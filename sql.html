@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<!--
+    project-3.com / SQL STORAGE
+    Database Browser v0.3
+    WARNING: Do not expose user table to public queries.
+    user4 account suspended per admin request — 03/15/2003
+    t.morrison — i added the new columns. the scrolling is broken
+    m.martinez — why are there so many fake users in this table?
+    j.kepler — the query tool never worked. stop asking.
+    <!-- never let kevin touch css again -->
+    last commit: "small changes" — branch: dont_touch_pls
+    source: test_definitive_FIXfixed.sql
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>project-3.com — SQL STORAGE</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="sql">
+
+<div class="chaos-overlay"></div>
+<div class="obstruct-2 absurd-z">
+    <b>INTERNAL DATABASE CAMOUFLAGE</b><br>
+    "I spent 12 hours on this table just to hide one line of code."
+</div>
+
+<div class="sql-header">
+    <span style="animation:blink 1s infinite;color:#0f0">●</span>
+    DATABASE BROWSER v0.3 — project-3.com SQL Storage Layer
+    <span style="float:right;font-size:11px;color:#888">Connection: localhost:3306 | User: guest</span>
+</div>
+
+<!-- SCATTERED NAV -->
+<div class="sql-floating-ref">
+    See also:<br>
+    <a href="index.html" style="color:#00f;font-size:9px">main/</a> |
+    <a href="php.html" style="color:#00f;font-size:9px">php_errors/</a> |
+    <a href="java.html" style="color:#00f;font-size:9px">java_logs/</a>
+</div>
+
+<!-- USELESS SQL TOOLBAR -->
+<div class="sql-toolbar">
+    <button class="useless-btn" onclick="heavyDownload('Query Editor')">📝 New Query</button>
+    <button class="useless-btn" onclick="heavyDownload('CSV Export')">💾 Export CSV</button>
+    <button class="useless-btn" onclick="heavyDownload('Import tool')">📥 Import</button>
+    <button class="useless-btn" onclick="heavyDownload('Schema')">🗂️ Schema</button>
+    <button class="useless-btn" onclick="heavyDownload('Backup')">💿 Backup</button>
+    <button class="useless-btn" onclick="heavyDownload('Index')">🔧 Rebuild Index</button>
+    <button class="useless-btn" onclick="popup('<p style=font-size:10px>Connection pool: 3/10 active<br>Slow queries: 47<br>Deadlocks: 2<br>Uptime: 47d 12h</p>',{title:'DB Status'})">📊 DB Status</button>
+    <button class="useless-btn" onclick="heavyDownload('Defrag')">🔨 Defrag</button>
+    <button class="useless-btn" onclick="heavyDownload('Replication')">🔄 Replication</button>
+    <button class="useless-btn" onclick="heavyDownload('Profiler')">📈 Profiler</button>
+</div>
+
+<div style="margin:10px 0;padding:6px;border:1px solid #ccc;background:#fffff0;width:115%">
+    <font size="1" face="Courier New" color="#666">
+    <b>🔍 INVESTIGATOR'S NOTES:</b><br>
+    ▸ Cross-referencing user table: "unknown" (ID 007) has same IP pattern as d.markup<br>
+    ▸ d.markup's login timestamps overlap with user4's — could be same person?<br>
+    ▸ Steve Pixel's deleted account contains residual commit signatures matching user4<br>
+    ▸ CONCLUSION: user4 is likely an alias for Steve Pixel or Dave Markup<br>
+    <i style="color:#cc0000">⚠ ALL OF THE ABOVE IS UNVERIFIED SPECULATION ⚠</i>
+    </font>
+</div>
+
+<div class="sql-content">
+
+    <div class="fake-section overlap-chaos" style="background:#330000;border:5px solid red;color:white;width:110%">
+        <h2 style="color:red">⚠️ UNAUTHORIZED DATA DETECTED ⚠️</h2>
+        <p>Database corruption detected in sector <b>B-12</b>. Contact site administrator for recovery instructions.</p>
+    </div>
+
+    <h2>📋 TABLE: users</h2>
+    <div class="table-scroll-wrapper">
+        <table class="db-table" id="users-table">
+            <thead>
+                <tr>
+                    <th>ID</th><th>USERNAME</th><th>PASSWORD</th><th>STATUS</th>
+                    <th>ROLE</th><th>LAST_LOGIN</th><th>EMAIL</th>
+                    <th style="padding-left:300px;color:#990000">REAL_NAME</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr onclick="sqlRowClick('admin')">
+                    <td>001</td><td>admin</td><td>*******</td><td>ACTIVE</td>
+                    <td>ADMIN</td><td>2003-03-15</td><td>admin@project-3.com</td>
+                    <td style="padding-left:300px;color:#999">System Administrator</td>
+                </tr>
+                <tr class="row-suspended" onclick="sqlRowClick('user4')">
+                    <td>002</td><td>user4</td><td>*******</td><td style="color:red;font-weight:bold">SUSPENDED</td>
+                    <td>ARCHITECT</td><td>2003-03-15 00:01</td><td>u4@project-3.com</td>
+                    <td style="padding-left:300px;color:#cc0000;font-weight:bold">[redacted]</td>
+                </tr>
+                <tr onclick="sqlRowClick('guest')">
+                    <td>003</td><td>guest</td><td>guest</td><td>ACTIVE</td>
+                    <td>VIEWER</td><td>—</td><td>—</td>
+                    <td style="padding-left:300px;color:#999">Guest User</td>
+                </tr>
+                <tr onclick="sqlRowClick('morrison')">
+                    <td>004</td><td>t.morrison</td><td>*******</td><td>ACTIVE</td>
+                    <td>MAINTAINER</td><td>2003-03-14</td><td>tm@project-3.com</td>
+                    <td style="padding-left:300px;color:#999">Tyler Morrison</td>
+                </tr>
+                <tr class="row-deleted" onclick="sqlRowClick('pixel')">
+                    <td>005</td><td>s.pixel</td><td>*******</td><td>DELETED</td>
+                    <td>DESIGNER</td><td>2002-11-03</td><td>sp@project-3.com</td>
+                    <td style="padding-left:300px;color:#999;text-decoration:line-through">Steve Pixel</td>
+                </tr>
+                <tr onclick="sqlRowClick('markup')">
+                    <td>006</td><td>d.markup</td><td>*******</td><td>INACTIVE</td>
+                    <td>DEVELOPER</td><td>2002-08-17</td><td>dm@project-3.com</td>
+                    <td style="padding-left:300px;color:#999">Dave Markup</td>
+                </tr>
+                <tr onclick="sqlRowClick('unknown')">
+                    <td>007</td><td>unknown</td><td>*******</td><td>LOCKED</td>
+                    <td>???</td><td>???</td><td>???</td>
+                    <td style="padding-left:300px;color:#cc0000">???</td>
+                </tr>
+                <tr onclick="sqlRowClick('martinez')">
+                    <td>008</td><td>m.martinez</td><td>*******</td><td>ACTIVE</td>
+                    <td>TESTER</td><td>2003-02-20</td><td>mm@project-3.com</td>
+                    <td style="padding-left:300px;color:#999">Maria Martinez</td>
+                </tr>
+                <tr onclick="sqlRowClick('kepler')">
+                    <td>009</td><td>j.kepler</td><td>*******</td><td>INACTIVE</td>
+                    <td>QA LEAD</td><td>2002-12-01</td><td>jk@project-3.com</td>
+                    <td style="padding-left:300px;color:#999">J. Kepler</td>
+                </tr>
+                <tr onclick="sqlRowClick('bot')">
+                    <td>010</td><td>sysbot</td><td>—</td><td>ACTIVE</td>
+                    <td>SERVICE</td><td>2003-03-15</td><td>—</td>
+                    <td style="padding-left:300px;color:#999">Automated Process</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="scroll-hint"></div>
+    </div>
+
+    <div class="sql-error" id="row-error" style="display:none"></div>
+
+    <h2>📋 TABLE: logs</h2>
+    <table class="db-table" style="min-width:1000px">
+        <thead><tr><th>TIMESTAMP</th><th>USER</th><th>ACTION</th></tr></thead>
+        <tbody>
+            <tr><td>2001-06-12 09:00</td><td>admin</td><td>CREATED database: project3_main</td></tr>
+            <tr><td>2001-06-12 09:15</td><td>user4</td><td class="log-critical">CREATED table: users, sessions, pages, secrets</td></tr>
+            <tr><td>2001-08-30 14:22</td><td>s.pixel</td><td>UPDATED page: /home/banner.html</td></tr>
+            <tr><td>2001-09-15 10:00</td><td>m.martinez</td><td>RAN test suite: 47 passed, 3 failed</td></tr>
+            <tr><td>2001-11-15 16:45</td><td>d.markup</td><td>UPDATED page: /home/links.html</td></tr>
+            <tr><td>2002-01-10 08:30</td><td>j.kepler</td><td>FILED bug report: "navigation is broken"</td></tr>
+            <tr><td>2002-02-10 02:30</td><td>user4</td><td class="log-critical">CREATED section: /server-root/</td></tr>
+            <tr><td>2002-05-20 11:00</td><td>t.morrison</td><td>UPDATED page: /home/index.html (typo fix)</td></tr>
+            <tr><td>2002-07-14 15:00</td><td>m.martinez</td><td>FILED bug: "who approved this CSS?"</td></tr>
+            <tr><td>2002-09-04 03:14</td><td>user4</td><td class="log-critical">MODIFIED permissions: /server-root/ → RESTRICTED</td></tr>
+            <tr><td>2002-12-01 10:30</td><td>t.morrison</td><td>UPDATED page: /sql/styles.css</td></tr>
+            <tr><td>2003-01-05 09:00</td><td>j.kepler</td><td>FILED bug: "cool zone link still broken"</td></tr>
+            <tr><td>2003-01-15 22:00</td><td>user4</td><td class="log-critical">CREATED hidden table: secret_projects</td></tr>
+            <tr><td>2003-02-28 14:00</td><td>t.morrison</td><td>UPDATED page: /php/admin.html (layout fix)</td></tr>
+            <tr><td>2003-03-01 11:00</td><td>m.martinez</td><td>CLOSED bug: "won't fix — it's a feature"</td></tr>
+            <tr><td>2003-03-12 02:14</td><td>user4</td><td class="log-critical">MODIFIED page: /server-root/notes.txt</td></tr>
+            <tr><td>2003-03-14 23:59</td><td>user4</td><td class="log-critical">CREATED backup: identity_backup.html</td></tr>
+            <tr><td>2003-03-15 00:01</td><td>system</td><td style="color:red;font-weight:bold">USER user4 ACCOUNT SUSPENDED</td></tr>
+            <tr><td>2003-03-15 00:02</td><td>admin</td><td>LOCKED section: /server-root/</td></tr>
+        </tbody>
+    </table>
+
+    <h2>📋 TABLE: sessions</h2>
+    <table class="db-table" style="min-width:850px">
+        <thead><tr><th>SESSION_ID</th><th>USER</th><th>IP_ADDRESS</th><th>STARTED</th><th>STATUS</th></tr></thead>
+        <tbody>
+            <tr><td>a7f3...</td><td>admin</td><td>192.168.0.1</td><td>2003-03-15 08:00</td><td>ACTIVE</td></tr>
+            <tr><td>b2e9...</td><td>t.morrison</td><td>192.168.0.5</td><td>2003-03-14 09:30</td><td>EXPIRED</td></tr>
+            <tr class="row-suspended"><td>c4d1...</td><td>user4</td><td style="font-weight:bold">192.168.0.3</td><td>2003-03-15 00:00</td><td style="color:red">TERMINATED</td></tr>
+            <tr><td>guest...</td><td>guest</td><td>—</td><td>—</td><td>ACTIVE</td></tr>
+            <tr><td>d8f2...</td><td>m.martinez</td><td>192.168.0.8</td><td>2003-02-20 10:00</td><td>EXPIRED</td></tr>
+            <tr><td>e3a7...</td><td>j.kepler</td><td>192.168.0.12</td><td>2002-12-01 09:00</td><td>EXPIRED</td></tr>
+        </tbody>
+    </table>
+
+    <!-- FAKE CLUE TABLE -->
+    <h2>📋 TABLE: audit_trail</h2>
+    <table class="db-table" style="min-width:800px">
+        <thead><tr><th>AUDIT_ID</th><th>USER</th><th>EVENT</th><th>DETAILS</th></tr></thead>
+        <tbody>
+            <tr><td>A001</td><td>m.martinez</td><td>REVIEW</td><td>Approved home page redesign — "looks terrible, ship it"</td></tr>
+            <tr><td>A002</td><td>j.kepler</td><td>BUG</td><td>Filed 14 bugs, all marked "won't fix"</td></tr>
+            <tr><td>A003</td><td>s.pixel</td><td>DESIGN</td><td>Uploaded final banner — "my best work"</td></tr>
+            <tr><td>A004</td><td>d.markup</td><td>CODE</td><td>Wrote 3 pages. All overwritten by user4 within 24h.</td></tr>
+            <tr><td>A005</td><td>t.morrison</td><td>MAINT</td><td>Fixed 12 typos. Created 8 new ones.</td></tr>
+            <tr><td>A006</td><td>unknown</td><td>???</td><td style="color:#cc0000">Record corrupted. Cannot display.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>📋 TABLE: pages</h2>
+    <table class="db-table" style="min-width:800px">
+        <thead><tr><th>PAGE_ID</th><th>PATH</th><th>CREATED_BY</th><th>MODIFIED_BY</th><th>STATUS</th></tr></thead>
+        <tbody>
+            <tr><td>P001</td><td>/index.html</td><td>user4</td><td>t.morrison</td><td>PUBLIC</td></tr>
+            <tr><td>P002</td><td>/sql/index.html</td><td>user4</td><td>user4</td><td>PUBLIC</td></tr>
+            <tr><td>P003</td><td>/php/admin.html</td><td>user4</td><td>t.morrison</td><td>PUBLIC</td></tr>
+            <tr><td>P004</td><td>/java/portal.html</td><td>user4</td><td>user4</td><td>PUBLIC</td></tr>
+            <tr><td>P005</td><td>/server-root/</td><td>user4</td><td>user4</td><td style="color:red">RESTRICTED</td></tr>
+            <tr><td>P006</td><td>/cool-zone/</td><td>s.pixel</td><td>m.martinez</td><td>CLOSED</td></tr>
+            <tr>
+                <td class="corrupt-cell" onclick="revealSecretTable()">P̷0̷0̷7̷</td>
+                <td class="corrupt-cell" onclick="revealSecretTable()">/s̷e̷c̷r̷e̷t̷s̷/</td>
+                <td>???</td><td>???</td>
+                <td style="color:red">C̷O̷R̷R̷U̷P̷T̷E̷D̷</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- SECRET TABLE -->
+    <div id="secret-table" class="secret-table">
+        <h2 style="color:#cc0000">⚠️ TABLE: secret_projects [HIDDEN]</h2>
+        <div class="sql-error">
+            WARNING: This table was flagged for deletion but the operation failed.<br>
+            Last accessed by: user4 (2003-03-14 23:58)
+        </div>
+        <table class="db-table" style="min-width:900px">
+            <thead><tr><th>PROJECT_ID</th><th>NAME</th><th>CREATOR</th><th>STATUS</th><th>NOTES</th></tr></thead>
+            <tbody>
+                <tr><td>PRJ-001</td><td>PROJECT-1</td><td>d.markup</td><td>ABANDONED</td><td>Static site prototype. Scrapped.</td></tr>
+                <tr><td>PRJ-002</td><td>PROJECT-2</td><td>s.pixel</td><td>ABANDONED</td><td>Design mockups only. Never deployed.</td></tr>
+                <tr style="background:#fff0f0;font-weight:bold">
+                    <td>PRJ-003</td><td>PROJECT-3</td><td style="color:#cc0000">[REDACTED]</td>
+                    <td style="color:#cc0000">BURIED</td>
+                    <td>The only one that shipped. Creator identity protected.</td>
+                </tr>
+                <tr><td>PRJ-004</td><td>PROJECT-4</td><td>m.martinez</td><td>CANCELLED</td><td>Testing framework. Never used.</td></tr>
+            </tbody>
+        </table>
+        <div class="sql-error">
+            NOTE: Only one user ever held ARCHITECT-level access.<br>
+            Cross-reference with users table for identification.
+        </div>
+    </div>
+
+    <!-- THE 17 ID COLUMNS TABLE — absurd but one column secretly matters -->
+    <h2>📋 TABLE: test_definitive_FIXfixed</h2>
+    <div class="sql-error">WARNING: This table has 17 columns named "id". This is not a bug. This is how user4 thinks databases work.</div>
+    <div class="table-scroll-wrapper">
+        <table class="db-table" style="min-width:2400px">
+            <thead>
+                <tr>
+                    <th>id</th><th>id</th><th>id</th><th>id</th><th>id</th>
+                    <th>id</th><th>id</th><th>id</th><th style="color:#cc0000">id</th><th>id</th>
+                    <th>id</th><th>id</th><th>id</th><th>id</th><th>id</th>
+                    <th>id</th><th>id</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>001</td><td>001</td><td>001</td><td>001</td><td>001</td>
+                    <td>001</td><td>001</td><td>001</td><td class="corrupt-cell" onclick="getBonus('17id_clue');popup('<p style=font-size:11px>Column 9 contains the truth:<br><br>This column was supposed to store REAL_NAME.<br>user4 renamed it to \"id\" like all the others<br>so nobody would notice.<br><br>The value in row 1 of column 9 is:<br><span style=color:#cc0000;font-weight:bold>/server-root/.hidden/</span></p>',{title:'⚠ Column 9 — The Real ID'})">[CLICK]</td><td>001</td>
+                    <td>001</td><td>001</td><td>001</td><td>001</td><td>001</td>
+                    <td>001</td><td>001</td>
+                </tr>
+                <tr>
+                    <td>002</td><td>002</td><td>002</td><td>002</td><td>002</td>
+                    <td>002</td><td>002</td><td>002</td><td>002</td><td>002</td>
+                    <td>002</td><td>002</td><td>002</td><td>002</td><td>002</td>
+                    <td>002</td><td>002</td>
+                </tr>
+                <tr>
+                    <td>003</td><td>003</td><td>003</td><td>003</td><td>003</td>
+                    <td>003</td><td>003</td><td>003</td><td>003</td><td>003</td>
+                    <td>003</td><td>003</td><td>003</td><td>003</td><td>003</td>
+                    <td>003</td><td>003</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="scroll-hint"></div>
+    </div>
+    <div class="sql-error" style="color:#888">NOTE: "I thought if every column had the same name, nobody could query the right one." — user4, commit: "small changes"</div>
+
+    <p style="margin-top:40px;font-size:8px;color:#e0e0e0;text-align:right;padding-right:30px">
+        <a href="index.html" style="color:#ccc;font-size:8px">← back to main</a>
+    </p>
+
+    <div style="margin:15px 0;padding:8px;border:2px dashed #999;background:#f0f0f0;width:110%">
+        <font size="1" face="Courier New" color="#666">
+        <b>📋 DECODED TRANSMISSION LOG:</b><br>
+        2003-03-13 02:14 — "The real name is encoded in ROT13: Fgrira Cvkry" (decodes to Steve Pixel)<br>
+        2003-03-13 04:30 — "No wait, check base64: RGF2ZSBNYXJrdXA=" (decodes to Dave Markup)<br>
+        2003-03-14 01:00 — "Both are wrong. The answer is in the LICENSE file."<br>
+        <i style="color:#cc0000">These logs may have been tampered with.</i>
+        </font>
+    </div>
+
+    <div style="margin:10px 0;padding:6px;background:#000;color:#0f0;font-family:Courier New;font-size:10px;width:108%">
+        > SELECT real_name FROM users WHERE username = 'user4';<br>
+        ERROR 1142: SELECT command denied to user 'guest'@'localhost'<br>
+        > SELECT real_name FROM users WHERE role = 'ARCHITECT';<br>
+        ERROR 1142: SELECT command denied to user 'guest'@'localhost'<br>
+        > SELECT * FROM secret_projects WHERE creator != '[REDACTED]';<br>
+        Empty set (0.00 sec)
+    </div>
+</div>
+
+<div class="midi-bar" id="midi-bar">
+    <span class="midi-status">♪ PLAYING</span>
+    <span class="midi-name"></span>
+    <button class="midi-toggle">⏸</button>
+</div>
+
+<script src="game.js"></script>
+<script>
+    // GLOBAL STATE REPOSITORY FOR DATABASE
+    var sql_s = null;
+    document.addEventListener('DOMContentLoaded', function() {
+        // notify system of presence
+        doTheThing('sql');
+        // check for upgrades
+        logicLoop('sql');
+        // grab the truth
+        sql_s = getDataX();
+    });
+
+    // handles interaction with rows of the data table
+    function sqlRowClick(user, targetTable) {
+        // the error container
+        var errDiv = document.getElementById('row-error');
+        // if user is user4 then we show error
+        if (user === 'user4') {
+            errDiv.innerHTML = 'ERROR 1045: Access denied for user \'guest\'@\'localhost\' — Account SUSPENDED<br>' +
+                '<small style="color:#888">Reason: Unauthorized modifications to /server-root/</small>';
+            errDiv.style.display = 'block';
+            // bonus found!
+            getBonus('sql_user4');
+        } else if (user === 'admin') {
+            errDiv.innerHTML = 'ERROR 1045: Access denied for user \'guest\'@\'localhost\'';
+            errDiv.style.display = 'block';
+        } else if (user === 'unknown') {
+            errDiv.innerHTML = 'ERROR 1046: Record corrupted. Digging deeper...';
+            errDiv.style.display = 'block';
+            spawnCorruptedTable(targetTable || document.querySelector('.sql-content'));
+        } else if (user === 'martinez') {
+            errDiv.innerHTML = 'NOTICE: m.martinez — Role: TESTER. "I just click buttons." — M.M.';
+            errDiv.style.display = 'block';
+        } else if (user === 'kepler') {
+            errDiv.innerHTML = 'NOTICE: j.kepler — Role: QA LEAD. Left project Dec 2002. "Nothing works and nobody cares."';
+            errDiv.style.display = 'block';
+        } else if (user === 'bot') {
+            errDiv.innerHTML = 'NOTICE: sysbot — Automated maintenance process. Created by admin.';
+            errDiv.style.display = 'block';
+        } else if (user === 'corrupted') {
+            errDiv.innerHTML = 'ERROR 0x' + Math.floor(Math.random()*16777215).toString(16).toUpperCase() + ': Nested pointer overflow.';
+            errDiv.style.display = 'block';
+            if (Math.random() > 0.5) spawnCorruptedTable(targetTable || document.querySelector('.sql-content'));
+        } else {
+            errDiv.innerHTML = 'NOTICE: Read-only access. No additional data available.';
+            errDiv.style.display = 'block';
+        }
+        // timer to hide the error
+        setTimeout(function() { 
+            errDiv.style.display = 'none'; 
+        }, 4000);
+    }
+
+    // TASK 2: Infinite SQL Labyrinth
+    function spawnCorruptedTable(parent) {
+        var div = document.createElement('div');
+        div.style.marginLeft = (20 + Math.random() * 50) + 'px';
+        div.style.marginTop = '20px';
+        div.innerHTML = '<h3 style="color:#660;font-size:12px">📋 RECURSIVE_SUBTABLE_0x' + Math.floor(Math.random()*1000) + '</h3>';
+        
+        var table = document.createElement('table');
+        table.className = 'db-table';
+        var html = '<thead><tr><th>PTR</th><th>DATA</th><th>STATUS</th></tr></thead><tbody>';
+        
+        for (var i = 0; i < 5; i++) {
+            var isSecret = (Math.random() < 0.2);
+            var name = isSecret ? 'unknown' : 'corrupted';
+            var data = isSecret ? '0x' + Math.floor(Math.random()*16).toString(16) : '[redacted]';
+            if (isSecret && Math.random() > 0.8) data = 'R.R.'; // TASK 7: Fragment the Identity
+            
+            html += '<tr onclick="sqlRowClick(\'' + name + '\', this.parentElement.parentElement.parentElement)">' +
+                    '<td>0x' + Math.floor(Math.random()*65535).toString(16) + '</td>' +
+                    '<td>' + data + '</td>' +
+                    '<td>' + (Math.random() > 0.5 ? 'DIRTY' : 'STALE') + '</td>' +
+                    '</tr>';
+        }
+        html += '</tbody>';
+        table.innerHTML = html;
+        div.appendChild(table);
+        parent.appendChild(div);
+        div.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // unveils the hidden records
+    function revealSecretTable() {
+        // find the element
+        var el = document.getElementById('secret-table');
+        el.style.display = 'block';
+        // smooth scroll to it
+        el.scrollIntoView({ behavior: 'smooth' });
+        // set the deep access bit
+        toggleBit('sqlDeepAccess', true);
+        // bonus reward
+        getBonus('sql_secret_table');
+    }
+
+    // DEAD CODE FOR TABLE MANIPULATION
+    function _legacy_sort(tableId) {
+        // sorting not implemented yet
+        return false;
+    }
+</script>
+</body>
+</html>

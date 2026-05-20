@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<!--
+    project-3.com / JAVA SECTOR
+    Enterprise Portal — Java Application Server v2.1
+    
+    Build 2003.03.14 — Compiled by: u4@project3
+    Licensed to: project-3.com Operations
+    <!-- never let kevin touch css again -->
+    Dependencies: DO_NOT_DELETE2.java, stable_version_beta2_FINALfinal
+    commit: "small changes" — branch: dont_touch_pls
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>project-3.com — JAVA SECTOR — Enterprise Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="java">
+
+<div class="chaos-overlay"></div>
+<div class="obstruct-2 absurd-z" style="top:200px;left:50%;width:200px;height:200px;border-radius:50%;background:rgba(0,0,128,0.2);display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;color:#000080;border:1px dashed #000080">
+    SYSTEM OBSESSION<br>LAYER 4
+</div>
+
+<!-- SPLASH SCREEN -->
+<div class="java-splash" id="splash">
+    <h2>☕ Java Enterprise Portal</h2>
+    <div class="splash-sub">Licensed to project-3.com Operations</div>
+    <div class="load-bar-outer">
+        <div class="load-bar-inner" id="load-bar"></div>
+    </div>
+    <div class="load-msg" id="load-msg">Initializing application server...</div>
+</div>
+
+<!-- MAIN CONTENT (HIDDEN UNTIL LOADED) -->
+<div id="java-main" style="display:none">
+
+    <div class="java-content">
+
+        <h2 style="color:#000080;font-size:14px;border-bottom:1px solid #808080;padding-bottom:5px">
+            ☕ Enterprise Portal — Java Application Server v2.1
+            <span style="float:right;font-size:11px;color:#808080">Session: J2EE-4829 | User: guest</span>
+        </h2>
+
+        <div class="fake-section overlap-chaos" style="background:#d4d0c8;border:2px outset #fff;color:#000080;padding:15px;margin-bottom:20px">
+            <h3>INTERNAL SYSTEM LOCK</h3>
+            <p>Access to core modules is <b>RESTRICTED</b>. "Every page is a shield."</p>
+            <button class="java-btn" onclick="heavyDownload('Core Logs')">Access Core Logs</button>
+            <div class="barely-visible">"They think complexity is a bug. It's the only security I have."</div>
+        </div>
+
+        <!-- TOOLBAR — chaotic, some buttons navigate elsewhere -->
+        <div class="java-toolbar">
+            <button class="java-btn" onclick="openSystemLogs()">📋 System Logs</button>
+            <button class="java-btn" onclick="openUserMgmt()">👥 User Mgmt</button>
+            <button class="java-btn" onclick="openBuildReports()">🔨 Build</button>
+            <button class="java-btn" onclick="openLicense()">📄 License</button>
+            <button class="java-btn" onclick="openAbout()">ℹ️ About</button>
+            <button class="java-btn" onclick="heavyDownload('System Config')">⚙️ Config</button>
+            <button class="java-btn" onclick="heavyDownload('Deployment manager')">🚀 Deploy</button>
+            <!-- Nav buttons disguised as enterprise tools -->
+            <button class="java-btn" onclick="location.href='index.html'" style="color:#808080;font-size:9px">🏠 Portal Home</button>
+            <button class="java-btn" onclick="location.href='sql.html'" style="color:#808080;font-size:9px">💾 DB Admin</button>
+            <button class="java-btn" onclick="location.href='php.html'" style="color:#808080;font-size:9px">🔧 Legacy Panel</button>
+        </div>
+
+        <!-- GRID PANELS -->
+        <div class="java-grid">
+
+            <!-- STATUS PANEL -->
+            <div class="java-panel">
+                <div class="java-panel-header">System Status</div>
+                <div class="java-panel-body" style="font-size:11px">
+                    <p>✅ JVM: Running (JDK 1.4.2)</p>
+                    <p>✅ Servlet Container: Tomcat 4.1</p>
+                    <p>✅ Database Pool: 3/10 active</p>
+                    <p>⚠️ Memory: 78% used (256MB heap)</p>
+                    <p>✅ Uptime: 47 days, 12:33:01</p>
+                </div>
+            </div>
+
+            <!-- QUICK INFO PANEL -->
+            <div class="java-panel">
+                <div class="java-panel-header">Quick Information</div>
+                <div class="java-panel-body" style="font-size:11px">
+                    <p><b>Server:</b> project3-prod-01</p>
+                    <p><b>Environment:</b> PRODUCTION</p>
+                    <p><b>Build:</b> 2003.03.14-final</p>
+                    <p><b>Compiled by:</b> u4@project3</p>
+                    <p><b>OS:</b> Red Hat Linux 9</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="java-panel" style="margin-top:10px">
+            <div class="java-panel-header">Recent Activity (last 48h)</div>
+            <div class="java-panel-body">
+                <div class="java-log">
+                    <div class="log-line log-info">[2003-03-14 08:00] t.morrison logged in from 192.168.0.5</div>
+                    <div class="log-line log-info">[2003-03-14 08:15] t.morrison updated /home/index.html (typo fix)</div>
+                    <div class="log-line log-info">[2003-03-14 10:30] s.pixel uploaded banner_v3.png</div>
+                    <div class="log-line log-warn">[2003-03-14 14:00] WARN: High memory usage detected</div>
+                    <div class="log-line log-info">[2003-03-14 16:00] t.morrison logged out</div>
+                    <div class="log-line log-critical">[2003-03-14 22:00] user4 logged in from 192.168.0.3</div>
+                    <div class="log-line log-critical">[2003-03-14 22:15] user4 accessed /server-root/</div>
+                    <div class="log-line log-critical">[2003-03-14 23:30] user4 modified /server-root/notes.txt</div>
+                    <div class="log-line log-critical">[2003-03-14 23:45] user4 created /server-root/.hidden/</div>
+                    <div class="log-line log-critical">[2003-03-14 23:50] user4 moved report.html to /server-root/.hidden/</div>
+                    <div class="log-line log-critical">[2003-03-14 23:55] user4 set permissions: .hidden/ → OWNER ONLY</div>
+                    <div class="log-line log-critical">[2003-03-14 23:59] user4 created identity_backup.html</div>
+                    <div class="log-line" style="color:red;font-weight:bold">[2003-03-15 00:01] SYSTEM: user4 EMERGENCY SUSPENDED</div>
+                    <div class="log-line" style="color:red">[2003-03-15 00:02] SYSTEM: All user4 sessions terminated</div>
+                    <div class="log-line log-info">[2003-03-15 08:00] admin logged in</div>
+                    <div class="log-line log-warn">[2003-03-15 08:05] admin locked /server-root/ access</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MIDI BAR -->
+<div class="midi-bar" id="midi-bar">
+    <span class="midi-status">♪ PLAYING</span>
+    <span class="midi-name"></span>
+    <button class="midi-toggle">⏸</button>
+</div>
+
+<script src="game.js"></script>
+<script>
+    // GLOBAL ENTERPRISE STATE
+    var java_s = null;
+    document.addEventListener('DOMContentLoaded', function() {
+        // notify the cluster
+        doTheThing('java');
+        // start the splash sequence
+        startSplash();
+    });
+
+    // handles the enterprise loading screen
+    function startSplash() {
+        // array of loading messages
+        var msgs = [
+            'Initializing application server...',
+            'Loading Java Runtime Environment...',
+            'Downloading 14GB runtime environment...',
+            'Still downloading...',
+            'Connecting to database pool...',
+            'Loading user permissions...',
+            'Compiling JSP pages...',
+            'Recompiling because kevin changed one import...',
+            'Loading innovation...',
+            'Checking license...',
+            'Almost ready...'
+        ];
+        // the message element
+        var msgEl = document.getElementById('load-msg');
+        var loadBar = document.getElementById('load-bar');
+        var i = 0;
+        // override the CSS animation — we control the bar manually now
+        loadBar.style.animation = 'none';
+        loadBar.style.width = '0%';
+        loadBar.style.transition = 'width 0.8s ease';
+        // interval for progress simulation
+        var interval = setInterval(function() {
+            // add 1 to i
+            i = i + 1;
+            if (i < msgs.length) {
+                msgEl.textContent = msgs[i];
+                // progress bar advances but slows near end
+                var pct = Math.min(99, (i / msgs.length) * 100);
+                loadBar.style.width = pct + '%';
+            } else {
+                // FREEZE at 99% for dramatic effect
+                loadBar.style.width = '99%';
+                msgEl.textContent = 'Finalizing... (99%)';
+                clearInterval(interval);
+                // wait 3 seconds at 99%
+                setTimeout(function() {
+                    msgEl.textContent = 'ERROR: OutOfMemoryError: Java heap space';
+                    msgEl.style.color = '#cc0000';
+                    // then "recover" after another 2s
+                    setTimeout(function() {
+                        msgEl.textContent = 'Recovering... Loading innovation...';
+                        msgEl.style.color = '#808080';
+                        setTimeout(function() {
+                            loadBar.style.width = '100%';
+                            msgEl.textContent = 'Ready. (14GB runtime not actually needed)';
+                            setTimeout(finishSplash, 800);
+                        }, 1500);
+                    }, 2000);
+                }, 3000);
+            }
+        }, 1000);
+    }
+
+    // completes the splash sequence
+    function finishSplash() {
+        // hide splash
+        document.getElementById('splash').style.display = 'none';
+        // show main content
+        document.getElementById('java-main').style.display = 'block';
+        // run the logic loop
+        logicLoop('java');
+
+        // show notices after delay
+        setTimeout(function() {
+            windowMaker6000('<p style="font-size:11px">Your session will expire in 30 minutes.<br>Save your work.</p>',
+                { title: 'Session Notice', x: 400, y: 80 });
+        }, 1500);
+
+        // security alert
+        setTimeout(function() {
+            windowMaker6000('<p style="font-size:11px;color:#cc0000">⚠️ SECURITY NOTICE:<br>Unusual login activity on 2003-03-14.<br>User "user4" performed unauthorized operations.<br>Investigation in progress.</p>',
+                { title: '⚠️ Security Alert', x: 150, y: 200 });
+        }, 3000);
+    }
+
+    // opens the log viewer
+    function openSystemLogs() {
+        // full logs content
+        var logContent = '<div class="java-log" style="max-height:250px;overflow-y:auto;font-size:10px;width:130%">' +
+            '<div class="log-line log-critical">[2001-06-12] user4 initialized project-3 database</div>' +
+            '<div class="log-line log-info">[2001-06-15] admin configured user permissions</div>' +
+            '<div class="log-line log-critical">[2001-07-01] user4 deployed HOME section</div>' +
+            '<div class="log-line log-critical">[2001-09-15] user4 deployed SQL STORAGE section</div>' +
+            '<div class="log-line log-info">[2001-10-01] s.pixel uploaded design assets</div>' +
+            '<div class="log-line log-critical">[2001-12-01] user4 deployed PHP CAVES section</div>' +
+            '<div class="log-line log-info">[2002-01-15] d.markup wrote content pages</div>' +
+            '<div class="log-line log-critical">[2002-03-01] user4 deployed JAVA SECTOR</div>' +
+            '<div class="log-line log-critical">[2002-05-01] user4 CREATED /server-root/ — permissions: PRIVATE</div>' +
+            '<div class="log-line log-warn">[2002-09-04] admin asked user4 about /server-root/ — no response</div>' +
+            '<div class="log-line log-critical">[2003-01-15] user4 created hidden table: secret_projects</div>' +
+            '<div class="log-line log-critical">[2003-03-14] user4 last full session — 6 hours continuous</div>' +
+            '<div class="log-line" style="color:red;font-weight:bold">[2003-03-14 23:59] user4: "Moved the form to /server-root/. They won\'t look there."</div>' +
+            '<div class="log-line" style="color:red">[2003-03-15 00:01] SYSTEM: ACCOUNT SUSPENDED</div>' +
+            '</div>';
+        
+        // make the window
+        windowMaker6000(logContent, { title: '📋 Full System Logs', x: 80, y: 60 });
+        // found clue
+        getBonus('java_system_logs');
+    }
+
+    // opens user management table
+    function openUserMgmt() {
+        // table data
+        var tbl = '<table style="width:100%;font-size:11px;border-collapse:collapse">' +
+            '<tr style="background:#000080;color:#fff"><th style="padding:3px 6px">User</th><th>Role</th><th>Status</th></tr>' +
+            '<tr><td style="padding:3px 6px">admin</td><td>ADMIN</td><td style="color:green">ACTIVE</td></tr>' +
+            '<tr style="background:#fff0f0"><td style="padding:3px 6px;font-weight:bold">user4</td><td>ARCHITECT</td><td style="color:red;font-weight:bold">REMOVED</td></tr>' +
+            '<tr><td style="padding:3px 6px">t.morrison</td><td>MAINTAINER</td><td style="color:green">ACTIVE</td></tr>' +
+            '<tr><td style="padding:3px 6px;text-decoration:line-through;color:#888">s.pixel</td><td>DESIGNER</td><td>DELETED</td></tr>' +
+            '<tr><td style="padding:3px 6px;color:#888">d.markup</td><td>DEVELOPER</td><td>INACTIVE</td></tr>' +
+            '</table>' +
+            '<p style="font-size:10px;color:#888;margin-top:8px">Note: Only ARCHITECT-level users can modify core site structure.</p>';
+        
+        // show window
+        windowMaker6000(tbl, { title: '👥 User Management', x: 200, y: 100 });
+        // reward found
+        getBonus('java_user_mgmt');
+    }
+
+    // opens build report text
+    function openBuildReports() {
+        // text content
+        var txt = '<div style="font-family:Courier New;font-size:10px;max-height:200px;overflow-y:auto;background:#fff;padding:8px;border:1px inset #808080">' +
+            '=== BUILD REPORT 2003.03.14 ===\n' +
+            'Compiled by: u4@project3\n' +
+            'Build target: production\n' +
+            'Source: /var/www/project3/src/\n\n' +
+            'Modules compiled:\n' +
+            '  [OK] home.war\n' +
+            '  [OK] sql-storage.war\n' +
+            '  [OK] php-bridge.war\n' +
+            '  [OK] java-portal.war\n' +
+            '  [OK] server-root.war\n' +
+            '  [WARN] report-form.war — hidden deployment\n\n' +
+            'Total build time: 4m 23s\n' +
+            'Deployed by: user4\n' +
+            '================================' +
+            '</div>';
+        
+        // show window
+        windowMaker6000(txt, { title: '🔨 Build Report — 2003.03.14', x: 250, y: 150 });
+        // found clue
+        getBonus('java_build_report');
+    }
+
+    // opens license text
+    function openLicense() {
+        spawnNestingDolls(function() {
+            // license content
+            var lic = '<div class="java-license">' +
+                'SOFTWARE LICENSE AGREEMENT\n\n' +
+                'This Enterprise Portal software (the "Software") is provided under the terms of the project-3.com Internal Use License.\n\n' +
+                'SECTION 1. GRANT OF LICENSE\nThe Software is licensed, not sold, for internal use within the project-3.com infrastructure.\n\n' +
+                'SECTION 2. RESTRICTIONS\nYou may not copy, modify, distribute, or reverse engineer the Software without written permission from the original developer.\n\n' +
+                'SECTION 3. OWNERSHIP\nThe Software and all associated documentation remain the intellectual property of the original developer.\n\n' +
+                'SECTION 4. DEVELOPER INFORMATION\nID: UmFuZHkgUmVuZGVy\nProject: project-3.com\nDate of first deployment: June 12, 2001\nAll code, design, and architecture by user4\n\n' +
+                'SECTION 5. WARRANTY DISCLAIMER\nTHE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.\n\n' +
+                'SECTION 6. TERMINATION\nThis license is effective until terminated. It will terminate automatically if you fail to comply with any term.\n\n' +
+                '© 2001-2003 user4. All rights reserved.\n' +
+                '</div>';
+            
+            // show window
+            windowMaker6000(lic, { title: '📄 License Information', x: 100, y: 120 });
+            // clue reward
+            getBonus('java_license');
+        });
+    }
+
+    // opens about window
+    function openAbout() {
+        // content
+        var html = '<p style="font-size:11px">Java Enterprise Portal v2.1<br>Build: 2003.03.14-final<br><br>' +
+            '<button class="java-btn" onclick="openAboutDetails()">More Details...</button></p>';
+        // show it
+        windowMaker6000(html, { title: 'ℹ️ About', x: 200, y: 100 });
+    }
+
+    // opens more details
+    function openAboutDetails() {
+        // details
+        var html = '<p style="font-size:11px">Servlet Container: Apache Tomcat 4.1.30<br>' +
+            'JDK: 1.4.2_03<br>Database: MySQL 4.0.15<br><br>' +
+            '<button class="java-btn" onclick="openAboutCredits()">Credits...</button></p>';
+        // show window
+        windowMaker6000(html, { title: 'Technical Details', x: 280, y: 180 });
+    }
+
+    // opens credits window
+    function openAboutCredits() {
+        // credits
+        var html = '<p style="font-size:12px;text-align:center;padding:10px">' +
+            'Built with passion by user4<br><br>' +
+            '<i style="font-size:10px;color:#808080">"They\'ll never find it."</i></p>';
+        // show window
+        windowMaker6000(html, { title: 'Credits', x: 320, y: 240 });
+        // clue reward
+        getBonus('java_about_credits');
+    }
+
+    // DEAD CODE FOR FUTURE ENTERPRISE STUFF
+    function _j2ee_bridge_init() {
+        return "v2.1 bridge ready";
+    }
+</script>
+
+</body>
+</html>: Apache Tomcat 4.1.30<br>' +
+            'JDK: 1.4.2_03<br>Database: MySQL 4.0.15<br><br>' +
+            '<button class="java-btn" onclick="openAboutCredits()">Credits...</button></p>';
+        // show window
+        windowMaker6000(html, { title: 'Technical Details', x: 280, y: 180 });
+    }
+
+    // opens credits window
+    function openAboutCredits() {
+        // credits
+        var html = '<p style="font-size:12px;text-align:center;padding:10px">' +
+            'Built with passion by user4<br><br>' +
+            '<i style="font-size:10px;color:#808080">"They\'ll never find it."</i></p>';
+        // show window
+        windowMaker6000(html, { title: 'Credits', x: 320, y: 240 });
+        // clue reward
+        getBonus('java_about_credits');
+    }
+
+    // DEAD CODE FOR FUTURE ENTERPRISE STUFF
+    function _j2ee_bridge_init() {
+        return "v2.1 bridge ready";
+    }
+</script>
+
+</body>
+</html>

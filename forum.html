@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--
+    project-3.com / PHANTOM FORUM
+    "I shouldn't have left this open."
+    — user4
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>project-3.com — FORUM (ARCHIVED)</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body.forum {
+            background: #eee;
+            color: #444;
+            font-family: 'Verdana', sans-serif;
+            overflow-x: hidden;
+        }
+        .forum-post {
+            background: #fff;
+            border: 1px solid #ccc;
+            margin: 20px;
+            padding: 15px;
+            max-width: 600px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .post-header {
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            font-size: 11px;
+            color: #888;
+        }
+        .user-name {
+            font-weight: bold;
+            color: #000080;
+        }
+        .broken-css-crime {
+            position: absolute;
+            top: -10px;
+            right: -100px;
+            width: 300px;
+            height: 400px;
+            background: rgba(255,0,0,0.05);
+            border: 10px solid #f00;
+            z-index: -1;
+            transform: rotate(15deg);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="forum">
+
+<div class="forum-post">
+    <div class="post-header">
+        <span class="user-name">xX_n0vaDump_Xx</span> | Posted: 2003-03-14 23:40
+    </div>
+    <div class="post-body">
+        GUYS. I think I found it. The real name.
+        He's been using the same alias across every section.
+        Look at the Java license. Look at the SQL tables.
+        The name is <b>Randy Render</b>.
+        He thinks he's so clever hiding it in base64.
+        Who even uses base64 for security? LOL.
+    </div>
+    <div class="broken-css-crime"></div>
+</div>
+
+<div class="forum-post" style="margin-left:60px;opacity:0.8">
+    <div class="post-header">
+        <span class="user-name">darkphp_42</span> | Posted: 2003-03-14 23:45
+    </div>
+    <div class="post-body">
+        Wait, Randy Render? That's the guy who built the 3D engine for those Flash games.
+        He's the same guy who made this site?
+        That explains the mess. He's obsessed with "depth".
+    </div>
+</div>
+
+<div class="forum-post" style="margin-left:100px;opacity:0.6">
+    <div class="post-header">
+        <span class="user-name">admin</span> | Posted: 2003-03-15 00:01
+    </div>
+    <div class="post-body" style="color:red;font-weight:bold">
+        THIS THREAD HAS BEEN CLOSED BY THE ADMINISTRATOR.
+        REASON: Unauthorized disclosure of personal information.
+        USER xX_n0vaDump_Xx HAS BEEN PERMANENTLY BANNED.
+    </div>
+</div>
+
+<div style="margin:40px;font-size:10px;color:#999">
+    <a href="index.html" style="color:#999">← back to reality</a>
+</div>
+
+<script src="game.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        doTheThing('forum');
+        getBonus('forum_reveal');
+    });
+</script>
+</body>
+</html>

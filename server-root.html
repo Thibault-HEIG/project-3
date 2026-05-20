@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!--
+    /server-root/
+    This directory should not be publicly accessible.
+    
+    — ???
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>project-3.com — /server-root/</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="server-root">
+
+<!-- breadcrumb nav -->
+<div class="sr-breadcrumb">
+    <a href="index.html">home</a> / <a href="java.html">java</a> / <span style="color:#0f0">server-root</span>
+</div>
+
+<div class="sr-content" id="sr-content">
+
+    <div id="access-denied" style="display:none;text-align:center;padding:60px 20px">
+        <h2 style="color:#f00">ACCESS DENIED</h2>
+        <p>Error 403: Forbidden</p>
+        <p style="color:#0a0;font-size:14px">Insufficient permissions. Required clearance: ARCHITECT</p>
+        <p style="margin-top:30px"><a href="index.html">Return to HOME</a></p>
+    </div>
+
+    <div id="directory-view" style="display:none">
+
+        <div class="cli-terminal" id="cli-terminal">
+            <div class="cli-output" id="cli-output">Project-3 Server Root Shell v0.4
+Restricted access. Limited commands available.
+
+</div>
+            <div class="cli-input-line">
+                <span class="cli-prompt" id="cli-prompt">root@project3:/server-root$</span>
+                <input type="text" id="cli-input" autofocus autocomplete="off" spellcheck="false">
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MIDI BAR -->
+<div class="midi-bar" id="midi-bar">
+    <span class="midi-status">♪ PLAYING</span>
+    <span class="midi-name"></span>
+    <button class="midi-toggle">⏸</button>
+</div>
+
+<script src="game.js"></script>
+<script>
+    // VIRTUAL FILE SYSTEM
+    var FS = {
+        'root': {
+            'index.html.bak': { type: 'file', size: '2.1K', modified: '2001-06-12', content: '<!\u0044OCTYPE html>\n<html>\n<head>\n    <title>project-3.com</title>\n    <!-- Original homepage backup -->\n    <!-- Created by user4, June 2001 -->\n    <!-- never let kevin touch css again -->\n</head>\n<body bgcolor="#FFFF00">\n    <h1>Welcome to project-3.com</h1>\n    <p>This is the beginning of something.</p>\n    <p>Built entirely from scratch. No templates.</p>\n    <p>No help. Just me and Notepad.</p>\n    <!-- [redacted] -->\n</body>\n</html>' },
+            'notes.txt': { type: 'file', size: '0.4K', modified: '2003-03-14', content: '=== NOTES ===\nDate: March 14, 2003\nAuthor: user4\n\nIf you\'re reading this, you found my server.\n\nI built project-3.com from nothing. Every HTML file,\nevery CSS rule, every JavaScript function, every SQL\ntable \u2014 all of it is mine.\n\nThey suspended my account. Said I was "making\nunauthorized modifications." But how can modifications\nbe unauthorized when I built the entire thing?\n\nThe form is here. In this directory. Hidden.\nYou know my name by now. \n\nUse it.\n\n\u2014 Randy', flag: 'notesRead', clue: 'sr_notes' },
+            'identity_backup.html': { type: 'file', size: '0.6K', modified: '2003-03-14', content: '=== IDENTITY BACKUP ===\nGenerated: 2003-03-14 23:59\nStatus: ARCHIVED\n\nCreator: [redacted]\nUsername: user4\nRole: ARCHITECT (original)\nProject: project-3.com\nActive: 2001-06-12 to 2003-03-15\n\nSections built:\n  - HOME (index.html)\n  - SQL STORAGE (sql.html)\n  - PHP CAVES (php.html)\n  - JAVA SECTOR (java.html)\n  - SERVER ROOT (this directory)\n\nTotal files created: 147\nTotal lines of code: ~12,000\n\n"Every page. Every error. Every broken link.\n All by design."\n\n \u2014 user4', clue: 'sr_identity' },
+            'FINAL_final_REAL_lastversion_v2.php': { type: 'file', size: '0.1K', modified: '2003-03-13', content: '<?php\n// TODO: fix the thing that hides the name\n// i think i left a backup in .hidden/\ninclude("core.php");\n?>' },
+            'backup_backup_backup.zip': { type: 'file', size: '0', modified: '2003-03-14' },
+            'AAAAAAA.css': { type: 'file', size: '12.4K', modified: '2003-03-14', content: '/* AAAAAAA.css — THE MASTERPIECE */\n* { z-index: 9999 !important; }\nbody { background: yellow; }\n/* kevin: please stop adding z-indices. everything is on top of everything now. */\n/* user4: that is the point. */' },
+            'DO_NOT_DELETE2.java': { type: 'file', size: '3.2K', modified: '2002-11-01', content: 'public class IdentityResolver {\n    // UmFuZHkgUmVuZGVy\n    private String architect = "user4";\n    public void resolve() {\n        System.out.println("Initializing labyrinth...");\n    }\n}' },
+            'documentation.txt': { type: 'file', size: '0.01K', modified: '2003-01-01', content: 'good luck.' },
+            'git_log.txt': { type: 'file', size: '0.3K', modified: '2003-03-14', content: 'commit d2f5c4a: small changes\ncommit c9d1b3e: small changes\ncommit b7e4a2f: small changes\ncommit a3f2d1c: initial commit (small changes)' },
+            'old': { type: 'dir', modified: '2003-03-10', contents: {
+                'about_u4.txt': { type: 'file', size: '0.5K', modified: '2003-03-10', content: '=== ABOUT ===\n\n[redacted]\nWeb Developer\n\nBuilt project-3.com between 2001 and 2003.\nAlone.\n\nStarted as a student project. Became something else.\nA labyrinth. A puzzle box. A place to hide things.\n\nSome people build websites to show the world.\nuser4 built one to hide from it.\n\nLast known login: March 14, 2003, 10:00 PM\nLast known action: Moved report.html to .hidden/\nAccount status: SUSPENDED\n\n"Was the site protecting itself?\n Or was I protecting the site?"\n\n \u2014 [redacted]', clue: 'sr_about' },
+                'index_old_backup_WORKING(4).html': { type: 'file', size: '1.8K', modified: '2002-08-15' },
+                'new_homepage_temp_FINAL_USETHISONE.html': { type: 'file', size: '2.0K', modified: '2003-02-20' },
+                'stable_version_beta2_FINALfinal': { type: 'dir', modified: '2003-01-10', contents: {
+                    'README.txt': { type: 'file', size: '0.02K', modified: '2003-01-10' },
+                    'test_definitive_FIXfixed.sql': { type: 'file', size: '0.8K', modified: '2003-01-15' }
+                }}
+            }},
+            '.hidden': { type: 'dir', hidden: true, modified: '2003-03-14', contents: {
+                'report.html': { type: 'file', size: '4.7K', modified: '2003-03-14', content: 'REDIRECTING TO REPORT FORM...', action: function() { window.location.href = 'report.html'; } }
+            }},
+            '.git_history': { type: 'dir', hidden: true, modified: '2003-03-14', contents: {
+                'log': { type: 'file', size: '0.4K', modified: '2003-03-14' }
+            }}
+        }
+    };
+
+    var currentPath = ['root'];
+    var cmdHistory = [];
+    var historyIdx = -1;
+    var input = document.getElementById('cli-input');
+    var output = document.getElementById('cli-output');
+    var prompt = document.getElementById('cli-prompt');
+
+    function getDir(path) {
+        var node = FS;
+        for (var i = 0; i < path.length; i++) {
+            if (node.contents) node = node.contents;
+            node = node[path[i]];
+        }
+        return node.contents || node;
+    }
+
+    function print(text, cls) {
+        var div = document.createElement('div');
+        div.className = cls || '';
+        div.textContent = text;
+        output.appendChild(div);
+        output.scrollTop = output.scrollHeight;
+    }
+
+    function printHTML(html, cls) {
+        var div = document.createElement('div');
+        div.className = cls || '';
+        div.innerHTML = html;
+        output.appendChild(div);
+        output.scrollTop = output.scrollHeight;
+    }
+
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            var cmdLine = input.value.trim();
+            print(prompt.textContent + ' ' + cmdLine);
+            if (cmdLine) {
+                cmdHistory.push(cmdLine);
+                historyIdx = cmdHistory.length;
+            }
+            input.value = '';
+            handleCmd(cmdLine);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (historyIdx > 0) {
+                historyIdx--;
+                input.value = cmdHistory[historyIdx];
+            }
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (historyIdx < cmdHistory.length - 1) {
+                historyIdx++;
+                input.value = cmdHistory[historyIdx];
+            } else {
+                historyIdx = cmdHistory.length;
+                input.value = '';
+            }
+        }
+    });
+
+    function handleCmd(line) {
+        var parts = line.split(/\s+/);
+        var cmd = parts[0].toLowerCase();
+        var args = parts.slice(1);
+
+        if (cmd === 'ls') {
+            var dir = getDir(currentPath);
+            var showAll = (args.indexOf('-a') !== -1 || args.indexOf('-la') !== -1 || args.indexOf('-al') !== -1);
+            var showLong = (args.indexOf('-l') !== -1 || args.indexOf('-la') !== -1 || args.indexOf('-al') !== -1);
+            var files = Object.keys(dir).filter(function(f) {
+                return showAll || !f.startsWith('.');
+            });
+            
+            if (showLong || showAll) {
+                // detailed listing
+                print('total ' + files.length);
+                files.forEach(function(f) {
+                    var entry = dir[f];
+                    var isDir = entry.type === 'dir';
+                    var perms = isDir ? 'drwxr-x---' : '-rw-r-----';
+                    var size = entry.size || (isDir ? '4.0K' : '0');
+                    var date = entry.modified || '2003-03-14';
+                    var name = isDir ? f + '/' : f;
+                    print(perms + '  user4  staff  ' + size + '  ' + date + '  ' + name);
+                });
+            } else {
+                // simple listing
+                var display = files.map(function(f) {
+                    return dir[f].type === 'dir' ? f + '/' : f;
+                });
+                print(display.join('  '));
+            }
+
+            if (showAll) {
+                var hasHidden = files.some(function(f) { return f.startsWith('.'); });
+                if (hasHidden) getBonus('sr_found_hidden');
+            }
+        } 
+        else if (cmd === 'cd') {
+            var arg = args[0];
+            if (!arg || arg === '/' || arg === '~') {
+                currentPath = ['root'];
+            } else if (arg === '..') {
+                if (currentPath.length > 1) currentPath.pop();
+            } else if (arg === '.') {
+                // stay in place
+            } else {
+                var segments = arg.split('/').filter(function(s) { return s !== ''; });
+                var tempPath = currentPath.slice();
+                var valid = true;
+                for (var i = 0; i < segments.length; i++) {
+                    var seg = segments[i];
+                    if (seg === '..') {
+                        if (tempPath.length > 1) tempPath.pop();
+                    } else if (seg === '.') {
+                        continue;
+                    } else {
+                        var dir = getDir(tempPath);
+                        if (dir[seg] && dir[seg].type === 'dir') {
+                            if (seg === '.hidden') {
+                                var s = getDataX();
+                                if (!s.notesRead) {
+                                    print('cd: .hidden: Permission denied', 'cli-error');
+                                    valid = false;
+                                    break;
+                                }
+                            }
+                            tempPath.push(seg);
+                        } else if (dir[seg] && dir[seg].type === 'file') {
+                            print('cd: ' + seg + ': Not a directory', 'cli-error');
+                            valid = false;
+                            break;
+                        } else {
+                            print('cd: ' + seg + ': No such file or directory', 'cli-error');
+                            valid = false;
+                            break;
+                        }
+                    }
+                }
+                if (valid) currentPath = tempPath;
+            }
+            var displayPath = '/' + currentPath.slice(1).join('/');
+            prompt.textContent = 'root@project3:' + (displayPath || '/') + '$';
+
+            var pathStr = currentPath.join('/');
+            if (pathStr.indexOf('.hidden') !== -1) {
+                getBonus('sr_entered_hidden');
+                var hiddenDir = getDir(currentPath);
+                var hiddenFiles = Object.keys(hiddenDir);
+                if (hiddenFiles.length > 0) {
+                    print('');
+                    hiddenFiles.forEach(function(f) {
+                        var entry = hiddenDir[f];
+                        if (entry.type === 'file') {
+                            printHTML('<span class="cli-link" onclick="openHiddenFile(\'' + f + '\')">' + f + '</span> (' + (entry.size || '?') + ')', 'cli-info');
+                        }
+                    });
+                }
+            }
+            if (pathStr.indexOf('old') !== -1) getBonus('sr_entered_old');
+        }
+        else if (cmd === 'cat') {
+            var arg = args[0];
+            if (!arg) {
+                print('cat: missing operand', 'cli-error');
+            } else {
+                var dir = getDir(currentPath);
+                var file = dir[arg];
+                if (file && file.type === 'file') {
+                    if (file.content) {
+                        print(file.content);
+                        if (file.flag) toggleBit(file.flag, true);
+                        if (file.clue) getBonus(file.clue);
+                    } else {
+                        print('cat: ' + arg + ': File is binary or empty', 'cli-error');
+                    }
+                } else if (file && file.type === 'dir') {
+                    print('cat: ' + arg + ': Is a directory', 'cli-error');
+                } else {
+                    print('cat: ' + arg + ': No such file or directory', 'cli-error');
+                }
+            }
+        }
+        else if (cmd !== '') {
+            print(cmd + ': command not found', 'cli-error');
+            print('Available commands: ls, cd, cat', 'cli-info');
+        }
+    }
+
+    function openHiddenFile(filename) {
+        var dir = getDir(currentPath);
+        var file = dir[filename];
+        if (file && file.type === 'file') {
+            if (file.flag) toggleBit(file.flag, true);
+            if (file.clue) getBonus(file.clue);
+            if (file.action) file.action();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var s = getDataX();
+        if (!s.serverRootUnlocked) {
+            document.getElementById('access-denied').style.display = 'block';
+            document.getElementById('directory-view').style.display = 'none';
+        } else {
+            document.getElementById('access-denied').style.display = 'none';
+            document.getElementById('directory-view').style.display = 'block';
+            input.focus();
+        }
+        doTheThing('server-root');
+        logicLoop('server-root');
+    });
+
+    document.addEventListener('click', function() { input.focus(); });
+</script>
+
+</body>
+</html>

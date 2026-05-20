@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--
+    /server-root/.hidden/report.html
+    The form. The end. The answer.
+    
+    If you found this, you know the name.
+    — user4
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>project-3.com — ???</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="report">
+
+<div class="chaos-overlay"></div>
+<div class="obstruct-1 absurd-z">FINAL DEFENSE</div>
+<div class="obstruct-2 absurd-z" style="top:50%;left:10%">CAMOUFLAGE: 99% COMPLETE</div>
+
+<div class="fake-section overlap-chaos absurd-z" style="position:fixed;top:10px;right:10px;width:200px;background:#000;border:1px solid #0f0;padding:10px">
+    <h3 style="color:#0f0;font-size:14px">SYSTEM INTEGRITY</h3>
+    <p style="font-size:10px">"I built this labyrinth to be the only place I can truly exist."</p>
+</div>
+
+<div class="report-form" id="the-form" style="position:relative;z-index:100;margin-top:200px">
+    <h2>WHO BUILT THIS WEBSITE?</h2>
+    <p style="font-size:14px;color:#0a0;margin-bottom:25px">
+        Enter the full name of the creator of project-3.com
+    </p>
+    <div class="barely-visible" style="position:absolute;top:-50px;left:0;width:100%">The truth is fragmented across the sectors. Randy? Render? R.R.?</div>
+    
+    <!-- TASK 9: Camouflage the Final Form -->
+    <div style="position:relative;height:100px;margin:20px 0">
+        <input type="text" id="answer-input" placeholder="" autocomplete="off"
+               onkeydown="if(event.key==='Enter')submitAnswer()"
+               style="position:absolute;top:40px;left:70%;width:10px;height:10px;opacity:0.1;z-index:500;background:transparent;border:none">
+        
+        <div style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1000;pointer-events:none;display:flex;align-items:center;justify-content:center">
+            <div style="font-size:80px;animation:wobble 0.2s infinite">🔥🔥🔥🔥</div>
+        </div>
+        
+        <div class="win-popup absurd-z" style="position:absolute;top:-100px;left:-50px;width:300px">
+            <div class="win-bar"><span class="win-title">⚠ SYSTEM OVERLOAD</span></div>
+            <div class="win-body" style="background:#000;color:red;font-size:10px">
+                CRITICAL: Layout engine collapsed. Stylesheet /AAAAAAA.css is too large.
+                The input field has been relocated to prevent data loss.
+                (Search the void)
+            </div>
+        </div>
+    </div>
+    
+    <br>
+    <button onclick="submitAnswer()">SUBMIT</button>
+    <div id="result" class="wrong" style="display:none"></div>
+    <button class="useless-btn" style="margin-top:20px" onclick="popup('<p>The system is locked. Identification required.</p>',{title:'System'})">Emergency Unlock</button>
+</div>
+
+<div class="overlap-chaos absurd-z" style="background:yellow;color:black;padding:20px;width:300px;position:fixed;bottom:100px;right:-50px;transform:rotate(-15deg)">
+    <b>OBSESSION LOG:</b><br>
+    "They think the mess is an accident. They don't know it's a choice."
+</div>
+
+<div class="invisible-clue">The answer is the one who built this. The technical sectors hold the key.</div>
+
+<script src="game.js"></script>
+<script>
+    // GLOBAL ATTEMPTS COUNTER
+    var countMe = 0;
+    // THE GLOBAL TRUTH
+    var truth_s = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // grab the truth
+        truth_s = getDataX();
+        // check if user is allowed to see the end
+        if (!truth_s.serverRootUnlocked || !truth_s.notesRead) {
+            // nested logic for rejection
+            if (true) {
+                document.body.innerHTML = '<div style="background:#000;color:#f00;font-family:VT323,monospace;height:100vh;display:flex;align-items:center;justify-content:center;font-size:24px;text-align:center;padding:20px">ACCESS DENIED<br><br><span style="font-size:16px;color:#0f0">You are not ready.<br>Explore further.</span></div>';
+                // wait 4 seconds and leave
+                setTimeout(function() { 
+                    window.location.href = 'index.html'; 
+                }, 4000);
+            }
+            return;
+        }
+        // inform system of final arrival
+        doTheThing('report');
+        // focus the input box
+        document.getElementById('answer-input').focus();
+    });
+
+    // handles the submission of the final answer
+    function submitAnswer() {
+        // grab the input element
+        var input = document.getElementById('answer-input');
+        // result container
+        var result = document.getElementById('result');
+        // the value entered
+        var val = input.value.trim();
+
+        // if empty then we do nothing
+        if (!val) {
+            return;
+        }
+        
+        // add 1 to the attempts
+        countMe = countMe + 1;
+
+        // check if it is right
+        if (isItRight(val)) {
+            // we have a winner!
+            endGameNow();
+        } else {
+            // wrong answer logic
+            result.style.display = 'block';
+            // nested ternary for error messages (MUCH BETTER)
+    result.textContent = (countMe === 1) ? 'Incorrect. Think harder.' : 
+                                 (countMe === 2) ? 'Wrong. The clues are everywhere.' :
+                                 (countMe === 3) ? 'No. Read the logs. Read the notes. Who BUILT this?' :
+                                 'The username is user4. His name is hidden in the technical sectors.';
+            // clear the box
+            input.value = '';
+            // refocus
+            input.focus();
+        }
+    }
+
+    // DEAD CODE FOR VALIDATION
+    function _validate_input_length(str) {
+        if (str.length > 0) return true;
+        return false;
+    }
+</script>
+
+</body>
+</html>

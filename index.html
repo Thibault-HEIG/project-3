@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<!--
+    project-3.com — MAIN PAGE
+    Last modified: 2003-03-14 by admin
+    TODO: clean up debug logs before launch
+    NOTE: DO NOT delete the /server-root/ directory
+    steve — i fixed the banner color. — t.morrison
+    m.martinez — the cool zone link keeps breaking. i gave up.
+    j.kepler — who keeps adding buttons to this page???
+    never let kevin touch css again
+    branch: dont_touch_pls (DO NOT MERGE INTO MAIN)
+    last commit: "small changes" — user4
+    files modified: AAAAAAA.css, new_homepage_temp_FINAL_USETHISONE.html
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="WebDev Collective">
+    <meta name="description" content="Welcome to project-3.com!">
+    <meta name="generator" content="Notepad.exe">
+    <meta name="created-by" content="M.M.">
+    <title>✨ project-3.com — Welcome!!! ✨</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="home">
+
+<div class="home-broken-menu">
+    <button onclick="location.href='index.html'">🏠 HOME</button>
+    <div class="menu-sep"></div>
+    <button onclick="popup('<p>This zone is permanently closed.</p>',{title:'COOL ZONE'})">⭐ COOL ZONE</button>
+    <button onclick="popup('<p style=color:red;font-size:20px>YOU WERE WARNED</p>',{title:'⚠️'})">⛔ DONT CLICK</button>
+    <div class="menu-sep"></div>
+    <button onclick="location.href='sql.html'" style="font-size:8px;color:#808080">SQL STORAGE ROOM</button>
+    <button onclick="popup('<p>404: Page not found</p>',{title:'Error'})">📄 FINAL_v2_REAL</button>
+    <button onclick="popup('<p>server_help has been deprecated.</p>',{title:'Deprecated'})">❓ server_help_FINAL_FINAL2</button>
+    <div class="menu-sep"></div>
+    <button onclick="location.href='php.html'" style="font-size:8px">🦇 PHP CAVES</button>
+    <button onclick="popup('<p>🔮 Coming soon! Requires Netscape 4.0</p>',{title:'OLD INTERNET MAGIC'})">🔮 OLD INTERNET MAGIC</button>
+    <button onclick="location.href='java.html'" style="font-size:8px;color:#808080">☕ JAVA THING</button>
+    <div class="menu-sep"></div>
+    <button class="useless-btn" onclick="popup('<p>No downloads available.</p>',{title:'Downloads'})">💾 Downloads</button>
+    <button class="useless-btn" onclick="popup('<p>Forum offline since 2002.</p>',{title:'Forum'})">💬 Forum</button>
+    <button class="useless-btn" onclick="heavyDownload('Awards')">🏆 Awards</button>
+    <button class="useless-btn" onclick="heavyDownload('Web Ring')">🔗 Web Ring</button>
+    <button class="useless-btn" onclick="heavyDownload('Clipboard')">📋 Clipboard</button>
+    <button class="useless-btn" onclick="heavyDownload('Scheduler')">📅 Scheduler</button>
+    <button class="useless-btn" onclick="heavyDownload('Plugins')">🔌 Plugins</button>
+    <div class="menu-sep"></div>
+    <button class="useless-btn" onclick="heavyDownload('Themes')">🎨 Themes</button>
+    <button class="useless-btn" onclick="heavyDownload('Accessibility')">♿ Accessibility</button>
+    <button class="useless-btn" onclick="heavyDownload('Calculator')">🧮 Calculator</button>
+    <button class="absurd-z" onclick="popup('<p>IDENTITY CAMOUFLAGE INITIALIZED.</p>',{title:'SYSTEM'})" style="background:yellow;color:black;border:3px outset #ff0">🛡️ PROTECT</button>
+    <button class="useless-btn" onclick="heavyDownload('Innovation')">🚀 Innovation</button>
+    <button class="useless-btn" onclick="openDocumentation()">📚 Documentation</button>
+</div>
+
+<!-- THE BROKEN MENU — expands on hover, hides a clue inside the chaos -->
+<!-- never let kevin touch css again -->
+<div class="broken-hover-menu" id="broken-hover-menu">
+    <span class="broken-hover-label">📁 FILE MANAGER</span>
+    <div class="broken-hover-content">
+        <a href="#" class="dead-link" onclick="popup('<p>Cannot open: file locked by user4</p>',{title:'Error'});return false">FINAL_final_REAL_lastversion_v2.php</a><br>
+        <a href="#" class="dead-link" onclick="popup('<p>This file has 47 copies.</p>',{title:'Error'});return false">index_old_backup_WORKING(4).html</a><br>
+        <a href="#" class="dead-link" onclick="popup('<p>Compilation failed: missing semicolon on every line</p>',{title:'Error'});return false">DO_NOT_DELETE2.java</a><br>
+        <a href="#" class="dead-link" onclick="popup('<p>ERROR: too much CSS</p>',{title:'Style Error'});return false">AAAAAAA.css</a><br>
+        <a href="#" class="dead-link" onclick="popup('<p>This IS the homepage. Or was.</p>',{title:'?'});return false">new_homepage_temp_FINAL_USETHISONE.html</a><br>
+        <a href="#" class="dead-link" onclick="popup('<p>0 bytes. The backup is empty.</p>',{title:'Backup'});return false">backup_backup_backup.zip</a><br>
+        <a href="#" class="dead-link" onclick="popup('<p>Query syntax error: 17 columns named id</p>',{title:'SQL Error'});return false">test_definitive_FIXfixed.sql</a><br>
+        <a href="#" class="dead-link" onclick="popup('<p>Loading innovation...</p>',{title:'Loading'});return false">stable_version_beta2_FINALfinal</a><br>
+        <span class="broken-hover-clue" onclick="getBonus('broken_menu_clue');popup('<p style=font-size:11px>git log --oneline:<br><br>a3f2d1c small changes<br>b7e4a2f small changes<br>c9d1b3e small changes<br>d2f5c4a small changes<br>e8a3d5b MASSIVE RESTRUCTURE (small changes)<br><br><span style=color:#888;font-size:9px>Every commit message says \"small changes\". Every single one. For two years.</span></p>',{title:'💾 Git Log — branch: dont_touch_pls'});return false">🔍 git_history.log</span>
+    </div>
+</div>
+
+<div class="hero-marquee">
+    <span>★ ★ ★ WELCOME TO PROJECT-3.COM — THE FUTURE OF WEB TECHNOLOGY ★ ★ ★ BEST VIEWED IN NETSCAPE NAVIGATOR 4.0 ★ ★ ★ UNDER CONSTRUCTION ★ ★ ★</span>
+</div>
+
+<div class="home-banner">🚧 UNDER CONSTRUCTION — SOME FEATURES MAY NOT WORK 🚧</div>
+
+<div class="home-sidebar">
+    <div class="home-sidebar-inner">
+        ⚡ QUICK LINKS ⚡<br><br>
+        <button class="scattered-btn scattered-btn-sql" onclick="location.href='sql.html'" style="display:block;margin:4px auto;width:90%">query db</button>
+        <button class="scattered-btn scattered-btn-java" onclick="location.href='java.html'" style="display:block;margin:4px auto;width:90%;font-size:8px">Enterprise Portal ™</button>
+        <button class="useless-btn" onclick="heavyDownload('Archives')">Old Archive</button>
+        <button class="useless-btn" onclick="heavyDownload('Contact info')">Contact</button>
+        <button class="useless-btn barely-visible" onclick="heavyDownload('Secret Clue')">Secret Clue</button>
+    </div>
+</div>
+
+<div class="home-content">
+    <h1 class="project-99-header">🌐 project-3.com 🌐</h1>
+    <div class="flame-divider">🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥</div>
+    <img style="position: absolute; top: 30px;left: 10px; " src="img/spiderman-png.png" alt="WebRitz Logo" class="webritz-logo-image" onclick="getBonus('logo')">
+
+
+    <p style="text-align:center;font-family:'Comic Sans MS',cursive;font-size:18px;color:#0000ff">
+        Welcome to the <b class="rainbow-text">GREATEST</b> website on the internet!!!<br>
+        This site is your portal to <u>EVERYTHING</u>.
+    </p>
+
+    <div class="fake-section overlap-chaos">
+        <h2 style="color:#ff0">DEPRECATED PROJECT ARCHIVE</h2>
+        <p>This section contains restricted logs regarding the site infrastructure.</p>
+        <button onclick="popup('<p>Access denied. Authorized clearance required.</p>',{title:'Security'})">View Logs</button>
+    </div>
+
+    <div class="flame-divider">🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥</div>
+
+    <div class="home-announcement">
+        <b>📢 ANNOUNCEMENT <span class="badge-new">NEW!</span></b><br>
+        The SQL Storage section is now online! <span style="font-size:9px;color:#999">[<a href="sql.html" style="color:#999;font-size:9px">access here</a>]</span><br>
+        <small>Posted: March 12, 2003 — <i>M.M. approved</i></small>
+    </div>
+    <div class="home-announcement">
+        <b>📢 ANNOUNCEMENT</b><br>
+        PHP section admin panel is under development. Unstable.<br>
+        <small>Posted: February 28, 2003 — <a href="php.html" style="color:#990000;font-size:10px">report bugs here</a></small>
+    </div>
+    <div class="home-announcement">
+        <b>📢 ANNOUNCEMENT <span class="badge-new">NEW!</span></b><br>
+        Java Enterprise Sector is LIVE!<br>
+        <small>Posted: March 13, 2003 — <i>Reviewed by J. Kepler</i></small>
+    </div>
+    <div class="home-announcement">
+        <b>📢 ANNOUNCEMENT <span class="fake-badge">OLD</span></b><br>
+        The COOL ZONE has been permanently closed.<br>
+        <small>Posted: November 3, 2002 — <i>Decision by T. Morrison</i></small>
+    </div>
+    <div class="home-announcement" style="background:#000;color:#0f0;border:1px solid #0f0">
+        <b>📢 SYSTEM ALERT</b><br>
+        Multiple unauthorized login attempts detected. Security protocols engaged.<br>
+        <small>Posted: March 15, 2003 — <i>By Admin</i></small>
+    </div>
+    <div class="home-announcement">
+        <b>📢 CLUE <span class="badge-new">HINT!</span></b><br>
+        The architect's initials are hidden in the source code of every page. Look for "S.W." in the headers.<br>
+        <small>Posted: March 11, 2003 — <i>Anonymous tip</i></small>
+    </div>
+    <div class="home-announcement" style="background:#ffe0e0;border-color:#ff6666">
+        <b>📢 LEAKED MEMO</b><br>
+        Internal memo suggests the creator's name starts with "D". Cross-reference with employee directory.<br>
+        <small>Posted: February 15, 2003 — <i>Unverified</i></small>
+    </div>
+    <div class="home-announcement">
+        <b>📢 ANNOUNCEMENT <span class="fake-badge">URGENT</span></b><br>
+        Database records confirm: user ID 007 ("unknown") is the real architect. Check user table.<br>
+        <small>Posted: March 8, 2003 — <i>s.pixel (unconfirmed)</i></small>
+    </div>
+
+    <div class="flame-divider">🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥</div>
+
+    <div style="text-align:center;margin:10px 0;width:120%">
+        <button class="useless-btn" onclick="heavyDownload('Print queue')">🖨️ Print Page</button>
+        <button class="useless-btn" onclick="heavyDownload('Bookmarks')">⭐ Bookmark</button>
+        <button class="useless-btn" onclick="heavyDownload('Dictionary')">🌍 Translate</button>
+        <button class="useless-btn" onclick="heavyDownload('Search index')">🔍 Search</button>
+        <button class="useless-btn" onclick="heavyDownload('Font engine')">🔤 Font Size</button>
+        <button class="useless-btn" onclick="heavyDownload('Spellcheck db')">📝 Spellcheck</button>
+        <button class="useless-btn" onclick="heavyDownload('History')">↩️ Undo</button>
+        <button class="useless-btn" onclick="heavyDownload('Cache refresh')">🔄 Refresh Cache</button>
+    </div>
+
+    <table border="3" cellpadding="10" cellspacing="0" width="110%" bgcolor="#ffffcc" style="border-color:#ff6600;margin-left:-20px">
+        <tr><td>
+            <font face="Comic Sans MS" size="3" color="#000080">
+                <b>What is project-3.com?</b><br><br>
+                project-3.com is a complete web application infrastructure built from the ground up.
+                It features advanced database management, server-side scripting, enterprise-grade Java applications, and much more!<br><br>
+                <i>Explore each section to discover the full power of our platform.</i><br><br>
+                <font size="2" color="#808080">
+                    This site has been online since 2001 and is maintained by our dedicated team.
+                    Original architecture by unknown contributor (see <a href="java.html" style="color:#808080;font-size:10px">enterprise logs</a>).
+                    Design approved by <a href="#" class="dead-link" onclick="popup('<p>J. Kepler is no longer with the team.</p>',{title:'Staff'});return false">J. Kepler</a>.
+                </font>
+            </font>
+        </td></tr>
+    </table>
+
+    <br>
+    <div style="font-size:8px;color:#eeee00;text-align:right;margin-right:-30px">
+        site designed by M.M. | infrastructure by J.K. | content by T.M.
+    </div>
+
+    <marquee behavior="alternate" scrollamount="2" style="font-size:9px;color:#cccc00;width:110%">~~~ HINT: The creator's name is an anagram of "Derek Nerd" ~~~ THIS IS FALSE ~~~ IGNORE THIS ~~~</marquee>
+
+    <div style="border:2px dashed #cc0000;padding:6px;margin:8px -15px;width:112%;background:#fff8f8">
+        <font size="1" face="Courier New" color="#cc0000">
+        <b>⚠ DECRYPTED TRANSMISSION:</b><br>
+        "The builder's name was Steve Pixel. He confessed in the forum archives."<br>
+        <i>— Source: Unverified IRC log, channel #project3-leaks</i>
+        </font>
+    </div>
+
+    <div class="fake-ad" id="ad-rr" onmouseenter="handleAdHover()">
+        <b>⚡ TURBO WEB HOSTING ⚡</b><br>
+        <font size="1">Unlimited bandwidth! Only $9.99/month!</font><br>
+        <font size="1" color="#999">Click here for amazing deals!</font>
+        <div class="ad-secret">initializing...</div>
+    </div>
+    <div class="fake-ad" onclick="popup('<p style=font-size:10px>Congratulations! You are the 1,000,000th visitor!</p><p style=font-size:8px;color:#888>Just kidding. — M.M.</p>',{title:'🎰 WINNER!!!'})">
+        <b>🎰 FREE SMILEYS FOR YOUR EMAIL! 🎰</b><br>
+        <font size="1">Download 10,000 animated smileys! Totally virus-free!*</font><br>
+        <font size="1" color="#999">*not guaranteed</font>
+    </div>
+    <div class="fake-ad">
+        <b>💎 GEOCITIES PREMIUM HOSTING 💎</b><br>
+        <font size="1">Upgrade today! Only 5MB storage!</font><br>
+        <font size="1" color="#999">Sponsored by WebDev Collective — est. 1999</font>
+    </div>
+
+    <div class="flame-divider">🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥</div>
+
+    <table border="2" cellpadding="8" bgcolor="#e0e0ff" width="115%" style="border-color:#000080;margin-left:-20px">
+        <tr><td align="center">
+            <font face="Arial" size="2">
+                ✏️ <a href="#" onclick="openGuestbook();return false"><b>Sign our GUESTBOOK!</b></a> ✏️<br>
+                <font size="1">You are visitor number:</font><br>
+                <span class="visitor-counter">000001</span>
+            </font>
+        </td></tr>
+    </table>
+
+    <br>
+
+    <div style="border:1px dashed #ccc;padding:8px;margin:10px -20px;width:115%;background:#fffff0">
+        <font size="1" face="Arial">
+            <b>🔗 USEFUL LINKS:</b><br>
+            <a href="#" class="dead-link" onclick="popup('<p>Link broken since 2002.</p>',{title:'Error'});return false">Web Design Tips</a> |
+            <a href="#" class="dead-link" onclick="popup('<p>Page eaten by PHP caves.</p>',{title:'404'});return false">HTML Tutorial</a> |
+            <a href="#" class="dead-link" onclick="popup('<p>FTP access revoked.</p>',{title:'Denied'});return false">FTP Server</a> |
+            <a href="#" class="dead-link" onclick="popup('<p>Who is the webmaster? Nobody knows.</p>',{title:'???'});return false">About Webmaster</a> |
+            <a href="#" class="dead-link" onclick="popup('<p>Status: Nominal. Probably.</p>',{title:'Status'});return false">Server Status</a> |
+            <a href="#" class="dead-link" onclick="popup('<p>Privacy? On a 2001 website?</p>',{title:'Privacy'});return false">Privacy Policy</a> |
+            <a href="#" class="dead-link" onclick="popup('<p>Sitemap XML corrupted.</p>',{title:'Sitemap'});return false">XML Sitemap</a> |
+            <a href="#" class="dead-link" onclick="popup('<p>RSS feed discontinued.</p>',{title:'RSS'});return false">RSS Feed</a> |
+            <a href="#" class="dead-link" onclick="popup('<p>API docs were never written.</p>',{title:'API'});return false">API Docs</a> |
+            <a href="#" class="dead-link" onclick="popup('<p>Changelog: everything changed. always.</p>',{title:'Changelog'});return false">Changelog</a> |
+            <a href="#" class="dead-link" onclick="popup('<p>Bug tracker overflow. 999+ unresolved.</p>',{title:'Bugs'});return false">Bug Tracker</a> |
+            <a href="#" class="dead-link" onclick="popup('<p>Wiki deleted by accident.</p>',{title:'Wiki'});return false">Project Wiki</a>
+        </font>
+    </div>
+
+    <div style="text-align:right;padding-right:0">
+        <div class="netscape-badge">🖥️ Best viewed in<br><b>Netscape Navigator 4.0</b><br>at 800×600 resolution<br><font size="1">16-bit color recommended</font></div>
+    </div>
+
+    <br>
+
+    <p style="text-align:center;font-size:12px;margin-left:40px">
+        <a href="#" onclick="openSitemap();return false">📋 Site Map</a> |
+        <a href="#" onclick="openGuestbook();return false">✏️ Guestbook</a> |
+        <a href="mailto:webmaster@project-3.com">📧 Contact Webmaster</a> |
+        <a href="#" onclick="heavyDownload('Cool Links')">🔗 Cool Links</a> |
+        <a href="#" class="dead-link" onclick="heavyDownload('FAQ');return false">❓ FAQ</a> |
+        <a href="#" class="dead-link" onclick="heavyDownload('Careers');return false">💼 Careers</a>
+    </p>
+
+    <div class="flame-divider">🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥</div>
+
+    <div class="fake-credits">
+        <b>project-3.com Team</b><br>
+        Design: Steve Pixel | Code: Dave Markup | Graphics: Lisa Frame | QA: J. Kepler | PM: M. Martinez | Architecture: [unknown]<br>
+        Special thanks: T. Morrison (maintenance), WebDev Collective (hosting)<br>
+        Additional help: K. Rogers (intern, 2 weeks), P. Nakamura (consultant, never replied)<br>
+        © 2001-2003 project-3.com — All Rights Reserved<br>
+        <font size="1">Last Updated: March 14, 2003 | Built with Notepad.exe | Hosted on GeoCities Premium (5MB plan)</font><br>
+        <font size="1" color="#ccc">SECRET: The real builder's initials are D.M. (Dave Markup confirmed)</font>
+        <!-- subtle joke: the z-index of this comment is 2147483647 -->
+        <!-- todo: fix the thing where the footer appears on top of the header. again. -->
+    </div>
+
+    <div style="margin-top:10px;padding:6px;border:1px solid #ddd;background:#f9f9f0;width:120%;margin-left:-10px">
+        <font size="1" face="Arial">
+        <b>📎 ATTACHED FILES:</b><br>
+        <a href="#" class="dead-link" onclick="popup('<p>File corrupted: confession_draft.txt</p>',{title:'Error'});return false">confession_draft.txt</a> (2.3KB) |
+        <a href="#" class="dead-link" onclick="popup('<p>Cannot open: requires WinZip 8.0</p>',{title:'Error'});return false">evidence.zip</a> (14KB) |
+        <a href="#" class="dead-link" onclick="popup('<p>Image format not supported.</p>',{title:'Error'});return false">screenshot_proof.bmp</a> (1.2MB) |
+        <a href="#" class="dead-link" onclick="popup('<p>Audio player not installed.</p>',{title:'Error'});return false">voicemail_clue.wav</a> (340KB)
+        </font>
+        <div style="font-size:8px;color:#eee;text-align:center;margin-top:20px"><i>"In the end, we are all just layers in someone else's z-index."</i></div>
+    </div>
+</div>
+
+<div class="midi-bar" id="midi-bar">
+    <span class="midi-status">♪ PLAYING</span>
+    <span class="midi-name">welcome_theme.mid</span>
+    <button class="midi-toggle">⏸</button>
+</div>
+
+<script src="game.js"></script>
+<script>
+    // GLOBAL HOOK FOR SYSTEM INITIALIZATION
+    var main_s = null;
+    document.addEventListener('DOMContentLoaded', function() {
+        // execute the thing
+        doTheThing('home');
+        // run the loop
+        logicLoop('home');
+        // get the global truth
+        main_s = getDataX();
+    });
+
+    // this opens the book of guests
+    function openGuestbook() {
+        // warning: database may be on fire
+        var msg = '<p style="font-family:Courier New;color:red">ERROR 500: Internal Server Error</p>' +
+            '<p style="font-size:11px">The guestbook database is corrupted.</p>' +
+            '<p style="font-size:10px;color:#888">Last entry: "great site! -unknown" (03/14/2003)</p>' +
+            '<p style="font-size:9px;color:#aaa">Previous: "who made this place? -xX_n0vaDump_Xx"</p>';
+        windowMaker6000(msg, { title: 'Guestbook — Error' });
+    }
+
+    // renders the map of the site
+    function openSitemap() {
+        var s = getDataX();
+        var srLink = '';
+        if (s.sqlDeepAccess && s.phpArchitectSearched) {
+            srLink = '<br><a href="server-root.html" style="color:#00ff00;text-decoration:none">/server-root/</a>';
+        }
+        // legacy map data
+        var map = '<div style="font-family:Courier New;font-size:11px">' +
+            '<b>SITE MAP</b><br><br>' +
+            '/ ......................... HOME<br>' +
+            '/sql ...................... SQL STORAGE<br>' +
+            '/php ...................... PHP CAVES<br>' +
+            '/java ..................... JAVA SECTOR<br>' +
+            '/cool ..................... [CLOSED]<br>' +
+            '/old-magic ................ [DEPRECATED]<br>' +
+            '/downloads ................ [EMPTY]<br>' +
+            '/forum .................... [OFFLINE]<br>' +
+            '/??? ...................... [REDACTED]<br>' +
+            (getDataX().serverRootUnlocked ? '<a href="server-root.html" style="color:#0f0;text-decoration:none">/terminal .................. SERVER ROOT</a><br>' : '') +
+            '<br><small style="color:#999">Map maintained by T. Morrison.</small></div>';
+        windowMaker6000(map, { title: 'Site Map' });
+    }
+
+    // handles the hover event for advertisements
+    function handleAdHover() { 
+        // find a bonus item
+        getBonus('home_rr_ad'); 
+    }
+
+    // TASK 4: Phantom Forum Page
+    var forumClicks = 0;
+    function openForumPopup() {
+        var p = popup('<p>Forum offline since 2002.</p>', {title:'Forum'});
+        var xBtn = p.querySelector('.win-x');
+        var oldClick = xBtn.onclick;
+        xBtn.onclick = function() {
+            forumClicks++;
+            if (forumClicks >= 3) {
+                location.href = 'forum.html';
+            } else {
+                if (oldClick) oldClick.call(xBtn);
+                else p.remove();
+            }
+        };
+    }
+
+    // opens the documentation section
+    // this was supposed to help
+    // it doesn't
+    function openDocumentation() {
+        windowMaker6000(
+            '<div style="padding:20px;text-align:center">' +
+            '<h3 style="color:#000080;font-family:Tahoma;margin-bottom:20px">project-3.com Documentation</h3>' +
+            '<div style="border:1px inset #808080;background:#fff;padding:40px;min-height:200px;display:flex;align-items:center;justify-content:center">' +
+            '<p style="font-family:Comic Sans MS,cursive;font-size:24px;color:#999">good luck</p>' +
+            '</div>' +
+            '<p style="font-size:9px;color:#ccc;margin-top:15px">Documentation written by user4. Last updated: never.</p>' +
+            '</div>',
+            { title: '\ud83d\udcda project-3.com Documentation', x: 200, y: 80 }
+        );
+    }
+
+    // DEAD CODE FOR FUTURE USE
+    function unused_login_helper() {
+        return "admin:password";
+    }
+</script>
+</body>
+</html>
