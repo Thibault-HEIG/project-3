@@ -51,5 +51,6 @@ The project is a static web application.
 
 ## Narrative Clues (SPOILERS)
 - **The Architect:** Randy Render (base64 encoded in `game.js` as `cmFuZHkgcmVuZGVy`).
+- **Name Fragmentation:** The full name is never in one place. Forum: "Randy", SQL zone: "Render", PHP and Java: "R.R."
 - **Initials:** "S.W." (Steve Pixel - Red Herring) vs "D.M." (Dave Markup - Red Herring) vs "user4".
 - **The Goal:** Find the hidden report form and submit the name "Randy Render".

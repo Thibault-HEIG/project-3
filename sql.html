@@ -42,7 +42,7 @@
 
 <!-- USELESS SQL TOOLBAR -->
 <div class="sql-toolbar">
-    <button class="useless-btn" onclick="heavyDownload('Query Editor')">📝 New Query</button>
+    <button class="useless-btn" onclick="openQueryEditor()" style="font-weight:bold;background:#e8e8e8">📝 New Query</button>
     <button class="useless-btn" onclick="heavyDownload('CSV Export')">💾 Export CSV</button>
     <button class="useless-btn" onclick="heavyDownload('Import tool')">📥 Import</button>
     <button class="useless-btn" onclick="heavyDownload('Schema')">🗂️ Schema</button>
@@ -52,6 +52,47 @@
     <button class="useless-btn" onclick="heavyDownload('Defrag')">🔨 Defrag</button>
     <button class="useless-btn" onclick="heavyDownload('Replication')">🔄 Replication</button>
     <button class="useless-btn" onclick="heavyDownload('Profiler')">📈 Profiler</button>
+</div>
+
+<!-- SQL QUERY EDITOR -->
+<div id="query-editor-panel" style="display:none;margin:10px 0;border:1px solid #999;background:#fff">
+    <div style="background:#e0e0e0;padding:4px 8px;border-bottom:1px solid #999;font-size:11px;font-family:Verdana,sans-serif;display:flex;align-items:center;gap:4px">
+        <span style="font-weight:bold;color:#333">📝 Query Editor</span>
+        <span style="color:#888;font-size:9px;margin-left:8px">— project3_main@localhost:3306</span>
+        <span style="flex:1"></span>
+        <button onclick="runQuery()" style="background:#4a7;color:#fff;border:2px outset #3a6;font-weight:bold;font-size:10px;padding:2px 10px;cursor:pointer;font-family:Verdana,sans-serif">▶ Run</button>
+        <button class="useless-btn" onclick="clearQuery()" style="font-size:10px;padding:2px 8px">🗑️ Clear</button>
+        <button class="useless-btn" onclick="heavyDownload('Query formatter')" style="font-size:10px;padding:2px 8px">🔧 Format</button>
+        <button class="useless-btn" onclick="heavyDownload('Explain plan')" style="font-size:10px;padding:2px 8px">📊 Explain</button>
+        <button class="useless-btn" onclick="closeQueryEditor()" style="font-size:10px;padding:2px 8px;color:#c00">✕</button>
+    </div>
+    <div style="display:flex;border-bottom:1px solid #ccc">
+        <!-- LINE NUMBERS -->
+        <div id="line-numbers" style="background:#f0f0f0;color:#999;font-family:'Courier New',monospace;font-size:12px;line-height:1.5;padding:8px 6px;text-align:right;min-width:35px;border-right:1px solid #ddd;user-select:none">1
+2
+3
+4
+5
+6
+7
+8</div>
+        <!-- CODE AREA -->
+        <div style="flex:1;position:relative">
+            <div id="syntax-highlight" style="position:absolute;top:0;left:0;right:0;bottom:0;padding:8px 10px;font-family:'Courier New',monospace;font-size:12px;line-height:1.5;white-space:pre-wrap;word-wrap:break-word;color:transparent;pointer-events:none;overflow:hidden"></div>
+            <textarea id="sql-input" spellcheck="false" oninput="updateHighlight();updateLineNumbers()" onscroll="syncScroll()" onkeydown="handleTab(event)" style="width:100%;min-height:160px;padding:8px 10px;font-family:'Courier New',monospace;font-size:12px;line-height:1.5;border:none;outline:none;resize:vertical;background:transparent;color:#333;position:relative;z-index:1;box-sizing:border-box">SELECT *
+FROM users
+WHERE status = 'ACTIVE'
+ORDER BY last_login DESC;
+</textarea>
+        </div>
+    </div>
+    <!-- RESULT AREA -->
+    <div id="query-result" style="display:none;padding:8px 10px;font-family:'Courier New',monospace;font-size:11px;border-top:1px solid #ccc;max-height:150px;overflow-y:auto"></div>
+    <!-- STATUS BAR -->
+    <div style="background:#e8e8e8;padding:2px 8px;font-size:9px;color:#666;font-family:Verdana,sans-serif;border-top:1px solid #ccc">
+        <span id="editor-status">Ready</span>
+        <span style="float:right">Connection: guest@localhost | Database: project3_main | Charset: utf8</span>
+    </div>
 </div>
 
 <div style="margin:10px 0;padding:6px;border:1px solid #ccc;background:#fffff0;width:115%">
@@ -91,7 +132,7 @@
                 <tr class="row-suspended" onclick="sqlRowClick('user4')">
                     <td>002</td><td>user4</td><td>*******</td><td style="color:red;font-weight:bold">SUSPENDED</td>
                     <td>ARCHITECT</td><td>2003-03-15 00:01</td><td>u4@project-3.com</td>
-                    <td style="padding-left:300px;color:#cc0000;font-weight:bold">[redacted]</td>
+                    <td style="padding-left:300px;color:#cc0000;font-weight:bold">Render</td>
                 </tr>
                 <tr onclick="sqlRowClick('guest')">
                     <td>003</td><td>guest</td><td>guest</td><td>ACTIVE</td>
@@ -375,7 +416,7 @@
             var isSecret = (Math.random() < 0.2);
             var name = isSecret ? 'unknown' : 'corrupted';
             var data = isSecret ? '0x' + Math.floor(Math.random()*16).toString(16) : '[redacted]';
-            if (isSecret && Math.random() > 0.8) data = 'R.R.'; // TASK 7: Fragment the Identity
+            if (isSecret && Math.random() > 0.8) data = 'Render'; // TASK 7: Fragment the Identity
             
             html += '<tr onclick="sqlRowClick(\'' + name + '\', this.parentElement.parentElement.parentElement)">' +
                     '<td>0x' + Math.floor(Math.random()*65535).toString(16) + '</td>' +
@@ -401,6 +442,208 @@
         toggleBit('sqlDeepAccess', true);
         // bonus reward
         getBonus('sql_secret_table');
+    }
+
+    // =============================================
+    // SQL QUERY EDITOR — "the editor that never works"
+    // t.morrison: "why did we even add this"
+    // j.kepler: "it has never executed a single query"
+    // =============================================
+    var queryRunCount = 0;
+
+    // opens the query editor panel
+    function openQueryEditor() {
+        var panel = document.getElementById('query-editor-panel');
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
+            panel.scrollIntoView({ behavior: 'smooth' });
+            updateHighlight();
+            // focus the textarea
+            document.getElementById('sql-input').focus();
+        }
+    }
+
+    // closes the query editor
+    function closeQueryEditor() {
+        document.getElementById('query-editor-panel').style.display = 'none';
+        document.getElementById('query-result').style.display = 'none';
+    }
+
+    // clears the sql input
+    function clearQuery() {
+        document.getElementById('sql-input').value = '';
+        document.getElementById('query-result').style.display = 'none';
+        document.getElementById('editor-status').textContent = 'Ready';
+        updateHighlight();
+        updateLineNumbers();
+    }
+
+    // handles tab key in textarea
+    function handleTab(e) {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            var ta = e.target;
+            var start = ta.selectionStart;
+            var end = ta.selectionEnd;
+            ta.value = ta.value.substring(0, start) + '    ' + ta.value.substring(end);
+            ta.selectionStart = ta.selectionEnd = start + 4;
+            updateHighlight();
+            updateLineNumbers();
+        }
+        // run on Ctrl+Enter or Cmd+Enter
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            runQuery();
+        }
+    }
+
+    // updates line numbers to match textarea content
+    function updateLineNumbers() {
+        var ta = document.getElementById('sql-input');
+        var lines = ta.value.split('\n').length;
+        // minimum 8 lines
+        if (lines < 8) lines = 8;
+        var nums = '';
+        for (var i = 1; i <= lines; i++) {
+            nums += i + '\n';
+        }
+        document.getElementById('line-numbers').textContent = nums;
+    }
+
+    // syncs the highlight div scroll with textarea scroll
+    function syncScroll() {
+        var ta = document.getElementById('sql-input');
+        var hl = document.getElementById('syntax-highlight');
+        hl.scrollTop = ta.scrollTop;
+        hl.scrollLeft = ta.scrollLeft;
+    }
+
+    // applies syntax highlighting overlay
+    function updateHighlight() {
+        var ta = document.getElementById('sql-input');
+        var code = ta.value;
+        // escape HTML
+        var html = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        // highlight strings (single quotes)
+        html = html.replace(/('(?:[^'\\]|\\.)*')/g, '<span style="color:#c00">$1</span>');
+        // highlight numbers
+        html = html.replace(/\b(\d+)\b/g, '<span style="color:#090">$1</span>');
+        // highlight SQL keywords
+        var keywords = ['SELECT', 'FROM', 'WHERE', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET',
+                        'DELETE', 'DROP', 'CREATE', 'TABLE', 'ALTER', 'INDEX', 'JOIN', 'LEFT',
+                        'RIGHT', 'INNER', 'OUTER', 'ON', 'AND', 'OR', 'NOT', 'IN', 'LIKE',
+                        'BETWEEN', 'IS', 'NULL', 'AS', 'ORDER', 'BY', 'GROUP', 'HAVING',
+                        'LIMIT', 'OFFSET', 'UNION', 'ALL', 'DISTINCT', 'COUNT', 'SUM',
+                        'AVG', 'MAX', 'MIN', 'ASC', 'DESC', 'EXISTS', 'CASE', 'WHEN',
+                        'THEN', 'ELSE', 'END', 'BEGIN', 'COMMIT', 'ROLLBACK', 'GRANT',
+                        'REVOKE', 'USE', 'SHOW', 'DESCRIBE', 'EXPLAIN', 'PRIMARY', 'KEY',
+                        'FOREIGN', 'REFERENCES', 'CASCADE', 'TRUNCATE', 'DATABASE',
+                        'CONSTRAINT', 'DEFAULT', 'AUTO_INCREMENT', 'VARCHAR', 'INT',
+                        'TEXT', 'BOOLEAN', 'DATE', 'TIMESTAMP', 'FLOAT', 'DOUBLE'];
+        for (var i = 0; i < keywords.length; i++) {
+            var re = new RegExp('\\b(' + keywords[i] + ')\\b', 'gi');
+            html = html.replace(re, function(match) {
+                // preserve case but color it
+                return '<span style="color:#00c;font-weight:bold">' + match + '</span>';
+            });
+        }
+        // highlight comments
+        html = html.replace(/(--.*)/g, '<span style="color:#888">$1</span>');
+        // highlight asterisk
+        html = html.replace(/(\*)/g, '<span style="color:#c0c">$1</span>');
+        // set the overlay
+        document.getElementById('syntax-highlight').innerHTML = html + '\n';
+    }
+
+    // THE GRAND QUERY EXECUTOR
+    // (it never works)
+    function runQuery() {
+        var ta = document.getElementById('sql-input');
+        var resultDiv = document.getElementById('query-result');
+        var statusSpan = document.getElementById('editor-status');
+        var query = ta.value.trim();
+
+        // if query is empty, show error
+        if (!query) {
+            resultDiv.style.display = 'block';
+            resultDiv.style.background = '#fff8f0';
+            resultDiv.innerHTML = '<span style="color:#c00">ERROR: No query to execute.</span>';
+            statusSpan.textContent = 'Error';
+            return;
+        }
+
+        // show "executing" state
+        resultDiv.style.display = 'block';
+        resultDiv.style.background = '#f8f8f0';
+        resultDiv.innerHTML = '<span style="color:#888">⏳ Executing query...</span>';
+        statusSpan.textContent = 'Executing...';
+
+        // increment counter
+        queryRunCount = queryRunCount + 1;
+
+        // parse the query to generate a contextual error
+        var lines = query.split('\n');
+        var lineCount = lines.length;
+        // pick a random line number (not line 1, to seem more realistic)
+        var errLine = Math.min(2 + Math.floor(Math.random() * (lineCount - 1)), lineCount);
+        // find a keyword from the query to blame
+        var tokens = query.match(/\b[A-Za-z_]+\b/g) || ['SELECT'];
+        var blameToken = tokens[Math.floor(Math.random() * tokens.length)];
+        // find what comes after FROM if present
+        var afterFrom = '';
+        var fromMatch = query.match(/FROM\s+(\S+)/i);
+        if (fromMatch) afterFrom = fromMatch[1];
+
+        // the error pool
+        var errors = [
+            // connection errors
+            { msg: 'ERROR 2002 (HY000): No active connection found!', detail: 'Can\'t connect to local MySQL server through socket \'/var/run/mysqld/mysqld.sock\'' },
+            { msg: 'ERROR 2003 (HY000): No active connection found!', detail: 'Can\'t connect to MySQL server on \'localhost\' (111)' },
+            { msg: 'ERROR 2006 (HY000): MySQL server has gone away', detail: 'Connection was closed by the server. Reconnect and retry.' },
+            // syntax errors
+            { msg: 'ERROR 1064 (42000): Syntax error on line ' + errLine, detail: 'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near \'' + (lines[errLine - 1] || '').trim().substring(0, 40) + '\'' },
+            { msg: 'ERROR 1064 (42000): Unexpected token after "FROM"', detail: afterFrom ? ('Unexpected identifier \'' + afterFrom + '\' — table does not exist or is restricted') : 'Expected table name after FROM clause' },
+            { msg: 'ERROR 1064 (42000): Unexpected token near "' + blameToken + '"', detail: 'Parse error at position ' + Math.floor(Math.random() * 80) + ': unexpected keyword \'' + blameToken.toUpperCase() + '\'' },
+            { msg: 'ERROR 1064 (42000): Syntax error on line ' + errLine, detail: 'Unexpected end of query. Did you forget a semicolon?' },
+            // permission errors
+            { msg: 'ERROR 1142 (42000): SELECT command denied to user \'guest\'@\'localhost\'', detail: 'Access denied for user \'guest\' on database \'project3_main\'' },
+            { msg: 'ERROR 1044 (42000): Access denied for user \'guest\'@\'localhost\'', detail: 'User \'guest\' does not have privileges to execute this query' },
+            // table errors
+            { msg: 'ERROR 1146 (42S02): Table \'project3_main.' + (afterFrom || 'unknown') + '\' doesn\'t exist', detail: 'Check table name spelling. Available tables: users, logs, sessions, pages, audit_trail' },
+            // weird ones
+            { msg: 'ERROR 1267 (HY000): Illegal mix of collations on line ' + errLine, detail: 'utf8_general_ci vs latin1_swedish_ci for operation \'=\'' },
+            { msg: 'ERROR 1205 (HY000): Lock wait timeout exceeded', detail: 'Try restarting the transaction. user4 may have left a lock.' },
+            { msg: 'ERROR 1040 (HY000): Too many connections', detail: 'Connection pool exhausted. 10/10 connections in use. (3 by user4, 7 by sysbot)' },
+        ];
+
+        // pick a random error but weight connection/syntax errors higher
+        var errIdx;
+        if (queryRunCount === 1) {
+            // first run always gets a connection error
+            errIdx = Math.floor(Math.random() * 3);
+        } else if (queryRunCount <= 3) {
+            // next few runs get syntax errors
+            errIdx = 3 + Math.floor(Math.random() * 4);
+        } else {
+            // after that, anything goes
+            errIdx = Math.floor(Math.random() * errors.length);
+        }
+        var err = errors[errIdx];
+
+        // simulate delay
+        var delay = 400 + Math.floor(Math.random() * 1200);
+        setTimeout(function() {
+            resultDiv.style.background = '#fff0f0';
+            resultDiv.innerHTML = '<div style="color:#c00;font-weight:bold">' + err.msg + '</div>' +
+                '<div style="color:#888;margin-top:4px;font-size:10px">' + err.detail + '</div>' +
+                '<div style="color:#aaa;margin-top:6px;font-size:9px;border-top:1px solid #eee;padding-top:4px">' +
+                'Query executed in ' + (Math.random() * 0.5).toFixed(4) + 's | ' +
+                'Rows affected: 0 | Warnings: ' + Math.floor(Math.random() * 5) + '</div>';
+            statusSpan.textContent = 'Error — ' + err.msg.split(':')[0];
+            statusSpan.style.color = '#c00';
+            // reset status color after a bit
+            setTimeout(function() { statusSpan.style.color = ''; }, 5000);
+        }, delay);
     }
 
     // DEAD CODE FOR TABLE MANIPULATION

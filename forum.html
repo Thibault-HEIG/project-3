@@ -17,25 +17,85 @@
             font-family: 'Verdana', sans-serif;
             overflow-x: hidden;
         }
+        .forum-banner {
+            background: #336699;
+            color: #fff;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-family: Verdana, sans-serif;
+            border-bottom: 2px solid #224466;
+        }
+        .forum-banner b { font-size: 13px; }
+        .forum-nav {
+            background: #d0d0d0;
+            padding: 3px 12px;
+            font-size: 9px;
+            border-bottom: 1px solid #aaa;
+            color: #666;
+        }
+        .forum-nav a { color: #336699; font-size: 9px; }
+        .forum-section {
+            margin: 15px 10px;
+            border: 1px solid #ccc;
+            background: #fff;
+        }
+        .forum-section-header {
+            background: #336699;
+            color: #fff;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .forum-thread {
+            padding: 5px 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+        }
+        .forum-thread:hover { background: #f5f5ff; }
+        .forum-thread:nth-child(even) { background: #f9f9f9; }
+        .forum-thread:nth-child(even):hover { background: #f0f0ff; }
+        .thread-icon { width: 16px; margin-right: 6px; font-size: 10px; }
+        .thread-title { flex: 1; }
+        .thread-title a { color: #336699; text-decoration: none; font-size: 11px; }
+        .thread-title a:hover { text-decoration: underline; }
+        .thread-title small { color: #999; font-size: 9px; display: block; }
+        .thread-replies { width: 60px; text-align: center; color: #888; font-size: 10px; }
+        .thread-last { width: 120px; text-align: right; color: #999; font-size: 9px; }
+        .thread-locked .thread-title a { color: #999; }
+        .thread-sticky { background: #fffff0 !important; }
+        .thread-sticky .thread-title a { font-weight: bold; }
         .forum-post {
             background: #fff;
             border: 1px solid #ccc;
-            margin: 20px;
-            padding: 15px;
-            max-width: 600px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            margin: 12px;
+            padding: 12px;
+            max-width: 700px;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.08);
             position: relative;
         }
         .post-header {
             border-bottom: 1px solid #eee;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
             font-size: 11px;
             color: #888;
         }
         .user-name {
             font-weight: bold;
             color: #000080;
+        }
+        .user-name-admin { color: #cc0000; }
+        .user-name-mod { color: #006600; }
+        .post-body { font-size: 11px; line-height: 1.5; }
+        .post-sig {
+            border-top: 1px dashed #ddd;
+            margin-top: 8px;
+            padding-top: 4px;
+            font-size: 8px;
+            color: #bbb;
+            font-style: italic;
         }
         .broken-css-crime {
             position: absolute;
@@ -49,49 +109,362 @@
             transform: rotate(15deg);
             pointer-events: none;
         }
+        .forum-footer {
+            margin: 15px 10px;
+            padding: 6px 10px;
+            font-size: 9px;
+            color: #999;
+            border-top: 1px solid #ddd;
+        }
+        .thread-expanded {
+            margin: 10px;
+            border: 1px solid #ccc;
+            background: #fff;
+        }
+        .thread-expanded-header {
+            background: #eee;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #336699;
+            border-bottom: 1px solid #ccc;
+        }
+        .quote-block {
+            background: #f5f5f0;
+            border-left: 3px solid #ccc;
+            padding: 4px 8px;
+            margin: 6px 0;
+            font-size: 10px;
+            color: #666;
+        }
+        .post-deleted {
+            background: #fff0f0;
+            border-color: #ffcccc;
+        }
+        .post-deleted .post-body {
+            color: #cc0000;
+            font-style: italic;
+        }
     </style>
 </head>
 <body class="forum">
 
-<div class="forum-post">
-    <div class="post-header">
-        <span class="user-name">xX_n0vaDump_Xx</span> | Posted: 2003-03-14 23:40
-    </div>
-    <div class="post-body">
-        GUYS. I think I found it. The real name.
-        He's been using the same alias across every section.
-        Look at the Java license. Look at the SQL tables.
-        The name is <b>Randy Render</b>.
-        He thinks he's so clever hiding it in base64.
-        Who even uses base64 for security? LOL.
-    </div>
-    <div class="broken-css-crime"></div>
+<!-- FORUM HEADER -->
+<div class="forum-banner">
+    <b>project-3.com Community Forum</b> — Archive Mode (Read Only)
+    <span style="float:right;font-size:9px">Users Online: 0 | Total Posts: 847 | Archived: March 15, 2003</span>
+</div>
+<div class="forum-nav">
+    <a href="index.html">Home</a> &raquo; Forum Index &raquo; Archive
+    <span style="float:right">Logged in as: <b>guest</b> [read-only]</span>
 </div>
 
-<div class="forum-post" style="margin-left:60px;opacity:0.8">
-    <div class="post-header">
-        <span class="user-name">darkphp_42</span> | Posted: 2003-03-14 23:45
+<!-- FORUM INDEX — THREAD LISTING -->
+<div class="forum-section">
+    <div class="forum-section-header">💬 General Discussion</div>
+    <div class="forum-thread thread-sticky">
+        <span class="thread-icon">📌</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">RULES: Read before posting. Seriously.</a>
+            <small>by admin — Created: 2001-07-01</small>
+        </div>
+        <div class="thread-replies">142 replies</div>
+        <div class="thread-last">2003-03-12<br>admin</div>
     </div>
-    <div class="post-body">
-        Wait, Randy Render? That's the guy who built the 3D engine for those Flash games.
-        He's the same guy who made this site?
-        That explains the mess. He's obsessed with "depth".
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">Has anyone gotten the SQL section to load properly?</a>
+            <small>by t.morrison — Created: 2002-08-14</small>
+        </div>
+        <div class="thread-replies">23 replies</div>
+        <div class="thread-last">2002-09-01<br>j.kepler</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">The CSS on home page is killing my browser</a>
+            <small>by s_pixel_fan — Created: 2002-05-20</small>
+        </div>
+        <div class="thread-replies">56 replies</div>
+        <div class="thread-last">2002-11-03<br>s.pixel</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">🔥</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">POLL: Best section of project-3.com?</a>
+            <small>by m.martinez — Created: 2002-10-01</small>
+        </div>
+        <div class="thread-replies">89 replies</div>
+        <div class="thread-last">2003-01-15<br>darkphp_42</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">Why does every commit say "small changes"???</a>
+            <small>by j.kepler — Created: 2002-06-30</small>
+        </div>
+        <div class="thread-replies">34 replies</div>
+        <div class="thread-last">2002-12-01<br>t.morrison</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">never let kevin touch css again (rant)</a>
+            <small>by t.morrison — Created: 2002-04-10</small>
+        </div>
+        <div class="thread-replies">71 replies</div>
+        <div class="thread-last">2003-02-28<br>m.martinez</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">PHP section keeps crashing when I click too fast</a>
+            <small>by darkphp_42 — Created: 2003-01-20</small>
+        </div>
+        <div class="thread-replies">12 replies</div>
+        <div class="thread-last">2003-02-05<br>s_pixel_fan</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">❓</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">How do I access /server-root/?? keeps saying restricted</a>
+            <small>by newbie_2003 — Created: 2003-02-10</small>
+        </div>
+        <div class="thread-replies">3 replies</div>
+        <div class="thread-last">2003-02-11<br>admin</div>
     </div>
 </div>
 
-<div class="forum-post" style="margin-left:100px;opacity:0.6">
-    <div class="post-header">
-        <span class="user-name">admin</span> | Posted: 2003-03-15 00:01
+<div class="forum-section">
+    <div class="forum-section-header">🔍 Site Mysteries & Investigation</div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">Who actually runs this site? (theories)</a>
+            <small>by xX_n0vaDump_Xx — Created: 2003-02-20</small>
+        </div>
+        <div class="thread-replies">47 replies</div>
+        <div class="thread-last">2003-03-10<br>darkphp_42</div>
     </div>
-    <div class="post-body" style="color:red;font-weight:bold">
-        THIS THREAD HAS BEEN CLOSED BY THE ADMINISTRATOR.
-        REASON: Unauthorized disclosure of personal information.
-        USER xX_n0vaDump_Xx HAS BEEN PERMANENTLY BANNED.
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">Steve Pixel is definitely the architect (PROOF INSIDE)</a>
+            <small>by s_pixel_fan — Created: 2003-03-01</small>
+        </div>
+        <div class="thread-replies">28 replies</div>
+        <div class="thread-last">2003-03-08<br>xX_n0vaDump_Xx</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">Dave Markup confession — he admits he built it all</a>
+            <small>by markup_truther — Created: 2003-03-05</small>
+        </div>
+        <div class="thread-replies">15 replies</div>
+        <div class="thread-last">2003-03-09<br>darkphp_42</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">The base64 in the Java license — has anyone decoded it?</a>
+            <small>by crypto_carl — Created: 2003-03-08</small>
+        </div>
+        <div class="thread-replies">19 replies</div>
+        <div class="thread-last">2003-03-12<br>xX_n0vaDump_Xx</div>
+    </div>
+    <div class="forum-thread thread-locked" style="background:#fff0f0">
+        <span class="thread-icon">🔒</span>
+        <div class="thread-title">
+            <a href="#" onclick="showLockedThread();return false">I FOUND THE NAME — it's Randy [LOCKED]</a>
+            <small>by xX_n0vaDump_Xx — Created: 2003-03-14 23:40 — <span>LOCKED by admin</span></small>
+        </div>
+        <div class="thread-replies">3 replies</div>
+        <div class="thread-last">2003-03-15<br>admin</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">The "unknown" user in the DB — red herring or real?</a>
+            <small>by dbsleuth — Created: 2003-03-02</small>
+        </div>
+        <div class="thread-replies">31 replies</div>
+        <div class="thread-last">2003-03-13<br>crypto_carl</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">Check the initials "S.W." in page source — means something?</a>
+            <small>by markup_truther — Created: 2003-03-06</small>
+        </div>
+        <div class="thread-replies">8 replies</div>
+        <div class="thread-last">2003-03-10<br>newbie_2003</div>
     </div>
 </div>
 
-<div style="margin:40px;font-size:10px;color:#999">
-    <a href="index.html" style="color:#999">← back to reality</a>
+<div class="forum-section">
+    <div class="forum-section-header">🛠️ Technical Support</div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">The Java section takes 20 minutes to load?!</a>
+            <small>by j.kepler — Created: 2002-03-15</small>
+        </div>
+        <div class="thread-replies">44 replies</div>
+        <div class="thread-last">2003-01-20<br>t.morrison</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">Bug: table with 17 columns all named "id"</a>
+            <small>by m.martinez — Created: 2003-01-18</small>
+        </div>
+        <div class="thread-replies">7 replies</div>
+        <div class="thread-last">2003-01-25<br>j.kepler</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">The FILE MANAGER hover menu breaks everything</a>
+            <small>by newbie_2003 — Created: 2003-02-14</small>
+        </div>
+        <div class="thread-replies">5 replies</div>
+        <div class="thread-last">2003-02-18<br>s_pixel_fan</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">z-index: 2147483647 — is this even legal??</a>
+            <small>by s.pixel — Created: 2002-07-22</small>
+        </div>
+        <div class="thread-replies">16 replies</div>
+        <div class="thread-last">2002-10-05<br>t.morrison</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">Cool Zone link STILL broken after 2 years</a>
+            <small>by j.kepler — Created: 2002-11-30</small>
+        </div>
+        <div class="thread-replies">22 replies</div>
+        <div class="thread-last">2003-03-01<br>m.martinez</div>
+    </div>
+</div>
+
+<div class="forum-section">
+    <div class="forum-section-header">💀 Off-Topic / Graveyard</div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">Best MIDI files of 2002 thread</a>
+            <small>by s_pixel_fan — Created: 2002-06-01</small>
+        </div>
+        <div class="thread-replies">103 replies</div>
+        <div class="thread-last">2003-03-14<br>darkphp_42</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">GeoCities or Angelfire? debate thread</a>
+            <small>by newbie_2003 — Created: 2003-01-05</small>
+        </div>
+        <div class="thread-replies">67 replies</div>
+        <div class="thread-last">2003-02-20<br>xX_n0vaDump_Xx</div>
+    </div>
+    <div class="forum-thread">
+        <span class="thread-icon">💬</span>
+        <div class="thread-title">
+            <a href="#" onclick="return false">Anyone else hear the MIDI playing even when paused?</a>
+            <small>by crypto_carl — Created: 2003-02-28</small>
+        </div>
+        <div class="thread-replies">4 replies</div>
+        <div class="thread-last">2003-03-03<br>markup_truther</div>
+    </div>
+</div>
+
+<!-- EXPANDED THREAD: THE KEY THREAD -->
+<div id="locked-thread" class="thread-expanded" style="display:none">
+    <div class="thread-expanded-header">
+        🔒 I FOUND THE NAME — it's Randy
+        <span style="float:right;color:#cc0000;font-size:10px">THREAD LOCKED — Violation of Personal Information Policy</span>
+    </div>
+
+    <div class="forum-post">
+        <div class="post-header">
+            <span class="user-name">xX_n0vaDump_Xx</span> | Posted: 2003-03-14 23:40 | Posts: 214
+        </div>
+        <div class="post-body">
+            GUYS. I think I found it. The real name.<br>
+            He's been using the same alias across every section.<br>
+            Look at the Java license. Look at the SQL tables.<br><br>
+            The first name is <b>Randy</b>.<br>
+            He thinks he's so clever hiding it in base64.<br>
+            Who even uses base64 for security? LOL.<br><br>
+            Check the stack trace in PHP — look at frame #3. His surname is RIGHT THERE.<br>
+            And the SQL zone... scroll right on that user table. The last column.<br><br>
+            I'm telling you, piece it all together. It's all the same guy.
+        </div>
+        <div class="post-sig">
+            — xX_n0vaDump_Xx | "The truth is in the source code" | Member since 2002
+        </div>
+        <div class="broken-css-crime"></div>
+    </div>
+
+    <div class="forum-post" style="margin-left:40px;opacity:0.9">
+        <div class="post-header">
+            <span class="user-name">darkphp_42</span> | Posted: 2003-03-14 23:45 | Posts: 89
+        </div>
+        <div class="post-body">
+            Wait, Randy? That's the guy who built the 3D engine for those Flash games.<br>
+            He's the same guy who made this site?<br>
+            That explains the mess. He's obsessed with "depth".<br><br>
+            <div class="quote-block">
+                <b>xX_n0vaDump_Xx wrote:</b><br>
+                Check the stack trace in PHP — look at frame #3
+            </div>
+            Yeah I saw that too. The surname is in the PHP zone. It's not "Randy" by itself...<br>
+            You need to find the last name somewhere else. Different zones, different fragments.
+        </div>
+        <div class="post-sig">
+            — darkphp_42 | PHP enthusiast | "echo $truth;"
+        </div>
+    </div>
+
+    <div class="forum-post" style="margin-left:60px;opacity:0.85">
+        <div class="post-header">
+            <span class="user-name">crypto_carl</span> | Posted: 2003-03-14 23:52 | Posts: 43
+        </div>
+        <div class="post-body">
+            I decoded the base64 in the Java license: <code>UmFuZHkgUmVuZGVy</code><br>
+            It decodes to two words. The first name matches what nova said.<br><br>
+            But the initials R.R. show up in the SQL recursive tables too sometimes.<br>
+            The guy literally spread his identity across every section like breadcrumbs.<br><br>
+            <i>Someone doesn't want their full name in one place...</i>
+        </div>
+    </div>
+
+    <div class="forum-post post-deleted" style="margin-left:80px;opacity:0.7">
+        <div class="post-header">
+            <span class="user-name user-name-admin">admin</span> | Posted: 2003-03-15 00:01
+        </div>
+        <div class="post-body">
+            THIS THREAD HAS BEEN CLOSED BY THE ADMINISTRATOR.<br>
+            REASON: Unauthorized disclosure of personal information.<br><br>
+            USER xX_n0vaDump_Xx HAS BEEN PERMANENTLY BANNED.<br><br>
+            <span style="font-size:9px;color:#888">Note: All users are reminded that speculation about site architecture personnel is prohibited under Section 4 of the Community Guidelines.</span>
+        </div>
+    </div>
+</div>
+
+<!-- FORUM STATS & FOOTER -->
+<div class="forum-footer">
+    <b>Forum Statistics:</b> 847 posts in 94 threads by 23 members.<br>
+    Most active user: xX_n0vaDump_Xx (214 posts) — <span style="color:red">BANNED</span><br>
+    Newest member: newbie_2003 (joined: 2003-01-04)<br>
+    <br>
+    <a href="index.html" style="color:#999;font-size:9px">← back to reality</a>
+    <span style="float:right;font-size:8px;color:#ccc">Powered by phpBB 2.0 | project-3.com © 2001-2003</span>
 </div>
 
 <script src="game.js"></script>
@@ -100,6 +473,16 @@
         doTheThing('forum');
         getBonus('forum_reveal');
     });
+
+    // shows the locked thread detail
+    function showLockedThread() {
+        var el = document.getElementById('locked-thread');
+        if (el.style.display === 'none') {
+            el.style.display = 'block';
+            el.scrollIntoView({ behavior: 'smooth' });
+            getBonus('forum_locked_thread');
+        }
+    }
 </script>
 </body>
 </html>

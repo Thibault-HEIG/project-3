@@ -1,3 +1,0 @@
-Add more kitsch pop-ups when the user lands on a page : spammy and full of colors advertising such as crypto ads, tinder, etc...
-
-Make dowloads variation, not always 34 GB
