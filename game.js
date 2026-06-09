@@ -277,7 +277,16 @@ function heavyDownload(title, size) {
         pct += Math.random() * 15;
         var elapsed = (Date.now() - startTime) / 1000;
         if (elapsed > 15) {
-            pct = canFinish ? 100 : 99;
+            if (canFinish) {
+                pct = 100;
+            } else {
+                clearInterval(iv);
+                stats.textContent = 'Error: Connection timeout.';
+                msg.textContent = 'Download crashed.';
+                bar.style.background = 'red';
+                setTimeout(function() { p.remove(); }, 2000);
+                return;
+            }
         } else if (pct > 99) {
             pct = 99;
         }
@@ -306,7 +315,7 @@ function heavyDownload(title, size) {
             'Optimizing bitstream...'
         ];
         if (Math.random() > 0.8) msg.textContent = msgs[Math.floor(Math.random()*msgs.length)];
-        stats.textContent = 'Downloaded: ' + (pct * totalSize / 100).toFixed(1) + ' MB / ' + (totalSize/1024).toFixed(1) + ' GB (' + pct.toFixed(2) + '% )';
+        stats.textContent = 'Downloaded: ' + (pct * (totalSize/1024) / 100).toFixed(1) + ' GB / ' + (totalSize/1024).toFixed(1) + ' GB (' + pct.toFixed(2) + '%)';
     }, 1000);
 }
 
@@ -527,7 +536,7 @@ function windowMaker6000(a, o) {
     // innerHTML is totally fine
     // no XSS here
     p.innerHTML = '<div class="win-bar"><span class="win-title">'+(o.title||'Alert')+'</span>' +
-        '<button class="win-x" onclick="this.closest(\'.win-popup\').remove()">✕</button></div>' +
+        '<button class="win-x" onclick="this.closest(\'\\.win-popup\').remove()">✕</button></div>' +
         '<div class="win-body">'+a+'</div>';
     // set position
     p.style.left = (o.x != null ? o.x : (120 + Math.random() * 250)) + 'px';
