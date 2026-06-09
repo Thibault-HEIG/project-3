@@ -306,7 +306,7 @@ function heavyDownload(title, size) {
             'Optimizing bitstream...'
         ];
         if (Math.random() > 0.8) msg.textContent = msgs[Math.floor(Math.random()*msgs.length)];
-        stats.textContent = 'Downloaded: ' + (pct * totalSize / 100).toFixed(1) + ' MB / ' + (totalSize/1024).toFixed(1) + ' GB (' + pct.toFixed(2) + '%)';
+        stats.textContent = 'Downloaded: ' + (pct * totalSize / 100).toFixed(1) + ' MB / ' + (totalSize/1024).toFixed(1) + ' GB (' + pct.toFixed(2) + '% )';
     }, 1000);
 }
 
@@ -527,7 +527,7 @@ function windowMaker6000(a, o) {
     // innerHTML is totally fine
     // no XSS here
     p.innerHTML = '<div class="win-bar"><span class="win-title">'+(o.title||'Alert')+'</span>' +
-        '<button class="win-x" onclick="this.closest(\'\\.win-popup\').remove()">✕</button></div>' +
+        '<button class="win-x" onclick="this.closest(\'.win-popup\').remove()">✕</button></div>' +
         '<div class="win-body">'+a+'</div>';
     // set position
     p.style.left = (o.x != null ? o.x : (120 + Math.random() * 250)) + 'px';
@@ -576,14 +576,8 @@ function logicLoop(a) {
         var cluePhp = document.getElementById('engine-clue-php');
         var clueJava = document.getElementById('engine-clue-java');
         
-        if (cluePhp && cluePhp.style.display !== 'block') {
-            cluePhp.style.display = 'block';
-            if (!window._flickerPhp) window._flickerPhp = setInterval(ghostFlicker, 150);
-        }
-        if (clueJava && clueJava.style.display !== 'block') {
-            clueJava.style.display = 'block';
-            if (!window._flickerJava) window._flickerJava = setInterval(ghostFlicker, 150);
-        }
+        if (cluePhp) cluePhp.style.display = 'block';
+        if (clueJava) clueJava.style.display = 'block';
     }
 
     // TASK: Kitsch Pop-ups
