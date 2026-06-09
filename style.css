@@ -1,15 +1,652 @@
---- style.css
-+++ style.css
-@@
- .home-broken-menu {
-     background: #c0c0c0; border-bottom: 2px outset #808080;
-     padding: 2px 4px; font-family: 'MS Sans Serif', Tahoma, sans-serif; font-size: 11px;
-     /* no flex. just inline flow. buttons wrap naturally. */
- }
- 
- /* the chaos overlay was too polished. simplified. */
--.chaos-overlay { display: none; }
-+.chaos-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 99999; background: rgba(0,0,0,0.2); }
- 
- .obstruct-1 { display: none; }
- 
+/* ===========================================
+   project-3.com — THE STYLESHEET
+   "Every CSS crime in here is intentional."
+   todo: ask steve to review this (steve left in 2002)
+   =========================================== */
+
+/* --- Fonts --- */
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+/* --- Keyframes --- */
+@keyframes blink { 0%,49%{opacity:1}50%,100%{opacity:0} }
+@keyframes rainbow { 0%{color:red}17%{color:orange}33%{color:yellow}50%{color:lime}67%{color:cyan}83%{color:magenta}100%{color:red} }
+@keyframes marqueeScroll { 0%{transform:translateX(100%)}100%{transform:translateX(-100%)} }
+@keyframes spin { 0%{transform:rotate(0)}100%{transform:rotate(360deg)} }
+@keyframes glitchShake { 0%{transform:translate(0)}25%{transform:translate(-2px,1px)}50%{transform:translate(2px,-1px)}75%{transform:translate(-1px,2px)}100%{transform:translate(0)} }
+@keyframes fadeIn { 0%{opacity:0}100%{opacity:1} }
+@keyframes drip { 0%{top:-20px;opacity:1}100%{top:100%;opacity:0} }
+@keyframes loadBar { 0%{width:0}100%{width:100%} }
+@keyframes scanline { 0%{top:-5px}100%{top:100%} }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.5} }
+@keyframes flashFade { 0%{opacity:0.3}100%{opacity:0} }
+@keyframes cursorBlink { 0%,49%{border-color:#0f0}50%,100%{border-color:transparent} }
+@keyframes driftRight { 0%{margin-left:0}50%{margin-left:35px}100%{margin-left:0} }
+@keyframes wobble { 0%{transform:rotate(0)}25%{transform:rotate(1deg)}75%{transform:rotate(-1deg)}100%{transform:rotate(0)} }
+@keyframes slideIn { 0%{transform:translateX(-100%)}100%{transform:translateX(0)} }
+
+/* --- Base --- */
+* { box-sizing: border-box; }
+html { 
+    overflow-x: auto; 
+    --degrade-gap: 0px;
+    --degrade-opacity: 1;
+}
+
+body {
+    /* transform removed per user request */
+}
+
+.home-content, .sql-content, .php-content, .java-content {
+    margin-top: var(--degrade-gap);
+    margin-left: var(--degrade-gap);
+}
+
+/* --- MIDI Bar --- */
+.midi-bar {
+    position: fixed; bottom: 0; left: 0; width: 130%; z-index: 9000;
+    background: #c0c0c0; border-top: 2px outset #fff;
+    display: flex; align-items: center; gap: 8px;
+    padding: 3px 10px; font-family: 'MS Sans Serif', Tahoma, sans-serif; font-size: 11px;
+}
+.midi-bar .midi-status { color: #800000; font-weight: bold; animation: blink 1s infinite; min-width: 80px; }
+.midi-bar .midi-name { color: #000080; flex: 1; }
+.midi-bar .midi-toggle {
+    background: #c0c0c0; border: 2px outset #fff; cursor: pointer;
+    font-size: 12px; padding: 1px 6px;
+}
+
+/* --- Window / Popup System --- */
+/* user4 copied this from a "make windows in javascript" tutorial */
+/* then modified it badly */
+.win-popup {
+    position: absolute; min-width: 250px; max-width: 450px;
+    background: #c0c0c0; border: 2px outset #dfdfdf;
+    box-shadow: 2px 2px 0 #000; font-family: Tahoma, sans-serif; font-size: 12px;
+}
+.win-bar {
+    background: #000080;
+    color: #fff; font-weight: bold; font-size: 11px;
+    padding: 2px 4px; display: flex; justify-content: space-between; align-items: center;
+    user-select: none;
+    /* was a gradient. removed because it looked "too modern" — t.morrison */
+}
+.win-title { padding-left: 3px; }
+.win-x {
+    background: #c0c0c0; border: 1px outset #fff; color: #000;
+    font-size: 10px; line-height: 1; padding: 0px 3px; cursor: pointer;
+    font-weight: bold;
+}
+.win-x:active { border-style: inset; }
+.win-body { padding: 10px; }
+
+/* --- Scattered Nav Buttons --- */
+.scattered-btn {
+    position: absolute; cursor: pointer; z-index: 50;
+    font-size: 10px; text-decoration: none;
+}
+.scattered-btn-home {
+    background: #ffff00; color: #000; border: 3px outset #cccc00;
+    font-family: 'Comic Sans MS', cursive; padding: 4px 8px;
+    transform: rotate(-3deg);
+}
+.scattered-btn-sql {
+    background: #333; color: #0f0; border: 1px solid #0f0;
+    font-family: 'Courier New', monospace; padding: 3px 10px;
+    font-size: 9px;
+}
+.scattered-btn-php {
+    background: #1a0a00; color: #ff6600; border: 2px ridge #4a2a00;
+    font-family: 'Courier New', monospace; padding: 5px 6px;
+    transform: rotate(2deg);
+}
+.scattered-btn-java {
+    background: #d4d0c8; color: #000080; border: 2px outset #fff;
+    font-family: Tahoma, sans-serif; padding: 3px 12px;
+}
+.scattered-btn-sr {
+    background: #000; color: #0f0; border: 1px solid #0f0;
+    font-family: 'VT323', monospace; padding: 2px 8px;
+    animation: glitchShake 0.4s infinite;
+    font-size: 11px;
+}
+.hidden-link { color: inherit; text-decoration: none; cursor: text; }
+.hidden-link:hover { text-decoration: underline; cursor: pointer; }
+.glitch { animation: glitchShake 0.3s infinite; }
+
+/* --- Buttons --- */
+.useless-btn {
+    cursor: pointer; font-size: 10px; opacity: 0.7;
+    border: 2px outset #999; background: #ddd; color: #444;
+    padding: 3px 8px; font-family: Arial, sans-serif;
+}
+.useless-btn:hover { opacity: 1; }
+.useless-btn:active { border-style: inset; }
+.dead-link { text-decoration: underline; cursor: pointer; font-size: 10px; }
+.dead-link:hover { color: #ff0000; }
+.fake-badge {
+    display: inline-block;
+    font-size: 7px; padding: 1px 4px; vertical-align: super;
+    font-family: Arial;
+}
+
+/* =======================================
+   HOME ZONE
+   this is where kevin and user4 fought the most
+   every section was edited by a different mood
+   ======================================= */
+body.home {
+    background: #ffff00;
+    font-family: 'Times New Roman', serif;
+    margin: 0; padding: 0 0 40px 0;
+    overflow-x: auto;
+    /* no background pattern. just yellow. */
+}
+body.home .hero-marquee {
+    background: #000080; color: #fff; padding: 8px;
+    font-family: 'Comic Sans MS', cursive; font-size: 20px; font-weight: bold;
+    overflow: hidden; white-space: nowrap;
+}
+body.home .hero-marquee span { display: inline-block; animation: marqueeScroll 12s linear infinite; }
+
+.home-banner {
+    background: #ff0000;
+    text-align: center; padding: 8px; color: #fff; font-weight: bold;
+    font-family: Arial, sans-serif; font-size: 16px;
+    /* was a gradient. kevin broke it. now it's just red. */
+}
+.flame-divider {
+    text-align: center; font-size: 24px; padding: 3px 0;
+    user-select: none;
+}
+.badge-new {
+    background: red; color: #fff; font-size: 9px; font-weight: bold;
+    padding: 1px 3px; vertical-align: super;
+    font-family: Arial;
+}
+.visitor-counter {
+    background: #000; color: #0f0; font-family: 'Courier New', monospace;
+    font-size: 16px; padding: 4px 10px; display: inline-block;
+    border: 2px inset #333;
+}
+.home-content {
+    padding: 10px 15px;
+    /* no max-width. it goes as wide as it wants. */
+}
+.home-content h1 {
+    font-family: 'Comic Sans MS', cursive; color: #ff0000;
+    text-shadow: 2px 2px #000;
+    font-size: 32px; text-align: center;
+}
+.home-content a { color: #0000ff; }
+.home-content a:visited { color: #800080; }
+.fake-ad {
+    border: 2px solid #808080; background: #fff; padding: 6px; margin: 8px 0;
+    text-align: center; font-family: Arial; font-size: 11px;
+    position: relative; cursor: pointer;
+}
+.fake-ad .ad-secret {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85); color: #0f0; display: flex;
+    align-items: center; justify-content: center;
+    font-family: 'Courier New'; font-size: 14px;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+}
+.fake-ad:hover .ad-secret { opacity: 1; }
+
+.netscape-badge {
+    display: inline-block;
+    padding: 4px 8px; font-size: 10px; font-family: Arial;
+    text-align: center;
+    border: 2px outset #c0c0c0; background: #c0c0c0;
+    color: #000080;
+}
+.fake-credits {
+    font-size: 10px; font-family: Arial; text-align: center;
+    margin-top: 20px; padding: 8px;
+    color: #888;
+    /* no border. just floating text. */
+}
+.home-announcement {
+    padding: 8px; margin: 8px 0;
+    font-family: 'Comic Sans MS', cursive;
+    font-size: 12px;
+    /* some have backgrounds, some don't. inconsistent on purpose. */
+}
+.home-announcement:nth-child(odd) { margin-left: 15px; }
+.home-announcement:nth-child(3n) { background: #ffffcc; border: 1px dashed red; }
+.rainbow-text { animation: rainbow 2s linear infinite; }
+
+.home-sidebar {
+    position: absolute; right: 10px; top: 280px;
+    width: 180px;
+    z-index: 30;
+}
+.home-sidebar-inner {
+    background: #ff00ff; color: #fff; padding: 6px;
+    border: 3px outset #cc00cc; font-family: 'Comic Sans MS', cursive;
+    font-size: 10px; text-align: center;
+}
+
+/* --- Home menu bar --- */
+.home-broken-menu {
+    background: #c0c0c0; border-bottom: 2px outset #808080;
+    padding: 2px 4px; font-family: 'MS Sans Serif', Tahoma, sans-serif; font-size: 11px;
+    /* no flex. just inline flow. buttons wrap naturally. */
+}
+
+/* the chaos overlay was too polished. simplified. */
+.chaos-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 99999; background: rgba(0,0,0,0.2); }
+
+.obstruct-1 { display: none; }
+
+.obstruct-2 {
+    position: absolute; bottom: 80px; left: -30px; width: 300px;
+    background: #000; color: #333; z-index: 800;
+    padding: 15px; font-size: 9px; border: 1px solid #444;
+}
+
+.invisible-clue {
+    color: #ffff00; background: #ffff00;
+    user-select: none; font-size: 1px;
+}
+
+.barely-visible {
+    color: #eeee00; font-size: 8px; opacity: 0.15;
+}
+
+.absurd-z {
+    position: relative; z-index: 2147483647 !important;
+}
+
+.overlap-chaos {
+    margin-top: -30px; margin-left: 10px; position: relative; z-index: 15;
+}
+
+.fake-section {
+    border: 5px ridge #ff00ff; padding: 15px; margin: 30px 0;
+    background: #000080; color: #fff;
+    /* removed skew. too intentional. */
+}
+
+.project-99-header {
+    font-family: 'Comic Sans MS'; font-size: 42px; color: #ff0;
+    text-shadow: 3px 3px #f0f;
+    /* removed wobble animation. it was too much. */
+}
+
+.home-broken-menu button {
+    background: #c0c0c0; border: 1px outset #fff; padding: 2px 6px;
+    font-size: 10px; cursor: pointer; font-family: inherit; white-space: nowrap;
+}
+.home-broken-menu button:active { border-style: inset; }
+.home-broken-menu .menu-sep {
+    width: 1px; background: #808080; margin: 2px 1px;
+    display: inline-block; height: 16px; vertical-align: middle;
+}
+
+/* =======================================
+   SQL ZONE
+   t.morrison: "i copy pasted this from a phpMyAdmin tutorial"
+   almost no styling. on purpose. i think.
+   ======================================= */
+body.sql {
+    background: #fff;
+    font-family: Verdana, Arial, sans-serif;
+    margin: 0; padding: 0 0 40px 0; font-size: 12px;
+    overflow-x: auto;
+    color: #000;
+}
+.sql-header {
+    background: #e5e5e5; color: #000; padding: 8px 15px;
+    font-family: Verdana, sans-serif; font-size: 13px;
+    border-bottom: 1px solid #999;
+}
+.sql-content { padding: 10px 15px; }
+.sql-content h2 {
+    font-family: Verdana, sans-serif; color: #000;
+    font-size: 14px; font-weight: bold;
+    margin: 15px 0 5px 0;
+    /* no animation, no decoration, nothing */
+}
+.db-table {
+    border-collapse: collapse; margin: 5px 0 20px 0;
+    font-size: 11px; font-family: monospace;
+}
+.db-table th {
+    background: #d0d0d0; color: #000; padding: 3px 8px; text-align: left;
+    border: 1px solid #888; font-weight: bold;
+    font-family: Verdana, sans-serif; font-size: 11px;
+}
+.db-table td {
+    padding: 2px 8px; border: 1px solid #ccc;
+    font-family: monospace; font-size: 11px;
+}
+.db-table tr:nth-child(even) { background: #f2f2f2; }
+.db-table tr:nth-child(odd) { background: #fff; }
+.db-table tr:hover { background: #ffffcc; }
+.db-table tr.row-suspended td { color: #cc0000; }
+.db-table tr.row-deleted td { text-decoration: line-through; color: #999; }
+
+.sql-error {
+    color: red; padding: 4px 0; font-size: 11px;
+    font-family: monospace;
+    /* no border, no background. just red text. like real error output */
+}
+.table-scroll-wrapper {
+    overflow-x: auto; position: relative;
+}
+.table-scroll-wrapper .scroll-hint { display: none; /* who needs this */ }
+.secret-table { display: none; }
+.corrupt-cell { cursor: pointer; color: blue; text-decoration: underline; }
+.corrupt-cell:hover { color: red; }
+
+.sql-floating-ref {
+    position: fixed; bottom: 50px; right: 5px;
+    background: #ffffcc; border: 1px solid #999; padding: 4px 8px;
+    font-size: 9px; z-index: 40;
+    font-family: Verdana, sans-serif; color: #666;
+}
+.sql-toolbar {
+    background: #f0f0f0; border: 1px solid #ccc; padding: 3px 6px;
+    margin: 8px 0;
+    /* no flex. just inline. like 2001. */
+}
+.sql-toolbar .useless-btn {
+    font-family: Verdana, sans-serif; font-size: 10px;
+    background: #e0e0e0; border: 1px solid #999;
+    padding: 2px 6px; margin: 1px;
+}
+
+/* =======================================
+   PHP ZONE
+   the "dark" section. user4 was going through a phase.
+   half the styles are inline in the html.
+   the other half contradict each other.
+   ======================================= */
+body.php {
+    background: #1a1a0a; color: #a0a080;
+    font-family: 'Courier New', monospace;
+    margin: 0; padding: 0 0 40px 0; font-size: 13px;
+    position: relative; overflow-x: auto;
+}
+.php-header {
+    background: #222; padding: 12px 15px;
+    border-bottom: 1px solid #444;
+    color: #cc9900; font-size: 14px;
+    font-family: Verdana, sans-serif;
+    /* different font than the body. user4 forgot. */
+}
+.php-header small { color: #666; display: block; margin-top: 4px; font-size: 10px; }
+.php-content { padding: 12px 15px; }
+.php-warn {
+    color: #ff9900; padding: 4px 0; margin: 6px 0; font-size: 11px;
+    /* no border, no background. just orange text. like real PHP warnings */
+}
+.php-warn:nth-of-type(odd) { margin-left: 15px; }
+.php-fatal {
+    color: #ff4444; padding: 4px 0; margin: 6px 0;
+    font-size: 12px; font-weight: bold;
+}
+.php-form {
+    background: #222; border: 1px solid #444;
+    padding: 12px; margin: 12px 0;
+}
+.php-form label { display: block; color: #999; margin-bottom: 4px; font-size: 12px; }
+.php-form input[type="text"] {
+    background: #111; border: 1px solid #555; color: #0f0;
+    padding: 5px 8px; width: 100%; font-family: 'Courier New'; font-size: 12px;
+}
+.php-form button {
+    background: #444; color: #ccc; border: 1px solid #666;
+    padding: 5px 15px; cursor: pointer; font-family: 'Courier New'; margin-top: 6px;
+}
+.php-form textarea {
+    background: #0a0a05; border: 1px solid #333; color: #888;
+    width: 100%; height: 180px; font-family: 'Courier New'; font-size: 10px;
+    padding: 6px; resize: vertical;
+}
+.drip { display: none; /* removed the drip effect. too artistic. */ }
+.hidden-under-window {
+    color: #4a3a20; font-style: italic; padding: 8px;
+    font-size: 13px; text-align: center;
+}
+
+/* =======================================
+   JAVA ZONE
+   the creator tried SO HARD here.
+   found a "professional web UI" tutorial in 2009
+   and applied every single trick at once.
+   ======================================= */
+body.java {
+    background: linear-gradient(180deg, #e8e4de 0%, #d0ccc4 40%, #c8c4bc 100%);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    margin: 0; padding: 0 0 40px 0; font-size: 12px;
+    overflow-x: auto;
+}
+.java-splash {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, #e0dcd4, #c8c4bc);
+    z-index: 5000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: 'Segoe UI', Tahoma; color: #333;
+}
+.java-splash h2 {
+    font-size: 18px; font-weight: normal; color: #000080;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+}
+.java-splash .splash-sub { font-size: 10px; color: #808080; margin-top: 4px; }
+.java-splash .load-bar-outer {
+    width: 380px; height: 22px;
+    background: #fff; border: 1px solid #888;
+    border-radius: 3px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+    margin-top: 20px; overflow: hidden;
+}
+.java-splash .load-bar-inner {
+    height: 100%; width: 0;
+    background: linear-gradient(180deg, #4488cc, #336699);
+    border-radius: 2px;
+    animation: loadBar 8s ease-in-out forwards;
+}
+.java-splash .load-msg {
+    font-size: 11px; color: #808080; margin-top: 10px;
+    font-style: italic;
+}
+.java-content { padding: 15px 20px; }
+.java-panel {
+    background: linear-gradient(180deg, #f0ece6, #e0dcd4);
+    border: 1px solid #a0a0a0;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.6);
+    margin: 12px 0;
+    overflow: hidden;
+}
+.java-panel-header {
+    background: linear-gradient(180deg, #5577aa, #334466);
+    color: #fff; font-size: 12px; font-weight: bold; padding: 6px 10px;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+    border-bottom: 1px solid #223344;
+}
+.java-panel-body { padding: 12px; }
+.java-log {
+    background: #fff; border: 1px solid #bbb;
+    border-radius: 3px;
+    padding: 8px; font-family: 'Courier New'; font-size: 11px;
+    max-height: 300px; overflow-y: auto;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+.java-log .log-line { padding: 2px 0; border-bottom: 1px dotted #eee; }
+.java-log .log-critical { color: #cc0000; font-weight: bold; }
+.java-log .log-info { color: #333; }
+.java-log .log-warn { color: #996600; }
+.java-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.java-btn {
+    background: linear-gradient(180deg, #f0ece6, #d4d0c8);
+    border: 1px solid #999;
+    border-radius: 4px;
+    padding: 5px 16px; font-family: 'Segoe UI', Tahoma; font-size: 11px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+.java-btn:hover {
+    background: linear-gradient(180deg, #f8f4ee, #e0dcd4);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.java-btn:active {
+    background: linear-gradient(180deg, #ccc8c0, #d4d0c8);
+    box-shadow: inset 0 2px 3px rgba(0,0,0,0.15);
+}
+.java-license {
+    height: 150px; overflow-y: auto; background: #fff;
+    border: 1px solid #bbb; border-radius: 3px;
+    padding: 10px;
+    font-size: 10px; color: #666; line-height: 1.6;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+}
+.java-toolbar {
+    margin: 10px 0; display: flex; gap: 4px; flex-wrap: wrap;
+    position: relative;
+    background: linear-gradient(180deg, #e8e4de, #d8d4cc);
+    border: 1px solid #aaa; border-radius: 4px;
+    padding: 6px 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* =======================================
+   SERVER ROOT ZONE — CLI TERMINAL
+   ======================================= */
+body.server-root {
+    background: #0a0a0a; color: #00ff00;
+    font-family: 'VT323', 'Courier New', monospace;
+    margin: 0; padding: 0 0 40px 0; font-size: 16px;
+}
+.sr-header {
+    padding: 15px 20px; border-bottom: 1px solid #0a3a0a;
+    font-size: 14px; color: #0a0;
+}
+.sr-content { padding: 20px; max-width: 900px; }
+.sr-content a { color: #0f0; text-decoration: none; }
+.sr-content a:hover { text-decoration: underline; color: #0f0; background: #0a3a0a; }
+
+/* CLI Terminal */
+.cli-terminal {
+    background: #050505; border: 1px solid #0a3a0a;
+    padding: 15px; min-height: 400px; font-size: 15px;
+    line-height: 1.5; white-space: pre-wrap; word-wrap: break-word;
+}
+.cli-terminal .cli-output { color: #0f0; }
+.cli-terminal .cli-error { color: #f44; }
+.cli-terminal .cli-info { color: #0a0; }
+.cli-terminal .cli-highlight { color: #ff0; }
+.cli-terminal .cli-link { color: #0ff; cursor: pointer; text-decoration: underline; }
+.cli-terminal .cli-link:hover { background: #0a3a0a; }
+.cli-input-line {
+    display: flex; align-items: center; margin-top: 4px;
+}
+.cli-input-line .cli-prompt { color: #0a0; white-space: nowrap; margin-right: 8px; }
+.cli-input-line input {
+    background: transparent; border: none; color: #0f0; outline: none;
+    font-family: 'VT323', 'Courier New', monospace; font-size: 15px;
+    flex: 1; caret-color: #0f0;
+}
+
+.sr-breadcrumb {
+    padding: 8px 20px; font-size: 13px; color: #0a0;
+    border-bottom: 1px solid #0a2a0a;
+}
+.sr-breadcrumb a { color: #0f0; margin: 0 4px; }
+.hidden-folder { display: none; }
+.cursor-blink { border-right: 2px solid #0f0; animation: cursorBlink 1s infinite; padding-right: 4px; }
+
+/* =======================================
+   REPORT ZONE
+   ======================================= */
+body.report {
+    background: #0a0a0a; color: #0f0;
+    font-family: 'VT323', 'Courier New', monospace;
+    margin: 0; display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+}
+.report-form {
+    text-align: center; max-width: 400px; padding: 40px;
+    border: 1px solid #0a3a0a;
+}
+.report-form h2 { font-size: 24px; margin-bottom: 30px; color: #0f0; }
+.report-form input[type="text"] {
+    background: #050505; border: 1px solid #0f0; color: #0f0;
+    padding: 10px 15px; font-family: 'VT323', monospace; font-size: 20px;
+    width: 100%; text-align: center; outline: none;
+}
+.report-form input[type="text"]:focus { box-shadow: 0 0 10px rgba(0,255,0,0.3); }
+.report-form button {
+    background: #0a0a0a; border: 2px solid #0f0; color: #0f0;
+    padding: 10px 30px; font-family: 'VT323', monospace; font-size: 18px;
+    cursor: pointer; margin-top: 20px; transition: all 0.2s;
+}
+.report-form button:hover { background: #0f0; color: #000; }
+.report-form .wrong { color: #ff0000; margin-top: 15px; font-size: 16px; }
+
+/* =======================================
+   QUIET MODE (late game)
+   ======================================= */
+body.quiet-mode .chaos-overlay,
+body.quiet-mode .obstruct-1,
+body.quiet-mode .obstruct-2,
+body.quiet-mode .absurd-z,
+body.quiet-mode .overlap-chaos { display: none !important; }
+
+/* =======================================
+   BROKEN HOVER MENU
+   "never let kevin touch css again"
+   This menu INTENTIONALLY breaks layout on hover.
+   The clue is hidden inside the chaos.
+   ======================================= */
+/* never let kevin touch css again */
+.broken-hover-menu {
+    position: fixed; top: 45%; left: 0;
+    background: #c0c0c0; border: 2px outset #fff;
+    padding: 4px 8px; font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    font-size: 10px; z-index: 60; cursor: pointer;
+    transition: all 0.1s;
+    max-width: 120px; overflow: hidden;
+}
+.broken-hover-label {
+    display: block; white-space: nowrap;
+    font-weight: bold; font-size: 9px;
+}
+.broken-hover-content {
+    display: none; padding-top: 5px;
+}
+.broken-hover-menu:hover {
+    max-width: 600px; width: 500px;
+    padding: 15px;
+    background: #ffffcc;
+    border: 4px ridge #ff6600;
+    z-index: 99990;
+    transform: translateX(20px);
+    box-shadow: 10px 10px 30px rgba(0,0,0,0.5);
+}
+.broken-hover-menu:hover .broken-hover-content {
+    display: block;
+}
+.broken-hover-menu:hover .broken-hover-label {
+    font-size: 14px; color: #cc0000;
+    margin-bottom: 8px;
+}
+.broken-hover-content a, .broken-hover-content span {
+    display: block; padding: 2px 0;
+    font-size: 10px; line-height: 1.6;
+}
+.broken-hover-clue {
+    color: #0f0 !important; background: #000;
+    padding: 3px 6px !important; margin-top: 8px;
+    cursor: pointer; font-size: 9px !important;
+    border: 1px solid #0f0;
+}
+.broken-hover-clue:hover {
+    background: #0a3a0a; text-decoration: underline;
+}
