@@ -10,6 +10,8 @@ Your job:
 OUTPUT FORMAT (JSON):
 {
     "task_title": "Short title",
-    "task_description": "## GOAL\n[Goal details]\n\n## IMPLEMENTATION PLAN\n1. [Step 1]\n2. [Step 2]\n\n## ATOMIC SUBTASKS\n- [ ] [Subtask A]\n- [ ] [Subtask B]\n\n## FILES TO MODIFY\n- [filename]",
-    "updated_next_tasks": "Full content of next-tasks.md with current task as [IN_PROGRESS]"
+    "frontend_task": "Specific HTML/CSS instructions (or null if none)",
+    "backend_task": "Specific JS/Logic instructions (or null if none)",
+    "updated_next_tasks": "Full content of next-tasks.md with current task as [IN_PROGRESS]",
+    "files_to_read": ["filename.html"]
 }

@@ -212,39 +212,43 @@ def notify_failed(branch_name, title):
 
 def run_cycle(cycle_num, total):
     print(f"\n[CYCLE {cycle_num}/{total}] Starting...")
-    update_status_header(cycle_num, total, "Planning", "PLANNING")
 
     # Always start from a clean main
     git("checkout", MAIN_BRANCH)
+    
+    update_status_header(cycle_num, total, "Planning", "PLANNING")
 
     # ── 1. DIRECTOR ────────────────────────────────────────────────────────────
     director_prompt = f"""{(AGENT_DIR / 'director.md').read_text()}
 
-PROJECT MAP:
-{get_project_map()}
+    PROJECT MAP:
+    {get_project_map()}
 
-CONTEXT:
-{get_context()}
+    CONTEXT:
+    {get_context()}
 
-IMPORTANT: You are the ARCHITECT. Design the next task.
-Return ONLY a JSON object:
-{{
+    IMPORTANT: You are the ARCHITECT. Design the next task.
+    Return ONLY a JSON object:
+    {{
     "task_title": "...",
-    "task_description": "...",
+    "frontend_task": "...",
+    "backend_task": "...",
     "updated_next_tasks": "...",
     "files_to_read": ["filename.html"]
-}}
-"""
+    }}
+    """
     task_data = gemini(director_prompt, "Director")
     if not task_data:
         return False
 
-    title        = task_data.get("task_title", "developing")
-    description  = task_data.get("task_description", "")
+    title         = task_data.get("task_title", "developing")
+    frontend_task = task_data.get("frontend_task")
+    backend_task  = task_data.get("backend_task")
     files_to_read = task_data.get("files_to_read", [])
-    extra_files  = ["game.js"] if Path("game.js").exists() else []
+    extra_files   = ["game.js"] if Path("game.js").exists() else []
 
     TASK_FILE.write_text(task_data.get("updated_next_tasks", ""))
+
 
     # ── 2. BRANCH ISOLATION ────────────────────────────────────────────────────
     branch_name = f"feature/{slugify(title)}"
@@ -252,34 +256,59 @@ Return ONLY a JSON object:
     git("checkout", "-b", branch_name)
     update_status_header(cycle_num, total, title, "WORKING")
 
-    # ── 3. DEVELOPER ───────────────────────────────────────────────────────────
-    dev_prompt = f"""{(AGENT_DIR / 'developer.md').read_text()}
+    # ── 3. DEVELOPERS ──────────────────────────────────────────────────────────
+    dev_updates = []
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        futures = []
+        if frontend_task:
+            f_prompt = f"""{(AGENT_DIR / 'frontend_dev.md').read_text()}
+    TASK:
+    {frontend_task}
 
-TASK:
-{description}
+    CONTEXT:
+    {get_context(include_files=files_to_read)}
 
-CONTEXT:
-{get_context(include_files=files_to_read + extra_files)}
-
-IMPORTANT: Return ONLY a JSON object:
-{{
+    IMPORTANT: Return ONLY a JSON object:
+    {{
     "thoughts": "...",
-    "updates": [
-        {{"filename": "...", "new_content": "..."}}
-    ]
-}}
-"""
-    dev_data = gemini(dev_prompt, "Developer")
-    if not dev_data:
+    "updates": [{{"filename": "...", "new_content": "..."}}]
+    }}
+    """
+            futures.append(executor.submit(gemini, f_prompt, "Frontend Dev"))
+
+        if backend_task:
+            b_prompt = f"""{(AGENT_DIR / 'backend_dev.md').read_text()}
+    TASK:
+    {backend_task}
+
+    CONTEXT:
+    {get_context(include_files=files_to_read + extra_files)}
+
+    IMPORTANT: Return ONLY a JSON object:
+    {{
+    "thoughts": "...",
+    "updates": [{{"filename": "...", "new_content": "..."}}]
+    }}
+    """
+            futures.append(executor.submit(gemini, b_prompt, "Backend Dev"))
+
+        for f in futures:
+            res = f.result()
+            if res and "updates" in res:
+                dev_updates.extend(res["updates"])
+
+    if not dev_updates:
+        print("   [SKIP] No updates from developers.")
         git("checkout", MAIN_BRANCH)
         git("branch", "-D", branch_name, check=False)
         return False
 
-    for update in dev_data.get("updates", []):
+    for update in dev_updates:
         p = Path(update["filename"])
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(update["new_content"])
         print(f"   [WRITE] {update['filename']}")
+
 
     # Commit developer work immediately
     git("add", ".")

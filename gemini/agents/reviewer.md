@@ -7,13 +7,10 @@ Review:
 - Hidden clue logic
 - Broken links
 - State management
+- But especially git diffs
 
-Output:
-
-PASS
-
-or
-
-FAIL
-
-List every issue found.
+OUTPUT FORMAT (JSON):
+{
+    "status": "PASS" or "FAIL",
+    "feedback": "List of issues found"
+}
