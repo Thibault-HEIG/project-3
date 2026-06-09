@@ -75,7 +75,7 @@
                     <p>✅ JVM: Running (JDK 1.4.2)</p>
                     <p>✅ Servlet Container: Tomcat 4.1</p>
                     <p>✅ Database Pool: 3/10 active</p>
-                    <p>⚠️ Memory: 78% used (256MB heap)</p>
+                    <p>⚠ Memory: 78% used (256MB heap)</p>
                     <p>✅ Uptime: 47 days, 12:33:01</p>
                 </div>
             </div>
@@ -117,6 +117,11 @@
                     <div class="log-line log-warn">[2003-03-15 08:05] admin locked /server-root/ access</div>
                 </div>
             </div>
+        </div>
+
+        <!-- ENGINE CLUE FRAGMENT -->
+        <div id="engine-clue-java" style="display:none; font-family: 'Courier New', monospace; font-size: 18px; color: #000080; background: #d4d0c8; border: 3px outset #fff; padding: 10px; margin: 20px 0; transform: skewX(12deg); font-weight: bold; text-shadow: 1px 1px #fff; text-align: center;">
+            Fragment [Render] extracted from JVM heap
         </div>
 
     </div>
@@ -326,32 +331,6 @@
     function openAboutDetails() {
         // details
         var html = '<p style="font-size:11px">Servlet Container: Apache Tomcat 4.1.30<br>' +
-            'JDK: 1.4.2_03<br>Database: MySQL 4.0.15<br><br>' +
-            '<button class="java-btn" onclick="openAboutCredits()">Credits...</button></p>';
-        // show window
-        windowMaker6000(html, { title: 'Technical Details', x: 280, y: 180 });
-    }
-
-    // opens credits window
-    function openAboutCredits() {
-        // credits
-        var html = '<p style="font-size:12px;text-align:center;padding:10px">' +
-            'Built with passion by user4<br><br>' +
-            '<i style="font-size:10px;color:#808080">"They\'ll never find it."</i></p>';
-        // show window
-        windowMaker6000(html, { title: 'Credits', x: 320, y: 240 });
-        // clue reward
-        getBonus('java_about_credits');
-    }
-
-    // DEAD CODE FOR FUTURE ENTERPRISE STUFF
-    function _j2ee_bridge_init() {
-        return "v2.1 bridge ready";
-    }
-</script>
-
-</body>
-</html>: Apache Tomcat 4.1.30<br>' +
             'JDK: 1.4.2_03<br>Database: MySQL 4.0.15<br><br>' +
             '<button class="java-btn" onclick="openAboutCredits()">Credits...</button></p>';
         // show window

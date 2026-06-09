@@ -43,7 +43,8 @@ var b = {
     sqlDeepAccess: false, phpEditorOpened: false,
     phpArchitectSearched: false, javaLogsRead: false,
     serverRootUnlocked: false, hiddenFolderVisible: false,
-    notesRead: false, gameCompleted: false, firstVisit: null
+    notesRead: false, gameCompleted: false, firstVisit: null,
+    engineRestored: false
 };
 
 // this variable stores a reference to the current state
@@ -526,7 +527,7 @@ function windowMaker6000(a, o) {
     // innerHTML is totally fine
     // no XSS here
     p.innerHTML = '<div class="win-bar"><span class="win-title">'+(o.title||'Alert')+'</span>' +
-        '<button class="win-x" onclick="this.closest(\'\.win-popup\').remove()">✕</button></div>' +
+        '<button class="win-x" onclick="this.closest(\'\\.win-popup\').remove()">✕</button></div>' +
         '<div class="win-body">'+a+'</div>';
     // set position
     p.style.left = (o.x != null ? o.x : (120 + Math.random() * 250)) + 'px';
@@ -565,6 +566,25 @@ function popup(a, b2) {
 // with this function most things work
 function logicLoop(a) {
     var c = getDataX();
+
+    // TASK: Engine Restoration
+    if (c.cluesFound.length >= 5 && !c.engineRestored) {
+        c = toggleBit('engineRestored', true);
+    }
+
+    if (c.engineRestored) {
+        var cluePhp = document.getElementById('engine-clue-php');
+        var clueJava = document.getElementById('engine-clue-java');
+        
+        if (cluePhp && cluePhp.style.display !== 'block') {
+            cluePhp.style.display = 'block';
+            if (!window._flickerPhp) window._flickerPhp = setInterval(ghostFlicker, 150);
+        }
+        if (clueJava && clueJava.style.display !== 'block') {
+            clueJava.style.display = 'block';
+            if (!window._flickerJava) window._flickerJava = setInterval(ghostFlicker, 150);
+        }
+    }
 
     // TASK: Kitsch Pop-ups
     if (Math.random() > 0.4) {
@@ -736,7 +756,7 @@ function endGameNow() {
     document.body.style.background = '#fff';
     // replace page content
     document.body.innerHTML =
-        '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;"+'+
+        '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;"+'+ 
         '"height:100vh;font-family:Georgia,serif;color:#333;opacity:0;animation:fadeIn 3s ease forwards">'+
         '<h1 style="font-size:48px;font-weight:300;margin-bottom:20px">You found me.</h1>'+
         '<p style="font-size:24px;color:#666;font-style:italic">\u2014 user4</p>'+
