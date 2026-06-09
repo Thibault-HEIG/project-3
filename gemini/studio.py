@@ -1,127 +1,381 @@
 import subprocess
 import os
 import re
+import datetime
+import json
+import time
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 
-# Configuration
-AGENT_DIR = Path("gemini/agents")
-TASK_FILE = Path("gemini/next-tasks.md")
+# ── Configuration ─────────────────────────────────────────────────────────────
+AGENT_DIR    = Path("gemini/agents")
+TASK_FILE    = Path("gemini/next-tasks.md")
+STATUS_FILE  = Path("gemini/status.md")
+LOG_FILE     = Path("gemini/agent_logs.txt")
 PROJECT_ROOT = Path(".")
-CONTEXT_FILES = ["index.html", "sql.html", "php.html", "java.html", "forum.html", "server-root.html", "game.js", "style.css", "report.html", "gemini/GEMINI.md"]
+CONTEXT_FILES = ["README.md", "gemini/GEMINI.md"]
+RPM_COOLDOWN = 2
+MAIN_BRANCH  = "main"
 
-def gemini(prompt):
-    print(f"--- Calling Gemini CLI ---")
+
+# ── Git helpers ───────────────────────────────────────────────────────────────
+
+def git(*args, check=True):
+    """Run a git command in PROJECT_ROOT. Raises on non-zero exit if check=True."""
     result = subprocess.run(
-        ["gemini", "-p", prompt],
+        ["git"] + list(args),
+        cwd=PROJECT_ROOT,
         capture_output=True,
         text=True
     )
-    if result.returncode != 0:
-        print(f"Error calling gemini: {result.stderr}")
-        return ""
-    return result.stdout
+    if check and result.returncode != 0:
+        raise RuntimeError(f"git {' '.join(args)} failed:\n{result.stderr.strip()}")
+    return result
 
-def get_context():
-    context = ""
-    for file_path in CONTEXT_FILES:
-        p = PROJECT_ROOT / file_path
+
+def get_diff():
+    """Return the cumulative diff of the current branch vs main."""
+    result = git("diff", f"{MAIN_BRANCH}...HEAD", check=False)
+    return result.stdout.strip() or "(no diff — no changes committed yet)"
+
+
+def slugify(text):
+    """Convert a task title to a git-safe branch slug."""
+    text = text.lower().strip()
+    text = re.sub(r"[^a-z0-9\s-]", "", text)
+    text = re.sub(r"\s+", "-", text)
+    return text[:50].strip("-")
+
+
+# ── Project context ───────────────────────────────────────────────────────────
+
+def get_project_map():
+    file_map = "PROJECT STRUCTURE:\n"
+    for path in sorted(PROJECT_ROOT.rglob("*")):
+        if ".git" in path.parts or "__pycache__" in path.parts:
+            continue
+        depth = len(path.parts) - 1
+        indent = "  " * depth
+        if path.is_dir():
+            file_map += f"{indent}📁 {path.name}/\n"
+        else:
+            size = path.stat().st_size
+            file_map += f"{indent}📄 {path.name} ({size} bytes)\n"
+    return file_map
+
+
+def get_context(include_files=None):
+    context = "SYSTEM ARCHITECTURE & GOALS:\n"
+    for f in CONTEXT_FILES:
+        p = PROJECT_ROOT / f
         if p.exists():
-            context += f"\n\n--- FILE: {file_path} ---\n"
-            context += p.read_text()
-    
+            context += f"\n--- {f} ---\n{p.read_text()}\n"
     if TASK_FILE.exists():
-        context += f"\n\n--- FILE: next-tasks.md ---\n"
-        context += TASK_FILE.read_text()
-        
+        context += f"\n--- next-tasks.md ---\n{TASK_FILE.read_text()}\n"
+    if include_files:
+        for f in include_files:
+            p = PROJECT_ROOT / f
+            if p.exists():
+                if p.suffix == ".md" and p.stat().st_size > 100_000:
+                    context += f"\n--- FILE: {f} (TRUNCATED) ---\n{p.read_text()[:5000]}...\n"
+                else:
+                    context += f"\n--- FILE: {f} ---\n{p.read_text()}\n"
     return context
 
-def apply_diff(diff_text):
-    files_changed = []
-    parts = re.split(r'^--- ', diff_text, flags=re.MULTILINE)
-    for part in parts[1:]:
-        lines = part.splitlines()
-        if not lines: continue
-        filename = lines[0].strip()
-        if len(lines) < 2 or not lines[1].startswith("+++"): continue
-        content_lines = lines[2:]
-        if content_lines and content_lines[0].startswith("@@"): content_lines = content_lines[1:]
-        file_path = PROJECT_ROOT / filename
-        if not file_path.exists():
-            print(f"Warning: File {filename} not found.")
-            continue
-        current_content = file_path.read_text()
-        old_block = []
-        new_block = []
-        for line in content_lines:
-            if line.startswith("-"): old_block.append(line[1:])
-            elif line.startswith("+"): new_block.append(line[1:])
-            else:
-                if old_block or new_block:
-                    target = "\n".join(old_block)
-                    replacement = "\n".join(new_block)
-                    if target in current_content: current_content = current_content.replace(target, replacement)
-                    old_block, new_block = [], []
-        if old_block or new_block:
-            target = "\n".join(old_block)
-            replacement = "\n".join(new_block)
-            if target in current_content: current_content = current_content.replace(target, replacement)
-        file_path.write_text(current_content)
-        files_changed.append(filename)
-        print(f"Applied changes to {filename}")
-    return files_changed
 
-def git_commit(message):
-    print(f"[GIT] Committing changes: {message}")
-    subprocess.run(["git", "add", "."])
-    subprocess.run(["git", "commit", "-m", message])
+# ── JSON extraction ───────────────────────────────────────────────────────────
 
-def run_pipeline():
-    print("🚀 Starting Autonomous Pipeline")
-    
-    print("\n[DIRECTOR] Planning next move...")
-    director_prompt = (AGENT_DIR / "director.md").read_text() + "\n\nCONTEXT:\n" + get_context()
-    task_output = gemini(director_prompt)
-    
-    if "# UPDATED NEXT-TASKS" in task_output:
-        next_tasks_content = task_output.split("# UPDATED NEXT-TASKS")[1].strip()
-        TASK_FILE.write_text(next_tasks_content)
-        print("Updated next-tasks.md")
+def extract_json(text):
+    if not text:
+        return None
+    start = text.find("{")
+    end   = text.rfind("}")
+    if start == -1 or end == -1:
+        return None
+    content = text[start:end + 1].strip()
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        try:
+            def fix_newlines(match):
+                return match.group(0).replace("\n", "\\n")
+            fixed = re.sub(r'"(.*?)"', fix_newlines, content, flags=re.DOTALL)
+            return json.loads(fixed)
+        except Exception:
+            return None
 
-    print("\n[DEVELOPER] Implementing task...")
-    developer_prompt = (AGENT_DIR / "developer.md").read_text() + "\n\nTASK:\n" + task_output + "\n\nCONTEXT:\n" + get_context()
-    implementation = gemini(developer_prompt)
-    apply_diff(implementation)
 
-    for i in range(3):
-        print(f"\n[REVIEWER] (Attempt {i+1}) Checking architecture...")
-        reviewer_prompt = (AGENT_DIR / "reviewer.md").read_text() + "\n\nIMPLEMENTATION:\n" + implementation + "\n\nCONTEXT:\n" + get_context()
-        review = gemini(reviewer_prompt)
-        
-        print(f"\n[PLAYTESTER] (Attempt {i+1}) Attacking game...")
-        playtester_prompt = (AGENT_DIR / "playtester.md").read_text() + "\n\nCONTEXT:\n" + get_context()
-        playtest = gemini(playtester_prompt)
-        
-        if "PASS" in review and "PASS" in playtest:
-            print("\n✅ TASK COMPLETE AND VALIDATED!")
-            content = TASK_FILE.read_text()
-            content = content.replace("[IN_PROGRESS]", "[DONE]")
-            TASK_FILE.write_text(content)
-            
-            task_match = re.search(r"# CURRENT TASK\n(.*)", task_output)
-            task_title = task_match.group(1).strip() if task_match else "Autonomous Update"
-            git_commit(f"Gemini: {task_title}")
+# ── Gemini CLI call ───────────────────────────────────────────────────────────
+
+def gemini(prompt, agent_name=""):
+    for attempt in range(3):
+        print(f"   [AI] Requesting {agent_name} (Attempt {attempt + 1}/3)...")
+        update_status_activity(f"Agent **{agent_name}** is thinking...")
+        try:
+            process = subprocess.Popen(
+                ["gemini", "-p", "Respond ONLY with a JSON object. No other text.", "--raw-output"],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            stdout, stderr = process.communicate(input=prompt)
+
+            with open(LOG_FILE, "a") as f:
+                f.write(f"\n\n{'='*20} {agent_name} Attempt {attempt+1} {'='*20}\n")
+                f.write(f"EXIT CODE: {process.returncode}\n")
+                f.write(f"STDERR: {stderr}\n")
+                f.write(f"STDOUT:\n{stdout}\n")
+
+            if process.returncode != 0:
+                print(f"   [ERROR] CLI exited {process.returncode}.")
+                time.sleep(2)
+                continue
+            if not stdout.strip():
+                print(f"   [WARNING] Empty response from {agent_name}.")
+                time.sleep(2)
+                continue
+
+            data = extract_json(stdout)
+            if data:
+                time.sleep(RPM_COOLDOWN)
+                return data
+
+            print(f"   [WARNING] {agent_name} returned invalid JSON.")
+            time.sleep(2)
+
+        except Exception as e:
+            print(f"   [CRITICAL] {e}")
+            break
+
+    return None
+
+
+# ── Status file helpers ───────────────────────────────────────────────────────
+
+def update_status_header(cycle, total, task_name, status="RUNNING"):
+    now    = datetime.datetime.now().strftime("%H:%M:%S")
+    header = (
+        f"# 🤖 Autonomous Status\n\n"
+        f"## 🚀 {status}\n"
+        f"**Task:** {task_name}\n"
+        f"**Cycle:** {cycle}/{total}\n"
+        f"**Time:** {now}\n\n---\n"
+    )
+    try:
+        parts = STATUS_FILE.read_text().split("---", 1)
+        STATUS_FILE.write_text(header + (parts[1] if len(parts) > 1 else ""))
+    except Exception:
+        STATUS_FILE.write_text(header + "\n## 📝 Activity\n> Ready.\n")
+
+
+def update_status_activity(activity):
+    try:
+        content = STATUS_FILE.read_text()
+        if "## 📝 Activity" in content:
+            parts = content.split("## 📝 Activity", 1)
+            STATUS_FILE.write_text(f"{parts[0]}## 📝 Activity\n> {activity}\n")
+        else:
+            STATUS_FILE.write_text(content + f"\n## 📝 Activity\n> {activity}\n")
+    except Exception:
+        pass
+
+
+# ── Human-in-the-loop gateway ─────────────────────────────────────────────────
+
+def notify_ready(branch_name, title):
+    """Print a clear review prompt and update status. Does NOT merge."""
+    border = "=" * 64
+    print(f"\n{border}")
+    print(f"  ✅  READY FOR REVIEW")
+    print(f"  Branch : {branch_name}")
+    print(f"  Task   : {title}")
+    print(f"  → Open VS Code › Source Control to inspect the diff.")
+    print(f"  → Merge manually, or discard with:")
+    print(f"    git branch -D {branch_name}")
+    print(f"{border}\n")
+    update_status_activity(f"⏸ Awaiting human review on `{branch_name}`")
+
+
+def notify_failed(branch_name, title):
+    border = "=" * 64
+    print(f"\n{border}")
+    print(f"  ⚠️   VALIDATION EXHAUSTED")
+    print(f"  Branch : {branch_name}")
+    print(f"  Task   : {title}")
+    print(f"  → Branch preserved. Inspect or delete manually.")
+    print(f"{border}\n")
+    update_status_activity(f"❌ Validation failed on `{branch_name}`")
+
+
+# ── Main cycle ────────────────────────────────────────────────────────────────
+
+def run_cycle(cycle_num, total):
+    print(f"\n[CYCLE {cycle_num}/{total}] Starting...")
+    update_status_header(cycle_num, total, "Planning", "PLANNING")
+
+    # Always start from a clean main
+    git("checkout", MAIN_BRANCH)
+
+    # ── 1. DIRECTOR ────────────────────────────────────────────────────────────
+    director_prompt = f"""{(AGENT_DIR / 'director.md').read_text()}
+
+PROJECT MAP:
+{get_project_map()}
+
+CONTEXT:
+{get_context()}
+
+IMPORTANT: You are the ARCHITECT. Design the next task.
+Return ONLY a JSON object:
+{{
+    "task_title": "...",
+    "task_description": "...",
+    "updated_next_tasks": "...",
+    "files_to_read": ["filename.html"]
+}}
+"""
+    task_data = gemini(director_prompt, "Director")
+    if not task_data:
+        return False
+
+    title        = task_data.get("task_title", "developing")
+    description  = task_data.get("task_description", "")
+    files_to_read = task_data.get("files_to_read", [])
+    extra_files  = ["game.js"] if Path("game.js").exists() else []
+
+    TASK_FILE.write_text(task_data.get("updated_next_tasks", ""))
+
+    # ── 2. BRANCH ISOLATION ────────────────────────────────────────────────────
+    branch_name = f"feature/{slugify(title)}"
+    print(f"   [GIT] Creating branch: {branch_name}")
+    git("checkout", "-b", branch_name)
+    update_status_header(cycle_num, total, title, "WORKING")
+
+    # ── 3. DEVELOPER ───────────────────────────────────────────────────────────
+    dev_prompt = f"""{(AGENT_DIR / 'developer.md').read_text()}
+
+TASK:
+{description}
+
+CONTEXT:
+{get_context(include_files=files_to_read + extra_files)}
+
+IMPORTANT: Return ONLY a JSON object:
+{{
+    "thoughts": "...",
+    "updates": [
+        {{"filename": "...", "new_content": "..."}}
+    ]
+}}
+"""
+    dev_data = gemini(dev_prompt, "Developer")
+    if not dev_data:
+        git("checkout", MAIN_BRANCH)
+        git("branch", "-D", branch_name, check=False)
+        return False
+
+    for update in dev_data.get("updates", []):
+        p = Path(update["filename"])
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(update["new_content"])
+        print(f"   [WRITE] {update['filename']}")
+
+    # Commit developer work immediately
+    git("add", ".")
+    git("commit", "-m", f"Developer: {title}")
+    print(f"   [GIT] Developer changes committed.")
+
+    # ── 4. DIFF-BASED VALIDATION LOOP ──────────────────────────────────────────
+    for attempt in range(2):
+        update_status_activity(f"Validating attempt {attempt + 1}/2...")
+        diff = get_diff()
+
+        rev_prompt = f"""{(AGENT_DIR / 'reviewer.md').read_text()}
+
+GIT DIFF (exact changes introduced by this branch vs {MAIN_BRANCH}):
+{diff}
+
+IMPORTANT: Evaluate ONLY what changed above.
+Return ONLY {{"status": "PASS" or "FAIL", "feedback": "..."}}"""
+
+        play_prompt = f"""{(AGENT_DIR / 'playtester.md').read_text()}
+
+GIT DIFF (exact changes introduced by this branch vs {MAIN_BRANCH}):
+{diff}
+
+IMPORTANT: Evaluate ONLY what changed above.
+Return ONLY {{"status": "PASS" or "FAIL", "feedback": "..."}}"""
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            rev_future  = executor.submit(gemini, rev_prompt,  "Reviewer")
+            play_future = executor.submit(gemini, play_prompt, "Playtester")
+            rev_data    = rev_future.result()
+            play_data   = play_future.result()
+
+        reviewer_pass  = rev_data  and rev_data.get("status")  == "PASS"
+        playtester_pass = play_data and play_data.get("status") == "PASS"
+
+        if reviewer_pass and playtester_pass:
+            TASK_FILE.write_text(TASK_FILE.read_text().replace("[IN_PROGRESS]", "[DONE]"))
+            # ── 5. HUMAN-IN-THE-LOOP: do NOT auto-merge ────────────────────────
+            notify_ready(branch_name, title)
+            update_status_header(cycle_num, total, f"AWAITING REVIEW — {branch_name}", "PAUSED")
+            git("checkout", MAIN_BRANCH)
             return True
-            
-        print("\n[FIXER] Issues found. Patching...")
-        fixer_prompt = (AGENT_DIR / "fixer.md").read_text() + f"\n\nREVIEWER REPORT:\n{review}\n\nPLAYTESTER REPORT:\n{playtest}\n\nCONTEXT:\n" + get_context()
-        implementation = gemini(fixer_prompt)
-        apply_diff(implementation)
-        
-    print("\n❌ Pipeline failed to stabilize after 3 attempts.")
+
+        # ── FIXER: receives diff + feedback + full file content ────────────────
+        # (Fixer needs full content because it must produce complete file rewrites.)
+        update_status_activity(f"Fixer running (attempt {attempt + 1})...")
+        combined_feedback = " | ".join(filter(None, [
+            rev_data.get("feedback",  "") if rev_data  else "Reviewer returned no data.",
+            play_data.get("feedback", "") if play_data else "Playtester returned no data.",
+        ]))
+
+        fix_prompt = f"""{(AGENT_DIR / 'fixer.md').read_text()}
+
+REVIEWER / PLAYTESTER FEEDBACK:
+{combined_feedback}
+
+GIT DIFF (what was changed so far on this branch):
+{diff}
+
+FULL FILE CONTEXT (for rewriting):
+{get_context(include_files=files_to_read + extra_files)}
+
+IMPORTANT: Return ONLY {{"updates": [{{"filename": "...", "new_content": "..."}}]}}"""
+
+        fix_data = gemini(fix_prompt, "Fixer")
+        if not fix_data:
+            break
+
+        for update in fix_data.get("updates", []):
+            Path(update["filename"]).write_text(update["new_content"])
+
+        git("add", ".")
+        git("commit", "-m", f"Fixer: iteration {attempt + 1} on '{title}'")
+        print(f"   [GIT] Fixer changes committed (iteration {attempt + 1}).")
+
+    # Validation exhausted — leave branch for manual inspection, never delete it
+    notify_failed(branch_name, title)
+    update_status_header(cycle_num, total, f"FAILED — {branch_name}", "FAILED")
+    git("checkout", MAIN_BRANCH)
     return False
 
+
+# ── Entry point ───────────────────────────────────────────────────────────────
+
 if __name__ == "__main__":
-    while True:
-        if not run_pipeline(): break
-        print("\nWaiting for next cycle...")
-        break
+    if not STATUS_FILE.exists():
+        STATUS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        STATUS_FILE.write_text("# 🤖 Autonomous Status\n\n## 📝 Activity\n> Ready.\n")
+
+    results = []
+    for i in range(1, 6):
+        success = run_cycle(i, 5)
+        results.append(success)
+        # Each cycle is isolated — a failure does NOT abort subsequent cycles.
+
+    passed = sum(results)
+    update_status_header(5, 5, f"Done — {passed}/5 tasks passed", "FINISHED")
+    print(f"\n[DONE] {passed}/5 cycles passed. Check open branches in VS Code Source Control.")
