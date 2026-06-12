@@ -253,6 +253,17 @@ function fakeLoad() {
     nextLine();
 }
 
+// utility to format file sizes
+// MB is the base unit here
+function formatSize(mb) {
+    // TODO: add TB support for the 2005 server upgrade
+    if (mb >= 1024) {
+        return (mb / 1024).toFixed(1) + ' GB';
+    } else {
+        return parseFloat(mb).toFixed(1) + ' MB';
+    }
+}
+
 // TASK: Heavy Download Popup (Variable Size)
 function heavyDownload(title, size) {
     var gb = size || (Math.floor(Math.random() * 90) + 10) + '.' + Math.floor(Math.random() * 9);
@@ -311,7 +322,7 @@ function heavyDownload(title, size) {
             'Optimizing bitstream...'
         ];
         if (Math.random() > 0.8) msg.textContent = msgs[Math.floor(Math.random()*msgs.length)];
-        stats.textContent = 'Downloaded: ' + (pct * totalSize / 100).toFixed(1) + ' MB / ' + (totalSize/1024).toFixed(1) + ' GB (' + pct.toFixed(2) + '%)';
+        stats.textContent = 'Downloaded: ' + formatSize(pct * totalSize / 100) + ' / ' + formatSize(totalSize) + ' (' + pct.toFixed(2) + '%)';
     }, 1000);
 }
 

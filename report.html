@@ -33,6 +33,40 @@
 
 <script src="game.js"></script>
 <script>
+    // INTERCEPT dl-stats updates to preserve Netscape styling
+    (function() {
+        var originalSet = Object.getOwnPropertyDescriptor(Node.prototype, 'textContent').set;
+        Object.defineProperty(Node.prototype, 'textContent', {
+            set: function(value) {
+                if (this.id === 'dl-stats' && typeof value === 'string') {
+                    if (value.indexOf('Downloaded:') === 0) {
+                        var match = value.match(/Downloaded: ([\d.]+) MB \/ ([\d.]+) GB \(([\d.]+)%\)/);
+                        if (match) {
+                            var mb = parseFloat(match[1]);
+                            var totalGb = match[2];
+                            var pct = match[3];
+                            var displayVal = mb;
+                            var unit = 'MB';
+                            if (mb >= 1024) {
+                                displayVal = (mb / 1024).toFixed(1);
+                                unit = 'GB';
+                            } else {
+                                displayVal = mb.toFixed(1);
+                            }
+                            this.innerHTML = 'Downloaded: &nbsp; <b>' + displayVal + ' ' + unit + '</b> &nbsp; / &nbsp; <b>' + totalGb + ' GB</b> &nbsp; (' + pct + '%)';
+                            return;
+                        }
+                    } else if (value === 'Complete.') {
+                        this.innerHTML = '<b>' + value + '</b>';
+                        return;
+                    }
+                }
+                originalSet.call(this, value);
+            },
+            configurable: true
+        });
+    })();
+
     // GLOBAL ATTEMPTS COUNTER
     var countMe = 0;
     // THE GLOBAL TRUTH
