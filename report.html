@@ -42,7 +42,7 @@
         // inform system of final arrival
         doTheThing('report');
         // grab the truth
-        truth_s = sv;
+        truth_s = getDataX();
         // check if user is allowed to see the end
         if (!truth_s || !truth_s.serverRootUnlocked || !truth_s.notesRead) {
             // nested logic for rejection

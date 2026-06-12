@@ -287,7 +287,7 @@
         observer.observe(document.querySelector('.php-content'), { childList: true, subtree: true });
 
         // INITIALIZE STATE REFERENCE
-        php_s = sv;
+        php_s = getDataX();
         // check if root is unlocked
         if (php_s && php_s.serverRootUnlocked) {
             // link to the abyss

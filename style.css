@@ -10,6 +10,7 @@
 
 /* --- Keyframes --- */
 @keyframes blink { 0%,49%{opacity:1}50%,100%{opacity:0} }
+.blink { animation: blink 1s infinite; }
 @keyframes rainbow { 0%{color:red}17%{color:orange}33%{color:yellow}50%{color:lime}67%{color:cyan}83%{color:magenta}100%{color:red} }
 @keyframes marqueeScroll { 0%{transform:translateX(100%)}100%{transform:translateX(-100%)} }
 @keyframes spin { 0%{transform:rotate(0)}100%{transform:rotate(360deg)} }

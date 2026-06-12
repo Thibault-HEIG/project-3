@@ -233,7 +233,7 @@ Restricted access. Limited commands available.
             }
         } 
         else if (cmd === 'login') {
-            var s = sv;
+            var s = getDataX();
             if (s && s.serverRootUnlocked) {
                 if (args[0] === 'admin' && args[1] === 'project3_root') {
                     print('Authentication successful.', 'cli-info');
@@ -271,7 +271,7 @@ Restricted access. Limited commands available.
                         var dir = getDir(tempPath);
                         if (dir[seg] && dir[seg].type === 'dir') {
                             if (seg === '.hidden') {
-                                var s = sv;
+                                var s = getDataX();
                                 if (s && !s.notesRead) {
                                     print('cd: .hidden: Permission denied', 'cli-error');
                                     valid = false;
@@ -354,7 +354,7 @@ Restricted access. Limited commands available.
     document.addEventListener('DOMContentLoaded', function() {
         doTheThing('server-root');
         logicLoop('server-root');
-        var s = sv;
+        var s = getDataX();
         if (s && !s.serverRootUnlocked) {
             document.getElementById('access-denied').style.display = 'block';
             document.getElementById('directory-view').style.display = 'none';

@@ -108,17 +108,17 @@
                         </tr>
                         <tr>
                             <td>1001</td>
-                            <td>java-main</td>
+                            <td>admin</td>
                             <td style="color:green">RUNNING</td>
                         </tr>
                         <tr>
                             <td>1002</td>
-                            <td>java-auth</td>
+                            <td>sysbot</td>
                             <td style="color:green">RUNNING</td>
                         </tr>
                         <tr>
                             <td>1004</td>
-                            <td>java-bridge</td>
+                            <td>user4-architect</td>
                             <td style="color:orange">HUNG</td>
                         </tr>
                     </table>
@@ -163,13 +163,13 @@
 </div>
 
 <!-- DEADLOCK SYSTEM -->
-<div id="deadlock-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999999; cursor:not-allowed; display:flex; align-items:center; justify-content:center; flex-direction:column;">
+<div id="deadlock-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999999; cursor:not-allowed; align-items:center; justify-content:center; flex-direction:column;">
     <div style="color:#fff; font-family: Tahoma, sans-serif; text-align:center;">
         <div style="width:50px; height:50px; border:5px solid #fff; border-top:5px solid #000080; border-radius:50%; animation: spin 1s linear infinite; margin-bottom:20px;"></div>
         <p>Wait for Process...</p>
     </div>
+    <button id="force-kill-btn" style="display:none; position:absolute; z-index:1000000; padding:12px 24px; background:#cc0000; color:#fff; border:3px outset #fff; font-family: Tahoma, sans-serif; font-weight:bold; cursor:pointer;">Force Kill user4-architect</button>
 </div>
-<button id="force-kill-btn" style="display:none; position:absolute; z-index:1000000; padding:12px 24px; background:#cc0000; color:#fff; border:3px outset #fff; font-family: Tahoma, sans-serif; font-weight:bold; cursor:pointer;">Force Kill user4-architect</button>
 
 <script src="game.js"></script>
 <script>
@@ -183,7 +183,7 @@
         // notify the cluster
         doTheThing('java');
         // INITIALIZE STATE REFERENCE
-        java_s = sv;
+        java_s = getDataX();
         // start the splash sequence
         startSplash();
         
@@ -211,7 +211,7 @@
 
     // UPDATES THE PROCESS MANAGER DISPLAY
     function updateProcessManager() {
-        var s = sv;
+        var s = getDataX();
         if (!s) return;
         
         var cluesEl = document.getElementById('java-clues-status');
@@ -231,7 +231,7 @@
         var deadEl = document.getElementById('java-deadlock-status');
         if (deadEl) {
             if (deadlock_active) {
-                deadEl.innerHTML = '● Deadlock Status: <span style="animation:blink 0.5s infinite;color:red">CRITICAL</span>';
+                deadEl.innerHTML = '● Deadlock Status: <span class="blink" style="color:red">CRITICAL</span>';
             } else {
                 deadEl.innerHTML = '● Deadlock Status: <span style="color:green">NOMINAL</span>';
             }
@@ -243,7 +243,7 @@
         deadlock_active = true;
         clearInterval(heap_interval);
         
-        document.getElementById('deadlock-overlay').style.display = 'block';
+        document.getElementById('deadlock-overlay').style.display = 'flex';
         var btn = document.getElementById('force-kill-btn');
         btn.style.display = 'block';
         btn.style.left = '50%';
@@ -271,10 +271,9 @@
 
     // handles the button fleeing
     function handleFleeing(e) {
+        var s = getDataX();
         if (!deadlock_active) return;
         
-        // REFACTORED: Accessing sv directly from game.js instead of getDataX()
-        var s = sv;
         var hasPatch = false;
         if (s && s.cluesFound) {
             for (var i = 0; i < s.cluesFound.length; i++) {

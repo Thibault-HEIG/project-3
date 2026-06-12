@@ -48,7 +48,7 @@
     <button class="useless-btn" onclick="heavyDownload('Schema')">🗂️ Schema</button>
     <button class="useless-btn" onclick="heavyDownload('Backup')">💿 Backup</button>
     <button class="useless-btn" onclick="heavyDownload('Index')">🔧 Rebuild Index</button>
-    <button class="useless-btn" onclick="popup('<p style=font-size:10px>Connection pool: 3/10 active<br>Slow queries: 47<br>Deadlocks: 2<br>Uptime: 47d 12h</p>',{title:'DB Status'})">📊 DB Status</button>
+    <button class="useless-btn" onclick="windowMaker6000('<p style=font-size:10px>Connection pool: 3/10 active<br>Slow queries: 47<br>Deadlocks: 2<br>Uptime: 47d 12h</p>',{title:'DB Status'})">📊 DB Status</button>
     <button class="useless-btn" onclick="heavyDownload('Defrag')">🔨 Defrag</button>
     <button class="useless-btn" onclick="heavyDownload('Replication')">🔄 Replication</button>
     <button class="useless-btn" onclick="heavyDownload('Profiler')">📈 Profiler</button>
@@ -295,13 +295,13 @@ ORDER BY last_login DESC;
             <tbody>
                 <tr>
                     <td>001</td><td>001</td><td>001</td><td>001</td><td>001</td>
-                    <td>001</td><td>001</td><td>001</td><td class="corrupt-cell" onclick="getBonus('17id_clue');popup('<p style=font-size:11px>Column 9 contains the truth:<br><br>This column was supposed to store REAL_NAME.<br>user4 renamed it to \"id\" like all the others<br>so nobody would notice.<br><br>The value in row 1 of column 9 is:<br><span style=color:#cc0000;font-weight:bold>/server-root/.hidden/</span></p>',{title:'⚠ Column 9 — The Real ID'})">[CLICK]</td><td>001</td>
+                    <td>001</td><td>001</td><td>001</td><td class="corrupt-cell" onclick="getBonus('17id_clue');windowMaker6000('<p style=font-size:11px>Column 9 contains the truth:<br><br>This column was supposed to store REAL_NAME.<br>user4 renamed it to \"id\" like all the others<br>so nobody would notice.<br><br>The value in row 1 of column 9 is:<br><span style=color:#cc0000;font-weight:bold>/server-root/.hidden/</span></p>',{title:'⚠ Column 9 — The Real ID'})">[CLICK]</td><td>001</td>
                     <td>001</td><td>001</td><td>001</td><td>001</td><td>001</td>
                     <td>001</td><td>001</td>
                 </tr>
                 <tr>
                     <td>002</td><td>002</td><td>002</td><td>002</td><td>002</td>
-                    <td>002</td><td>002</td><td>002</td><td class="corrupt-cell" onclick="getBonus('sql_stability_patch');popup('<p style=font-size:11px>STABILITY PATCH DETECTED:<br><br>Applying fix for sector B-12...<br>Recalibrating flux capacitor...<br><br>Success: Identity fragmentation reduced by 0.04%.</p>',{title:'🔧 Stability Patch'})">[RECOVER]</td><td>002</td>
+                    <td>002</td><td>002</td><td>002</td><td class="corrupt-cell" onclick="getBonus('sql_stability_patch');windowMaker6000('<p style=font-size:11px>STABILITY PATCH DETECTED:<br><br>Applying fix for sector B-12...<br>Recalibrating flux capacitor...<br><br>Success: Identity fragmentation reduced by 0.04%.</p>',{title:'🔧 Stability Patch'})">[RECOVER]</td><td>002</td>
                     <td>002</td><td>002</td><td>002</td><td>002</td><td>002</td>
                     <td>002</td><td>002</td>
                 </tr>
@@ -357,7 +357,7 @@ ORDER BY last_login DESC;
         // check for upgrades
         logicLoop('sql');
         // grab the truth
-        sql_s = sv;
+        sql_s = getDataX();
     });
 
     // handles interaction with rows of the data table
