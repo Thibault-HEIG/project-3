@@ -292,20 +292,15 @@ function heavyDownload(title, size) {
         if (!canFinish && elapsed >= 20) {
             clearInterval(iv);
             p.remove();
-            windowMaker6000('<div style="background:#b00;color:#fff;padding:15px;text-align:center;font-family:monospace;border:2px solid #f00">' +
-                '<h2 style="margin:0;font-size:16px">SYSTEM ERROR</h2>' +
-                '<p style="font-size:10px;margin-top:10px">Stack overflow at 0x8840A110.<br>The download has been aborted to protect system integrity.</p>' +
-                '<p style="font-size:9px;color:#faa">Fragment collision detected in memory buffer.</p>' +
-                '</div>', { title: '🛑 FATAL EXCEPTION', autoClose: 0 });
+            triggerBSOD();
             return;
         }
 
-        // Rule 2: Stall at 99% if canFinish is false
-        if (elapsed >= 15) {
-            pct = canFinish ? 100 : 99;
+        // Rule 2: Reach exactly 99% at the 15-second mark
+        if (elapsed < 15) {
+            pct = (elapsed / 15) * 99;
         } else {
-            pct += Math.random() * 12;
-            if (pct > 99) pct = 99;
+            pct = canFinish ? 100 : 99;
         }
         bar.style.width = pct + '%';
         
@@ -336,6 +331,17 @@ function heavyDownload(title, size) {
     }, 1000);
 }
 
+// Rule 3: 20 second timeout for forced failure
+function triggerBSOD() {
+    windowMaker6000('<div class="bsod-body">' +
+        '<div class="bsod-text">A problem has been detected and windows has been shut down to prevent damage to your computer.</div>' +
+        '<div class="bsod-text">ERROR_DOWNLOAD_TIMEOUT_EXCEEDED_BY_USER4</div>' +
+        '<div class="bsod-text">SYSTEM ERROR: Stack overflow at 0x8840A110.<br>The download has been aborted to protect system integrity.</div>' +
+        '<div class="bsod-text" style="font-weight:bold">CRC_MISMATCH_IN_BUFFER_0xDEADBEEF</div>' +
+        '<div class="bsod-text">Fragment collision detected in memory buffer.</div>' +
+        '<div style="text-align:center"><button class="bsod-btn" onclick="this.closest(\'.win-popup\').remove()">REBOOT</button></div>' +
+        '</div>', { title: '🛑 FATAL EXCEPTION', autoClose: 0 });
+}
 // TASK: Engine Restoration - spawnNestingDolls
 function spawnNestingDolls(callback) {
     var dolls = 5;
