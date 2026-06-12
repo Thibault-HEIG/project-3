@@ -292,7 +292,8 @@ function heavyDownload(title, size) {
         if (!canFinish && elapsed >= 20) {
             clearInterval(iv);
             p.remove();
-            triggerBSOD();
+            // Refactored to dynamically load bsod.html
+            windowMaker6000('<iframe src="bsod.html" style="width:500px;height:400px;border:none;overflow:hidden"></iframe>', { title: '🛑 FATAL EXCEPTION', autoClose: 0 });
             return;
         }
 
@@ -339,6 +340,7 @@ function triggerBSOD() {
         '<div class="bsod-text">SYSTEM ERROR: Stack overflow at 0x8840A110.<br>The download has been aborted to protect system integrity.</div>' +
         '<div class="bsod-text" style="font-weight:bold">CRC_MISMATCH_IN_BUFFER_0xDEADBEEF</div>' +
         '<div class="bsod-text">Fragment collision detected in memory buffer.</div>' +
+        '<div class="bsod-text" style="word-break:break-all">Stack: 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000</div>' +
         '<div style="text-align:center"><button class="bsod-btn" onclick="this.closest(\'.win-popup\').remove()">REBOOT</button></div>' +
         '</div>', { title: '🛑 FATAL EXCEPTION', autoClose: 0 });
 }
@@ -1035,6 +1037,19 @@ document.addEventListener('DOMContentLoaded', function(){
     if (s.sqlDeepAccess && s.phpArchitectSearched && !sessionStorage.getItem('p3_merge')) {
         setTimeout(triggerMergeConflict, 2000);
     }
+
+    // message listener for BSOD reboot
+    window.addEventListener('message', function(e) {
+        if (e.data === 'close-bsod') {
+            var all = document.querySelectorAll('.win-popup');
+            for (var i = 0; i < all.length; i++) {
+                var f = all[i].querySelector('iframe');
+                if (f && f.src.indexOf('bsod.html') !== -1) {
+                    all[i].remove();
+                }
+            }
+        }
+    });
 });
 
 // === DEAD CODE CEMETERY ===

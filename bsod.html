@@ -11,14 +11,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bsod-body">
+<div class="scanline" style="position:fixed; top:0; left:0; width:100%; height:2px; background:rgba(255,255,255,0.1); z-index:100; pointer-events:none; animation: scanline 4s linear infinite;"></div>
 
 <div class="bsod-container">
+    <div class="bsod-header">SYSTEM_FAILURE_DETECTION_CORE</div>
+    
     <div class="bsod-text">
         A problem has been detected and windows has been shut down to prevent damage to your computer.
     </div>
 
-    <div class="bsod-text">
-        ERROR_DOWNLOAD_TIMEOUT_EXCEEDED_BY_USER4
+    <div class="bsod-text" style="color: #ffff00; font-weight: bold;">
+        *** FATAL_ERROR: DOWNLOAD_TIMEOUT_EXCEEDED_BY_USER4
     </div>
 
     <div class="bsod-text">
@@ -29,7 +32,7 @@
         Check to be sure you have adequate disk space. If a driver is identified in the stop message, disable the driver or check with the manufacturer for driver updates. Try changing video adapters.
     </div>
 
-    <div class="bsod-text" style="font-weight: bold;">
+    <div class="bsod-text" style="font-weight: bold; text-decoration: underline;">
         CRC_MISMATCH_IN_BUFFER_0xDEADBEEF
     </div>
 
@@ -38,25 +41,29 @@
         *** STOP: 0x000000D1 (0x0000000C, 0x00000002, 0x00000000, 0xF86B5A89)
     </div>
 
-    <div class="bsod-text" style="word-break: break-all;">
-        Stack: 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000
+    <div class="bsod-text" style="word-break: break-all; font-size: 10px; color: #ccc;">
+        Stack Dump: 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000
     </div>
 
     <div style="text-align: center;">
-        <button class="bsod-btn" onclick="if(window.parent && window.parent !== window) { window.parent.postMessage('close-bsod', '*'); } else { window.close(); }">REBOOT</button>
+        <button class="bsod-btn" onclick="rebootSystem()">REBOOT</button>
     </div>
 </div>
 
 <script>
-    // If loaded inside windowMaker6000, the button should close the popup
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('bsod-btn')) {
-            var popup = e.target.closest('.win-popup');
-            if (popup) {
-                popup.remove();
-            }
+    function rebootSystem() {
+        if(window.parent && window.parent !== window && window.parent.location.pathname.includes('index.html')) {
+             // If in iframe on index.html, maybe we just want to close the popup
+             var popup = window.frameElement ? window.frameElement.closest('.win-popup') : null;
+             if (popup) {
+                 popup.remove();
+             } else {
+                 window.parent.location.reload();
+             }
+        } else {
+            window.location.href = 'index.html';
         }
-    });
+    }
 </script>
 
 </body>
