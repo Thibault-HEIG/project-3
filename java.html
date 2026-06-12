@@ -75,7 +75,7 @@
                     <p>✅ JVM: Running (JDK 1.4.2)</p>
                     <p>✅ Servlet Container: Tomcat 4.1</p>
                     <p>✅ Database Pool: 3/10 active</p>
-                    <p>⚠️ Memory: 78% used (256MB heap)</p>
+                    <p id="java-mem-status">⚠️ Memory: 78% used (256MB heap)</p>
                     <p>✅ Uptime: 47 days, 12:33:01</p>
                 </div>
             </div>
@@ -129,10 +129,18 @@
     <button class="midi-toggle">⏸</button>
 </div>
 
+<!-- DEADLOCK SYSTEM -->
+<div id="deadlock-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; cursor:not-allowed;"></div>
+<button id="force-kill-btn" style="display:none; position:fixed; z-index:10001; padding:12px 24px; background:#cc0000; color:#fff; border:3px outset #fff; font-family: Tahoma, sans-serif; font-weight:bold; cursor:pointer;">FORCE KILL SESSION</button>
+
 <script src="game.js"></script>
 <script>
     // GLOBAL ENTERPRISE STATE
     var java_s = null;
+    var heap_val = 78;
+    var heap_interval = null;
+    var deadlock_active = false;
+
     document.addEventListener('DOMContentLoaded', function() {
         // notify the cluster
         doTheThing('java');
@@ -140,9 +148,110 @@
         startSplash();
     });
 
+    // increments the heap usage
+    function startHeapTimer() {
+        if (heap_interval) clearInterval(heap_interval);
+        heap_interval = setInterval(function() {
+            if (heap_val < 100) {
+                heap_val = heap_val + 1;
+                var el = document.getElementById('java-mem-status');
+                if (el) {
+                    el.innerHTML = '⚠️ Memory: ' + heap_val + '% used (256MB heap)';
+                }
+            } else {
+                if (!deadlock_active) {
+                    initiateDeadlock();
+                }
+            }
+        }, 3000);
+    }
+
+    // triggers the deadlock state
+    function initiateDeadlock() {
+        deadlock_active = true;
+        clearInterval(heap_interval);
+        
+        document.getElementById('deadlock-overlay').style.display = 'block';
+        var btn = document.getElementById('force-kill-btn');
+        btn.style.display = 'block';
+        btn.style.left = '50%';
+        btn.style.top = '50%';
+        btn.style.transform = 'translate(-50%, -50%)';
+        
+        window.addEventListener('click', blockInteraction, true);
+        document.addEventListener('mousemove', handleFleeing);
+        
+        btn.onclick = function() {
+            restoreStability();
+        };
+    }
+
+    // blocks interaction with background
+    function blockInteraction(e) {
+        if (e.target.id !== 'force-kill-btn') {
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        }
+    }
+
+    // handles the button fleeing
+    function handleFleeing(e) {
+        if (!deadlock_active) return;
+        
+        var s = getDataX();
+        var hasPatch = false;
+        if (s.cluesFound) {
+            for (var i = 0; i < s.cluesFound.length; i++) {
+                if (s.cluesFound[i] === 'sql_stability_patch') {
+                    hasPatch = true;
+                }
+            }
+        }
+        
+        if (hasPatch) return;
+        
+        var btn = document.getElementById('force-kill-btn');
+        var r = btn.getBoundingClientRect();
+        var bx = r.left + r.width / 2;
+        var by = r.top + r.height / 2;
+        
+        var dx = e.clientX - bx;
+        var dy = e.clientY - by;
+        var dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if (dist < 80) {
+            var nx = Math.random() * (window.innerWidth - 200) + 100;
+            var ny = Math.random() * (window.innerHeight - 100) + 50;
+            btn.style.left = nx + 'px';
+            btn.style.top = ny + 'px';
+            btn.style.transform = 'none';
+        }
+    }
+
+    // restores stability
+    function restoreStability() {
+        deadlock_active = false;
+        document.getElementById('deadlock-overlay').style.display = 'none';
+        document.getElementById('force-kill-btn').style.display = 'none';
+        
+        window.removeEventListener('click', blockInteraction, true);
+        document.removeEventListener('mousemove', handleFleeing);
+        
+        heap_val = 78;
+        var el = document.getElementById('java-mem-status');
+        if (el) {
+            el.innerHTML = '⚠️ Memory: 78% used (256MB heap)';
+        }
+        
+        windowMaker6000('<p style="color:green;font-weight:bold;text-align:center;padding:10px">SYSTEM MESSAGE:<br>Stability Restored.<br>Garbage collection successful.</p>', 
+            { title: '✅ Recovery Success', x: 300, y: 200 });
+            
+        startHeapTimer();
+    }
+
     // handles the enterprise loading screen
     function startSplash() {
-        // array of loading messages
         var msgs = [
             'Initializing application server...',
             'Loading Java Runtime Environment...',
@@ -156,33 +265,25 @@
             'Checking license...',
             'Almost ready...'
         ];
-        // the message element
         var msgEl = document.getElementById('load-msg');
         var loadBar = document.getElementById('load-bar');
         var i = 0;
-        // override the CSS animation — we control the bar manually now
         loadBar.style.animation = 'none';
         loadBar.style.width = '0%';
         loadBar.style.transition = 'width 0.8s ease';
-        // interval for progress simulation
         var interval = setInterval(function() {
-            // add 1 to i
             i = i + 1;
             if (i < msgs.length) {
                 msgEl.textContent = msgs[i];
-                // progress bar advances but slows near end
                 var pct = Math.min(99, (i / msgs.length) * 100);
                 loadBar.style.width = pct + '%';
             } else {
-                // FREEZE at 99% for dramatic effect
                 loadBar.style.width = '99%';
                 msgEl.textContent = 'Finalizing... (99%)';
                 clearInterval(interval);
-                // wait 3 seconds at 99%
                 setTimeout(function() {
                     msgEl.textContent = 'ERROR: OutOfMemoryError: Java heap space';
                     msgEl.style.color = '#cc0000';
-                    // then "recover" after another 2s
                     setTimeout(function() {
                         msgEl.textContent = 'Recovering... Loading innovation...';
                         msgEl.style.color = '#808080';
@@ -197,31 +298,25 @@
         }, 1000);
     }
 
-    // completes the splash sequence
     function finishSplash() {
-        // hide splash
         document.getElementById('splash').style.display = 'none';
-        // show main content
         document.getElementById('java-main').style.display = 'block';
-        // run the logic loop
         logicLoop('java');
 
-        // show notices after delay
         setTimeout(function() {
             windowMaker6000('<p style="font-size:11px">Your session will expire in 30 minutes.<br>Save your work.</p>',
                 { title: 'Session Notice', x: 400, y: 80 });
         }, 1500);
 
-        // security alert
         setTimeout(function() {
             windowMaker6000('<p style="font-size:11px;color:#cc0000">⚠️ SECURITY NOTICE:<br>Unusual login activity on 2003-03-14.<br>User "user4" performed unauthorized operations.<br>Investigation in progress.</p>',
                 { title: '⚠️ Security Alert', x: 150, y: 200 });
         }, 3000);
+
+        startHeapTimer();
     }
 
-    // opens the log viewer
     function openSystemLogs() {
-        // full logs content
         var logContent = '<div class="java-log" style="max-height:250px;overflow-y:auto;font-size:10px;width:130%">' +
             '<div class="log-line log-critical">[2001-06-12] user4 initialized project-3 database</div>' +
             '<div class="log-line log-info">[2001-06-15] admin configured user permissions</div>' +
@@ -238,16 +333,11 @@
             '<div class="log-line" style="color:red;font-weight:bold">[2003-03-14 23:59] user4: "Moved the form to /server-root/. They won\'t look there."</div>' +
             '<div class="log-line" style="color:red">[2003-03-15 00:01] SYSTEM: ACCOUNT SUSPENDED</div>' +
             '</div>';
-        
-        // make the window
         windowMaker6000(logContent, { title: '📋 Full System Logs', x: 80, y: 60 });
-        // found clue
         getBonus('java_system_logs');
     }
 
-    // opens user management table
     function openUserMgmt() {
-        // table data
         var tbl = '<table style="width:100%;font-size:11px;border-collapse:collapse">' +
             '<tr style="background:#000080;color:#fff"><th style="padding:3px 6px">User</th><th>Role</th><th>Status</th></tr>' +
             '<tr><td style="padding:3px 6px">admin</td><td>ADMIN</td><td style="color:green">ACTIVE</td></tr>' +
@@ -257,16 +347,11 @@
             '<tr><td style="padding:3px 6px;color:#888">d.markup</td><td>DEVELOPER</td><td>INACTIVE</td></tr>' +
             '</table>' +
             '<p style="font-size:10px;color:#888;margin-top:8px">Note: Only ARCHITECT-level users can modify core site structure.</p>';
-        
-        // show window
         windowMaker6000(tbl, { title: '👥 User Management', x: 200, y: 100 });
-        // reward found
         getBonus('java_user_mgmt');
     }
 
-    // opens build report text
     function openBuildReports() {
-        // text content
         var txt = '<div style="font-family:Courier New;font-size:10px;max-height:200px;overflow-y:auto;background:#fff;padding:8px;border:1px inset #808080">' +
             '=== BUILD REPORT 2003.03.14 ===\n' +
             'Compiled by: u4@project3\n' +
@@ -283,17 +368,12 @@
             'Deployed by: user4\n' +
             '================================' +
             '</div>';
-        
-        // show window
         windowMaker6000(txt, { title: '🔨 Build Report — 2003.03.14', x: 250, y: 150 });
-        // found clue
         getBonus('java_build_report');
     }
 
-    // opens license text
     function openLicense() {
         spawnNestingDolls(function() {
-            // license content
             var lic = '<div class="java-license">' +
                 'SOFTWARE LICENSE AGREEMENT\n\n' +
                 'This Enterprise Portal software (the "Software") is provided under the terms of the project-3.com Internal Use License.\n\n' +
@@ -305,72 +385,32 @@
                 'SECTION 6. TERMINATION\nThis license is effective until terminated. It will terminate automatically if you fail to comply with any term.\n\n' +
                 '© 2001-2003 user4. All rights reserved.\n' +
                 '</div>';
-            
-            // show window
             windowMaker6000(lic, { title: '📄 License Information', x: 100, y: 120 });
-            // clue reward
             getBonus('java_license');
         });
     }
 
-    // opens about window
     function openAbout() {
-        // content
         var html = '<p style="font-size:11px">Java Enterprise Portal v2.1<br>Build: 2003.03.14-final<br><br>' +
             '<button class="java-btn" onclick="openAboutDetails()">More Details...</button></p>';
-        // show it
         windowMaker6000(html, { title: 'ℹ️ About', x: 200, y: 100 });
     }
 
-    // opens more details
     function openAboutDetails() {
-        // details
         var html = '<p style="font-size:11px">Servlet Container: Apache Tomcat 4.1.30<br>' +
             'JDK: 1.4.2_03<br>Database: MySQL 4.0.15<br><br>' +
             '<button class="java-btn" onclick="openAboutCredits()">Credits...</button></p>';
-        // show window
         windowMaker6000(html, { title: 'Technical Details', x: 280, y: 180 });
     }
 
-    // opens credits window
     function openAboutCredits() {
-        // credits
         var html = '<p style="font-size:12px;text-align:center;padding:10px">' +
             'Built with passion by user4<br><br>' +
             '<i style="font-size:10px;color:#808080">"They\'ll never find it."</i></p>';
-        // show window
         windowMaker6000(html, { title: 'Credits', x: 320, y: 240 });
-        // clue reward
         getBonus('java_about_credits');
     }
 
-    // DEAD CODE FOR FUTURE ENTERPRISE STUFF
-    function _j2ee_bridge_init() {
-        return "v2.1 bridge ready";
-    }
-</script>
-
-</body>
-</html>: Apache Tomcat 4.1.30<br>' +
-            'JDK: 1.4.2_03<br>Database: MySQL 4.0.15<br><br>' +
-            '<button class="java-btn" onclick="openAboutCredits()">Credits...</button></p>';
-        // show window
-        windowMaker6000(html, { title: 'Technical Details', x: 280, y: 180 });
-    }
-
-    // opens credits window
-    function openAboutCredits() {
-        // credits
-        var html = '<p style="font-size:12px;text-align:center;padding:10px">' +
-            'Built with passion by user4<br><br>' +
-            '<i style="font-size:10px;color:#808080">"They\'ll never find it."</i></p>';
-        // show window
-        windowMaker6000(html, { title: 'Credits', x: 320, y: 240 });
-        // clue reward
-        getBonus('java_about_credits');
-    }
-
-    // DEAD CODE FOR FUTURE ENTERPRISE STUFF
     function _j2ee_bridge_init() {
         return "v2.1 bridge ready";
     }
