@@ -649,6 +649,33 @@ body.quiet-mode .overlap-chaos { display: none !important; }
     cursor: pointer; font-size: 9px !important;
     border: 1px solid #0f0;
 }
-.broken-hover-clue:hover {
-    background: #0a3a0a; text-decoration: underline;
+/* =======================================
+   BSOD SYSTEM ERROR
+   ======================================= */
+.bsod-body {
+    background: #0000AA !important;
+    color: #FFFFFF !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    padding: 20px !important;
+    min-height: 250px;
+}
+.win-body > .bsod-body {
+    margin: -10px; /* Offset default win-body padding */
+}
+.bsod-btn {
+    background: #FFFFFF !important;
+    color: #0000AA !important;
+    border: none !important;
+    padding: 8px 20px !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    margin-top: 20px;
+}
+.bsod-btn:hover {
+    background: #CCCCCC !important;
+}
+.bsod-text {
+    margin-bottom: 15px;
+    line-height: 1.4;
 }

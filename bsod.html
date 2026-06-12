@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!--
+    SYSTEM ERROR TEMPLATE
+    Aesthetic: Blue Screen of Death (BSOD)
+    Author: Frontend Developer
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CRITICAL_SYSTEM_ERROR</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bsod-body">
+
+<div class="bsod-container">
+    <div class="bsod-text">
+        A problem has been detected and windows has been shut down to prevent damage to your computer.
+    </div>
+
+    <div class="bsod-text">
+        ERROR_DOWNLOAD_TIMEOUT_EXCEEDED_BY_USER4
+    </div>
+
+    <div class="bsod-text">
+        If this is the first time you've seen this stop error screen, restart your computer. If this screen appears again, follow these steps:
+    </div>
+
+    <div class="bsod-text">
+        Check to be sure you have adequate disk space. If a driver is identified in the stop message, disable the driver or check with the manufacturer for driver updates. Try changing video adapters.
+    </div>
+
+    <div class="bsod-text" style="font-weight: bold;">
+        CRC_MISMATCH_IN_BUFFER_0xDEADBEEF
+    </div>
+
+    <div class="bsod-text">
+        Technical information:<br>
+        *** STOP: 0x000000D1 (0x0000000C, 0x00000002, 0x00000000, 0xF86B5A89)
+    </div>
+
+    <div class="bsod-text" style="word-break: break-all;">
+        Stack: 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000
+    </div>
+
+    <div style="text-align: center;">
+        <button class="bsod-btn" onclick="if(window.parent && window.parent !== window) { window.parent.postMessage('close-bsod', '*'); } else { window.close(); }">REBOOT</button>
+    </div>
+</div>
+
+<script>
+    // If loaded inside windowMaker6000, the button should close the popup
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('bsod-btn')) {
+            var popup = e.target.closest('.win-popup');
+            if (popup) {
+                popup.remove();
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
