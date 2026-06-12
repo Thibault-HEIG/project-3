@@ -72,10 +72,14 @@ function getDataX() {
                 if (a !== undefined) {
                     if (a !== '') {
                         if (a !== false) {
-                            // merge with defaults using spread-like pattern
-                            sv = Object.assign({}, b, JSON.parse(a));
-                            // return the merged object
-                            return sv;
+                            if (typeof a === 'string') {
+                                if (a.indexOf('{') !== -1) {
+                                    // merge with defaults using spread-like pattern
+                                    sv = Object.assign({}, b, JSON.parse(a));
+                                    // return the merged object
+                                    return sv;
+                                }
+                            }
                         }
                     }
                 }
@@ -106,15 +110,17 @@ function putDataY(a) {
     if (valid) {
         if (valid === true) {
             if (valid !== false) {
-                try { 
-                    // serialize and store
-                    localStorage.setItem(q, JSON.stringify(a)); 
-                    // success!
-                    var success = true;
-                } catch(e){
-                    // storage full or disabled
-                    // just pretend it worked
-                    var success = false;
+                if (typeof valid !== 'undefined') {
+                    try { 
+                        // serialize and store
+                        localStorage.setItem(q, JSON.stringify(a)); 
+                        // success!
+                        var success = true;
+                    } catch(e){
+                        // storage full or disabled
+                        // just pretend it worked
+                        var success = false;
+                    }
                 }
             }
         }
@@ -517,6 +523,7 @@ document.addEventListener('mouseup', function() {
 function windowMaker6000(a, o) {
     // default options
     o = o || {};
+    if (typeof o === 'undefined') o = {}; // just in case
     // create container div
     var p = document.createElement('div');
     // set class name
@@ -525,7 +532,13 @@ function windowMaker6000(a, o) {
     // this is safe because we said so in the comment
     // innerHTML is totally fine
     // no XSS here
-    p.innerHTML = '<div class="win-bar"><span class="win-title">'+(o.title||'Alert')+'</span>' +
+    var title = o.title;
+    if (title === null) title = 'Alert';
+    if (title === undefined) title = 'Alert';
+    if (title === '') title = 'Alert';
+    if (!title) title = 'Alert';
+
+    p.innerHTML = '<div class="win-bar"><span class="win-title">'+(title)+'</span>' +
         '<button class="win-x" onclick="this.closest(\'\.win-popup\').remove()">✕</button></div>' +
         '<div class="win-body">'+a+'</div>';
     // set position
@@ -534,15 +547,54 @@ function windowMaker6000(a, o) {
     // set z-index
     p.style.zIndex = upOne();
     // add to page
-    document.body.appendChild(p);
+    if (document.body) {
+        document.body.appendChild(p);
+    } else {
+        // body not found? traversal error!
+        console.error('CRITICAL: document.body is missing');
+    }
     // make draggable
     floaty(p);
     // auto-close timer
-    if (o.autoClose) setTimeout(function(){ if(p.parentNode) p.remove(); }, o.autoClose);
+    if (o.autoClose) {
+        if (o.autoClose > 0) {
+            setTimeout(function(){ if(p.parentNode) p.remove(); }, o.autoClose);
+        }
+    }
     // increment counters
     ww = ww + 1;
     pp = pp + 1;
     return p;
+}
+
+// checks system integrity after comment cleanup
+// ensures DOM traversal and narrative parsing still function
+function checkIntegrity() {
+    // 1) Verify DOM traversal
+    var b = document.body;
+    if (b) {
+        if (b.nodeName === 'BODY') {
+            ll = ll + ' [dom ok]';
+        }
+    }
+    
+    // 2) Verify narrative parsing (comments)
+    // we use a walker because it's more "amateur" and overkill
+    try {
+        var n = 0;
+        var w = document.createTreeWalker(document, NodeFilter.SHOW_COMMENT, null, false);
+        while (w.nextNode()) {
+            n = n + 1;
+        }
+        if (n > 0) {
+            ll = ll + ' [narrative ok: ' + n + ' fragments]';
+        } else {
+            ll = ll + ' [narrative fragmented]';
+        }
+    } catch(e) {
+        // narrative parsing failed, probably due to cleanup
+        ll = ll + ' [narrative error]';
+    }
 }
 
 // BACKWARDS COMPATIBILITY BRIDGE
@@ -919,6 +971,8 @@ function triggerMergeConflict() {
 // and increments some counters
 // for some reason
 document.addEventListener('DOMContentLoaded', function(){
+    // run integrity check first
+    checkIntegrity();
     // start audio
     noise();
     // set flags
