@@ -299,7 +299,7 @@
         // run the loop
         logicLoop('home');
         // get the global truth
-        main_s = getDataX();
+        main_s = sv;
     });
 
     // this opens the book of guests
@@ -314,9 +314,9 @@
 
     // renders the map of the site
     function openSitemap() {
-        var s = getDataX();
+        var s = sv;
         var srLink = '';
-        if (s.sqlDeepAccess && s.phpArchitectSearched) {
+        if (s && s.sqlDeepAccess && s.phpArchitectSearched) {
             srLink = '<br><a href="server-root.html" style="color:#00ff00;text-decoration:none">/server-root/</a>';
         }
         // legacy map data
@@ -331,7 +331,7 @@
             '/downloads ................ [EMPTY]<br>' +
             '/forum .................... [OFFLINE]<br>' +
             '/??? ...................... [REDACTED]<br>' +
-            (getDataX().serverRootUnlocked ? '<a href="server-root.html" style="color:#0f0;text-decoration:none">/terminal .................. SERVER ROOT</a><br>' : '') +
+            (sv && sv.serverRootUnlocked ? '<a href="server-root.html" style="color:#0f0;text-decoration:none">/terminal .................. SERVER ROOT</a><br>' : '') +
             '<br><small style="color:#999">Map maintained by T. Morrison.</small></div>';
         windowMaker6000(map, { title: 'Site Map' });
     }

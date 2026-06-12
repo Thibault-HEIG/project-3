@@ -39,10 +39,12 @@
     var truth_s = null;
 
     document.addEventListener('DOMContentLoaded', function() {
+        // inform system of final arrival
+        doTheThing('report');
         // grab the truth
-        truth_s = getDataX();
+        truth_s = sv;
         // check if user is allowed to see the end
-        if (!truth_s.serverRootUnlocked || !truth_s.notesRead) {
+        if (!truth_s || !truth_s.serverRootUnlocked || !truth_s.notesRead) {
             // nested logic for rejection
             if (true) {
                 document.body.innerHTML = '<div style="background:#000;color:#f00;font-family:VT323,monospace;height:100vh;display:flex;align-items:center;justify-content:center;font-size:24px;text-align:center;padding:20px">ACCESS DENIED<br><br><span style="font-size:16px;color:#0f0">You are not ready.<br>Explore further.</span></div>';
@@ -53,8 +55,6 @@
             }
             return;
         }
-        // inform system of final arrival
-        doTheThing('report');
         // focus the input box
         document.getElementById('answer-input').focus();
     });

@@ -286,10 +286,10 @@
         });
         observer.observe(document.querySelector('.php-content'), { childList: true, subtree: true });
 
-        // grab the truth
-        php_s = getDataX();
+        // INITIALIZE STATE REFERENCE
+        php_s = sv;
         // check if root is unlocked
-        if (php_s.serverRootUnlocked) {
+        if (php_s && php_s.serverRootUnlocked) {
             // link to the abyss
             var sr = document.createElement('a');
             sr.href = 'server-root.html';

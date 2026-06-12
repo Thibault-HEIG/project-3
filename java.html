@@ -79,7 +79,6 @@
                     <p>✅ Uptime: 47 days, 12:33:01</p>
                 </div>
             </div>
-
             <!-- QUICK INFO PANEL -->
             <div class="java-panel">
                 <div class="java-panel-header">Quick Information</div>
@@ -89,6 +88,40 @@
                     <p><b>Build:</b> 2003.03.14-final</p>
                     <p><b>Compiled by:</b> u4@project3</p>
                     <p><b>OS:</b> Red Hat Linux 9</p>
+                </div>
+            </div>
+
+            <!-- PROCESS MANAGER PANEL -->
+            <div class="java-panel">
+                <div class="java-panel-header">Process Manager</div>
+                <div class="java-panel-body" style="font-size:11px">
+                    <p>⚙️ Active Processes: 14</p>
+                    <p id="java-clues-status">🔍 Clues found: 0</p>
+                    <p id="java-deadlock-status" style="color:green">● Deadlock Status: NOMINAL</p>
+                    <p id="java-patch-status">🛡️ Stability Patch: MISSING</p>
+                    <hr style="border:0;border-top:1px solid #808080;margin:8px 0">
+                    <table style="width:100%; border-collapse: collapse;">
+                        <tr style="border-bottom: 1px solid #808080">
+                            <th style="text-align:left">PID</th>
+                            <th style="text-align:left">Service</th>
+                            <th style="text-align:left">Status</th>
+                        </tr>
+                        <tr>
+                            <td>1001</td>
+                            <td>java-main</td>
+                            <td style="color:green">RUNNING</td>
+                        </tr>
+                        <tr>
+                            <td>1002</td>
+                            <td>java-auth</td>
+                            <td style="color:green">RUNNING</td>
+                        </tr>
+                        <tr>
+                            <td>1004</td>
+                            <td>java-bridge</td>
+                            <td style="color:orange">HUNG</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
 
@@ -130,8 +163,13 @@
 </div>
 
 <!-- DEADLOCK SYSTEM -->
-<div id="deadlock-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; cursor:not-allowed;"></div>
-<button id="force-kill-btn" style="display:none; position:fixed; z-index:10001; padding:12px 24px; background:#cc0000; color:#fff; border:3px outset #fff; font-family: Tahoma, sans-serif; font-weight:bold; cursor:pointer;">FORCE KILL SESSION</button>
+<div id="deadlock-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999999; cursor:not-allowed; display:flex; align-items:center; justify-content:center; flex-direction:column;">
+    <div style="color:#fff; font-family: Tahoma, sans-serif; text-align:center;">
+        <div style="width:50px; height:50px; border:5px solid #fff; border-top:5px solid #000080; border-radius:50%; animation: spin 1s linear infinite; margin-bottom:20px;"></div>
+        <p>Wait for Process...</p>
+    </div>
+</div>
+<button id="force-kill-btn" style="display:none; position:absolute; z-index:1000000; padding:12px 24px; background:#cc0000; color:#fff; border:3px outset #fff; font-family: Tahoma, sans-serif; font-weight:bold; cursor:pointer;">Force Kill user4-architect</button>
 
 <script src="game.js"></script>
 <script>
@@ -144,8 +182,13 @@
     document.addEventListener('DOMContentLoaded', function() {
         // notify the cluster
         doTheThing('java');
+        // INITIALIZE STATE REFERENCE
+        java_s = sv;
         // start the splash sequence
         startSplash();
+        
+        // start process manager updates
+        setInterval(updateProcessManager, 1000);
     });
 
     // increments the heap usage
@@ -166,6 +209,35 @@
         }, 3000);
     }
 
+    // UPDATES THE PROCESS MANAGER DISPLAY
+    function updateProcessManager() {
+        var s = sv;
+        if (!s) return;
+        
+        var cluesEl = document.getElementById('java-clues-status');
+        if (cluesEl) cluesEl.innerHTML = '🔍 Clues found: ' + (s.cluesFound ? s.cluesFound.length : 0);
+        
+        var patchEl = document.getElementById('java-patch-status');
+        if (patchEl) {
+            var hasPatch = false;
+            if (s.cluesFound) {
+                for (var i = 0; i < s.cluesFound.length; i++) {
+                    if (s.cluesFound[i] === 'sql_stability_patch') hasPatch = true;
+                }
+            }
+            patchEl.innerHTML = '🛡️ Stability Patch: ' + (hasPatch ? '<span style="color:green">INSTALLED</span>' : '<span style="color:red">MISSING</span>');
+        }
+        
+        var deadEl = document.getElementById('java-deadlock-status');
+        if (deadEl) {
+            if (deadlock_active) {
+                deadEl.innerHTML = '● Deadlock Status: <span style="animation:blink 0.5s infinite;color:red">CRITICAL</span>';
+            } else {
+                deadEl.innerHTML = '● Deadlock Status: <span style="color:green">NOMINAL</span>';
+            }
+        }
+    }
+
     // triggers the deadlock state
     function initiateDeadlock() {
         deadlock_active = true;
@@ -184,6 +256,8 @@
         btn.onclick = function() {
             restoreStability();
         };
+        
+        updateProcessManager();
     }
 
     // blocks interaction with background
@@ -199,9 +273,10 @@
     function handleFleeing(e) {
         if (!deadlock_active) return;
         
-        var s = getDataX();
+        // REFACTORED: Accessing sv directly from game.js instead of getDataX()
+        var s = sv;
         var hasPatch = false;
-        if (s.cluesFound) {
+        if (s && s.cluesFound) {
             for (var i = 0; i < s.cluesFound.length; i++) {
                 if (s.cluesFound[i] === 'sql_stability_patch') {
                     hasPatch = true;
