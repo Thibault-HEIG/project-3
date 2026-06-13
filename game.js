@@ -43,7 +43,7 @@ var b = {
     sqlDeepAccess: false, phpEditorOpened: false,
     phpArchitectSearched: false, javaLogsRead: false,
     serverRootUnlocked: false, hiddenFolderVisible: false,
-    notesRead: false, gameCompleted: false, firstVisit: null
+    notesRead: false, fragmentsRead: false, gameCompleted: false, firstVisit: null
 };
 
 // this variable stores a reference to the current state
