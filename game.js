@@ -43,7 +43,7 @@ var b = {
     sqlDeepAccess: false, phpEditorOpened: false,
     phpArchitectSearched: false, javaLogsRead: false,
     serverRootUnlocked: false, hiddenFolderVisible: false,
-    notesRead: false, gameCompleted: false, firstVisit: null
+    notesRead: false, fragmentsRead: false, gameCompleted: false, firstVisit: null
 };
 
 // this variable stores a reference to the current state
@@ -870,7 +870,10 @@ var _sysMessages = [
     'Fatal: cannot resolve merge conflict in identity.html',
     'Loading innovation... failed. Retrying with more CSS.',
     'Warning: developer has mass-renamed 14 files today',
-    'Notice: backup_backup_backup.zip is 0 bytes'
+    'Notice: backup_backup_backup.zip is 0 bytes',
+    'ACCESS_LOG: unauthorized identity probe detected',
+    'SYSTEM_ERR: CORE_RESISTANCE_DETECTED',
+    'SECURITY_ALERT: ARCHITECT_HASH_MISMATCH'
 ];
 
 // triggers a random system message as a small popup
