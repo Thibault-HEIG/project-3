@@ -276,15 +276,32 @@ function heavyDownload(title, size) {
     var totalSize = parseFloat(gb) * 1024; // in MB
     var startTime = Date.now();
     var canFinish = Math.random() < 0.3;
+
+    // Check if fragment already found to force failure (Rule 1)
+    var _st = getDataX();
+    if (_st.cluesFound.indexOf('heavy_download_fragment') !== -1) {
+        canFinish = false;
+    }
     
     var iv = setInterval(function() {
-        if (!p.parentNode) { clearInterval(iv); return; }
-        pct += Math.random() * 15;
+        if (!p.parentNode) { clearInterval(iv); return; } // Rule 4
+        
         var elapsed = (Date.now() - startTime) / 1000;
-        if (elapsed > 15) {
+
+        // Rule 3: 20 second timeout for forced failure
+        if (!canFinish && elapsed >= 20) {
+            clearInterval(iv);
+            p.remove();
+            // Refactored to dynamically load bsod.html
+            windowMaker6000('<iframe src="bsod.html" style="width:500px;height:400px;border:none;overflow:hidden"></iframe>', { title: '🛑 FATAL EXCEPTION', autoClose: 0 });
+            return;
+        }
+
+        // Rule 2: Reach exactly 99% at the 15-second mark
+        if (elapsed < 15) {
+            pct = (elapsed / 15) * 99;
+        } else {
             pct = canFinish ? 100 : 99;
-        } else if (pct > 99) {
-            pct = 99;
         }
         bar.style.width = pct + '%';
         
@@ -315,6 +332,18 @@ function heavyDownload(title, size) {
     }, 1000);
 }
 
+// Rule 3: 20 second timeout for forced failure
+function triggerBSOD() {
+    windowMaker6000('<div class="bsod-body">' +
+        '<div class="bsod-text">A problem has been detected and windows has been shut down to prevent damage to your computer.</div>' +
+        '<div class="bsod-text">ERROR_DOWNLOAD_TIMEOUT_EXCEEDED_BY_USER4</div>' +
+        '<div class="bsod-text">SYSTEM ERROR: Stack overflow at 0x8840A110.<br>The download has been aborted to protect system integrity.</div>' +
+        '<div class="bsod-text" style="font-weight:bold">CRC_MISMATCH_IN_BUFFER_0xDEADBEEF</div>' +
+        '<div class="bsod-text">Fragment collision detected in memory buffer.</div>' +
+        '<div class="bsod-text" style="word-break:break-all">Stack: 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000 0x0045F2 0x000000 0xDEADBEEF 0x000001 0x000000</div>' +
+        '<div style="text-align:center"><button class="bsod-btn" onclick="this.closest(\'.win-popup\').remove()">REBOOT</button></div>' +
+        '</div>', { title: '🛑 FATAL EXCEPTION', autoClose: 0 });
+}
 // TASK: Engine Restoration - spawnNestingDolls
 function spawnNestingDolls(callback) {
     var dolls = 5;
@@ -1011,6 +1040,19 @@ document.addEventListener('DOMContentLoaded', function(){
     if (s.sqlDeepAccess && s.phpArchitectSearched && !sessionStorage.getItem('p3_merge')) {
         setTimeout(triggerMergeConflict, 2000);
     }
+
+    // message listener for BSOD reboot
+    window.addEventListener('message', function(e) {
+        if (e.data === 'close-bsod') {
+            var all = document.querySelectorAll('.win-popup');
+            for (var i = 0; i < all.length; i++) {
+                var f = all[i].querySelector('iframe');
+                if (f && f.src.indexOf('bsod.html') !== -1) {
+                    all[i].remove();
+                }
+            }
+        }
+    });
 });
 
 // === DEAD CODE CEMETERY ===

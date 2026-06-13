@@ -652,6 +652,59 @@ body.quiet-mode .overlap-chaos { display: none !important; }
     cursor: pointer; font-size: 9px !important;
     border: 1px solid #0f0;
 }
-.broken-hover-clue:hover {
-    background: #0a3a0a; text-decoration: underline;
+/* =======================================
+   BSOD SYSTEM ERROR
+   ======================================= */
+.bsod-body {
+    background: #0000AA !important;
+    color: #FFFFFF !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    padding: 20px !important;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.win-body > .bsod-body {
+    margin: -10px; /* Offset default win-body padding */
+    min-height: 250px;
+}
+.bsod-container {
+    max-width: 800px;
+    width: 95%;
+    margin: 0 auto;
+    border: 1px solid #fff;
+    padding: 20px;
+    background: #0000AA;
+    box-shadow: 10px 10px 0px rgba(0,0,0,0.5);
+}
+.bsod-btn {
+    background: #FFFFFF !important;
+    color: #0000AA !important;
+    border: 2px outset #fff !important;
+    padding: 8px 20px !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    margin-top: 20px;
+    text-transform: uppercase;
+}
+.bsod-btn:hover {
+    background: #CCCCCC !important;
+}
+.bsod-btn:active {
+    border-style: inset !important;
+}
+.bsod-text {
+    margin-bottom: 15px;
+    line-height: 1.4;
+    font-size: 14px;
+}
+.bsod-header {
+    background: #fff;
+    color: #0000AA;
+    padding: 2px 10px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
 }
