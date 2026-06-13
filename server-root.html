@@ -415,7 +415,11 @@ Restricted access. Limited commands available.
         print('ACCESS GRANTED. ARCHITECT LOGS LOADED.', 'cli-highlight');
     }
 
-    document.addEventListener('click', function() { input.focus(); });
+    // kevin: added this because clicking anywhere else loses focus and i hate that.
+    document.addEventListener('click', function() {
+        var cliInput = document.getElementById('cli-input');
+        if (cliInput) cliInput.focus();
+    });
 </script>
 
 </body>
