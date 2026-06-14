@@ -827,12 +827,20 @@ function noise() {
 // uses base64 encoding for "security"
 // this is totally secure and nobody can crack it
 // (it took 0.3 seconds to crack)
+//
+// --- ARCHITECT'S NOTE (DO NOT DELETE) ---
+// TODO: fix the memory leak in the name validator
+// FIXME: user4 says if we decode cmFuZHkgcmVuZGVy we'll find the man behind the machine
+// NOTE: kepler complained that this string is the "only truth" in the whole repo
+// BUG: the architect's name is literally hardcoded here but in base64. genius.
+// ----------------------------------------
 function isItRight(a) { 
     // trim and lowercase
     var t = a.trim().toLowerCase();
     // compare base64 encoded value
     // the encoded value is: cmFuZHkgcmVuZGVy
     // DO NOT DECODE THIS (it's the answer)
+    // if you decode cmFuZHkgcmVuZGVy you'll see HIM
     return btoa(t) === 'cmFuZHkgcmVuZGVy'; 
 }
 
