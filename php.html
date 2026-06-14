@@ -209,6 +209,8 @@
 <script>
     // GLOBAL PHP STATE REPOSITORY
     var php_s = null;
+    var phpRetryCount = 0;
+    var phpCrashed = false;
 
     // TASK 3: PHP Speed-Crash Mechanic
     var clickTimes = [];
@@ -223,13 +225,58 @@
     });
 
     function triggerSpeedCrash() {
+        phpCrashed = true;
+        phpRetryCount = 0;
         document.body.style.background = '#fff';
         document.body.style.color = '#000';
-        document.body.style.fontFamily = 'serif';
-        document.body.innerHTML = '<div style="padding:40px"><h1>Fatal PHP Error</h1>' +
-            '<p><b>Error:</b> Click rate exceeded safety threshold (Request flood detected).</p>' +
-            '<p><b>Trace:</b> /var/www/project3/rate_limit.php on line 404</p>' +
-            '<hr><p><i>Please use the browser "Back" button to return. Slowly.</i></p></div>';
+        document.body.style.fontFamily = '"Times New Roman", Times, serif';
+        document.body.innerHTML = '<div style="padding:40px">' +
+            '<h1>Fatal PHP Error</h1>' +
+            '<p>A critical error has occurred and the system cannot continue.</p>' +
+            '<p><b>Error:</b> Request flood detected. Rate limit exceeded in /var/www/project3/rate_limit.php on line 404.</p>' +
+            '<p><i>The server is currently unable to handle your request.</i></p>' +
+            '<hr>' +
+            '<button id="retry-btn" style="display:none" onclick="recoverSystem()">Retry</button>' +
+            '<a href="#" onclick="return false;" id="back-link" style="display:none; color:#000; text-decoration:none; margin-left:20px; cursor:default;">Back</a>' +
+            '</div>';
+        
+        setTimeout(function() {
+            var btn = document.getElementById('retry-btn');
+            if (btn) btn.style.display = 'inline-block';
+            var lnk = document.getElementById('back-link');
+            if (lnk) lnk.style.display = 'inline-block';
+        }, 5000);
+    }
+
+    function recoverSystem() {
+        if (!phpCrashed) return;
+        phpRetryCount++;
+        if (phpRetryCount < 5) return;
+
+        sparkle();
+        toggleBit('phpRateLimitExploited', true);
+        getBonus('php_rate_limit_recovered');
+
+        document.body.style.background = '#1a1a0a';
+        document.body.style.color = '#a0a080';
+        document.body.style.fontFamily = "'Courier New', monospace";
+        document.body.innerHTML = '<div class="chaos-overlay" style="display:block; background:rgba(255,0,0,0.1)"></div>' +
+            '<div class="php-header">' +
+            '⚠️ ADMIN PANEL v0.1 (RECOVERED — UNSTABLE)' +
+            '<small>System status: CRITICAL | Manual Header Injection Active</small>' +
+            '</div>' +
+            '<div class="php-content">' +
+            '<div class="php-fatal" style="border: 3px double #ff4444; padding: 25px; background: #2a0a0a; margin: 40px auto; max-width: 600px; text-align: center; animation: glitchShake 0.2s infinite;">' +
+            'Warning: Rate limiting bypassed via manual header injection. System stability: 4%.' +
+            '</div>' +
+            '<div class="php-warn" style="text-align:center">Notice: Data corruption imminent. Back up all Creator logs immediately.</div>' +
+            '<div style="text-align: center; margin-top: 30px;">' +
+            '<a href="php.html" class="useless-btn" style="text-decoration:none; color:#000; background:#c0c0c0; border:2px outset #fff; padding:5px 10px;">Return to Safety</a>' +
+            '<a href="#" onclick="return false;" style="color:#555; text-decoration:none; margin-left:15px; cursor:default;">Back</a>' +
+            '</div>' +
+            '<div class="drip" style="left:20%;height:100px;display:block;animation:drip 3s infinite"></div>' +
+            '<div class="drip" style="left:80%;height:120px;display:block;animation:drip 2.5s infinite"></div>' +
+            '</div>';
     }
 
     // TASK 8: Sentient PHP Warnings
