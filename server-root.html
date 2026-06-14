@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div id="directory-view" style="display:none">
+    <div id="directory-view">
 
         <!-- TERMINAL WINDOW -->
         <div class="win-popup" id="terminal-window" style="position: relative; max-width: 100%; min-width: 600px; margin: 0 auto; box-shadow: 4px 4px 0 #000;">
@@ -43,7 +43,7 @@
             </div>
             <div class="win-body" style="padding: 0; background: #000; position: relative; overflow: hidden;">
                 <div class="cli-terminal" id="cli-terminal" style="border: none; height: 450px; overflow-y: auto; padding-top: 5px;">
-                    <div class="cli-output" id="cli-output">Project-3 Server Root Shell v0.4
+                    <div class="cli-output cli-terminal" id="cli-output">Project-3 Server Root Shell v0.4
 Restricted access. Limited commands available.
 
 </div>
@@ -53,9 +53,9 @@ Restricted access. Limited commands available.
                     </div>
 
                     <!-- FINAL CLUE PREPARATION -->
-                    <div id="final-clue-box" style="display:none; margin: 20px 10px; border: 2px double #0f0; padding: 15px; background: #001100;">
+                    <div id="final-clue-box" class="cli-terminal" style="display:none; margin: 20px 10px; border: 2px double #0f0; padding: 15px; background: #001100;">
                         <div style="color: #ff0; font-weight: bold; text-align: center; margin-bottom: 10px; text-decoration: underline;">*** ARCHITECT LOG DECRYPTED ***</div>
-                        <div id="final-clue-content" style="color: #0f0; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.4;"></div>
+                        <div id="final-clue-content" style="color: #0f0; font-family: 'VT323', monospace; font-size: 14px; line-height: 1.4;"></div>
                     </div>
                 </div>
                 <div class="scanline" style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: rgba(0, 255, 0, 0.03); pointer-events: none; animation: scanline 8s linear infinite;"></div>
@@ -158,7 +158,7 @@ Restricted access. Limited commands available.
 
     function print(text, cls) {
         var div = document.createElement('div');
-        div.className = cls || '';
+        div.className = (cls || '') + ' cli-terminal';
         div.textContent = text;
         output.appendChild(div);
         var term = document.getElementById('cli-terminal');
@@ -167,7 +167,7 @@ Restricted access. Limited commands available.
 
     function printHTML(html, cls) {
         var div = document.createElement('div');
-        div.className = cls || '';
+        div.className = (cls || '') + ' cli-terminal';
         div.innerHTML = html;
         output.appendChild(div);
         var term = document.getElementById('cli-terminal');
@@ -203,9 +203,16 @@ Restricted access. Limited commands available.
     });
 
     function handleCmd(line) {
+        var _s = getDataX();
         var parts = line.split(/\s+/);
         var cmd = parts[0].toLowerCase();
         var args = parts.slice(1);
+
+        // block restricted commands if not unlocked
+        if (['ls', 'cat', 'cd', 'pwd'].indexOf(cmd) !== -1 && !_s.serverRootUnlocked) {
+            print('PERMISSION DENIED: Elevated privileges required.', 'cli-error');
+            return;
+        }
 
         if (cmd === 'ls') {
             var dir = getDir(currentPath);
@@ -246,10 +253,16 @@ Restricted access. Limited commands available.
         }
         else if (cmd === 'login') {
             if (args[0] === 'admin' && args[1] === 'flexbox') {
-                print('Authentication successful.', 'cli-info');
-                print('Scanning session buffer for elevated tokens...', 'cli-info');
+                print('Authentication successful!', 'cli-info');
+                print('Access granted to /server-root/.', 'cli-info');
+                toggleBit('serverRootUnlocked', true);
+                if (window.sparkle) window.sparkle();
                 setTimeout(function() {
-                    document.getElementById('master-credentials-modal').style.display = 'block';
+                    var modal = document.getElementById('master-credentials-modal');
+                    var bodyContent = modal.querySelector('.win-body').innerHTML;
+                    // Replace static display='none' with dynamic removal for windowMaker6000 compatibility
+                    bodyContent = bodyContent.replace(/document.getElementById\('master-credentials-modal'\).style.display='none'/g, 'this.closest(".win-popup").remove()');
+                    windowMaker6000(bodyContent, { title: 'System Alert', width: 350 });
                 }, 1000);
             } else {
                 print('Login failed: Invalid credentials.', 'cli-error');
@@ -402,21 +415,19 @@ Restricted access. Limited commands available.
         logicLoop('server-root');
 
         var s = getDataX();
-        if (s.serverRootUnlocked) {
-            document.getElementById('access-denied').style.display = 'none';
-            document.getElementById('directory-view').style.display = 'block';
-            if (input) input.focus();
-        } else {
-            document.getElementById('access-denied').style.display = 'block';
-            document.getElementById('directory-view').style.display = 'none';
-        }
+        // Task 1: Always visible
+        document.getElementById('directory-view').style.display = 'block';
+        document.getElementById('access-denied').style.display = 'none';
 
-        var err403 = document.getElementById('error-403');
-        if (err403) {
-            err403.onclick = function() {
-                showBypassLogin();
-            };
+        if (!s.serverRootUnlocked) {
+            // Task 3: Boot sequence additions
+            print('-----------------------------------------', 'cli-highlight');
+            print('LOCKED - AUTHORIZATION REQUIRED', 'cli-error');
+            print('-----------------------------------------', 'cli-highlight');
+            print('Type "login" to authenticate', 'cli-info');
         }
+        
+        if (input) input.focus();
     });
 
     function triggerFinalClue() {
@@ -451,6 +462,13 @@ Restricted access. Limited commands available.
     }
 
     // kevin: added this because clicking anywhere else loses focus and i hate that.
+    document.getElementById('terminal-window').addEventListener('click', function(e) {
+        var cliInput = document.getElementById('cli-input');
+        if (cliInput) cliInput.focus();
+        e.stopPropagation();
+    });
+    
+    // also keep the global focus helper but maybe more specific
     document.addEventListener('click', function() {
         var cliInput = document.getElementById('cli-input');
         if (cliInput) cliInput.focus();

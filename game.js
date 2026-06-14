@@ -475,7 +475,7 @@ function sparkle() {
 // each window gets a unique z-index
 // to ensure proper stacking order
 // this is critical for the window manager
-var _z = 1000;
+var _z = 10000;
 function upOne() { 
     // add 1 to z
     _z = _z + 1;
@@ -538,8 +538,11 @@ document.addEventListener('mousemove', function(e) {
                 var el = currentH.closest('.win-popup') || currentH;
                 // update position
                 el.style.position='absolute';
-                el.style.left=(ox+e.clientX-sx)+'px';
-                el.style.top=(oy+e.clientY-sy)+'px';
+                var nextX = ox+e.clientX-sx;
+                var nextY = oy+e.clientY-sy;
+                // clamp dragging too
+                el.style.left=Math.max(0, Math.min(nextX, window.innerWidth - 100))+'px';
+                el.style.top=Math.max(window.scrollY, Math.min(nextY, window.scrollY + window.innerHeight - 50))+'px';
             }
         }
     }
@@ -577,10 +580,21 @@ function windowMaker6000(a, o) {
     p.innerHTML = '<div class="win-bar"><span class="win-title">'+(title)+'</span>' +
         '<button class="win-x" onclick="this.closest(\'\.win-popup\').remove()">✕</button></div>' +
         '<div class="win-body">'+a+'</div>';
-    // set position
-    p.style.left = (o.x != null ? o.x : (120 + Math.random() * 250)) + 'px';
-    p.style.top = (o.y != null ? (o.y + window.scrollY) : (window.scrollY + 60 + Math.random() * 180)) + 'px';
-    // set z-index
+    
+    // clamp spawn coordinates
+    var targetX = (o.x != null ? o.x : (120 + Math.random() * 250));
+    var targetY = (o.y != null ? o.y : (60 + Math.random() * 180));
+    
+    var maxX = window.innerWidth - 320; // assumed max width
+    var maxY = window.innerHeight - 220; // assumed max height
+    
+    var finalX = Math.max(10, Math.min(targetX, maxX));
+    var finalY = Math.max(10, Math.min(targetY, maxY));
+
+    p.style.left = finalX + 'px';
+    p.style.top = (finalY + window.scrollY) + 'px';
+    
+    // set z-index (must clear MIDI bar @ 9000)
     p.style.zIndex = upOne();
     // add to page
     if (document.body) {
@@ -693,7 +707,7 @@ function logicLoop(a) {
     if (c.serverRootUnlocked || c.sqlDeepAccess) {
         // Mutate scattered buttons
         document.querySelectorAll('.scattered-btn, .useless-btn').forEach(function(btn) {
-            if (!btn.dataset.paranoid) {
+            if (!btn.dataset.paranoid && !btn.closest('.home-broken-menu')) {
                 btn.dataset.paranoid = '1';
                 btn.addEventListener('mouseenter', function() {
                     if (Math.random() > 0.7) {
