@@ -1157,7 +1157,13 @@ function showTerminalLock() {
         if (u === 'admin' && p === 'flexbox') {
             serverRootUnlocked = true;
             toggleBit('serverRootUnlocked', true);
-            win.remove();
+            
+            // Remove all active modal instances
+            var modals = document.querySelectorAll('.win-popup');
+            for (var i = 0; i < modals.length; i++) {
+                modals[i].remove();
+            }
+            
             if (typeof print === 'function') {
                 print('--- AUTHENTICATION SUCCESSFUL ---', 'cli-highlight');
                 print('System access granted. Terminal unlocked.', 'cli-info');
@@ -1173,10 +1179,13 @@ function handleCmd(line) {
     // TASK: Entry Point Lock
     var s = getDataX();
     if (!s.serverRootUnlocked) {
-        if (typeof print === 'function') {
-            print('CRITICAL: SYSTEM LOCKED', 'cli-error');
+        // Only spawn lock if not already visible
+        if (!document.querySelector('.vintage-login-window')) {
+            if (typeof print === 'function') {
+                print('CRITICAL: SYSTEM LOCKED', 'cli-error');
+            }
+            showTerminalLock();
         }
-        showTerminalLock();
         return;
     }
 

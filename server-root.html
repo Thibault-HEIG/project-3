@@ -72,8 +72,8 @@ Restricted access. Limited commands available.
             STATUS: READY_FOR_DECRYPTION
         </div>
         <div style="text-align: center; display: flex; gap: 5px; justify-content: center;">
-            <button class="java-btn" onclick="document.getElementById('master-credentials-modal').style.display='none'; triggerFinalClue();" style="flex: 1;">DECRYPT</button>
-            <button class="java-btn" onclick="document.getElementById('master-credentials-modal').style.display='none'" style="flex: 1;">ABORT</button>
+            <button class="java-btn" onclick="var modals=document.querySelectorAll('.win-popup'); for(var i=0;i<modals.length;i++) modals[i].remove(); triggerFinalClue();" style="flex: 1;">DECRYPT</button>
+            <button class="java-btn" onclick="this.closest('.win-popup').remove()" style="flex: 1;">ABORT</button>
         </div>
     </div>
 </div>
@@ -163,6 +163,15 @@ Restricted access. Limited commands available.
             }
             input.value = '';
             handleCmd(cmdLine);
+            
+            // Proactively check for modal triggers (like 'login' command)
+            setTimeout(function() {
+                var m = document.getElementById('master-credentials-modal');
+                if (m && m.style.display === 'block') {
+                    input.disabled = true;
+                    input.blur();
+                }
+            }, 1100);
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
             if (historyIdx > 0) {
@@ -180,6 +189,17 @@ Restricted access. Limited commands available.
             }
         }
     });
+
+    // Fix stacking and terminal focus management
+    var _oldShowTerminalLock = window.showTerminalLock;
+    window.showTerminalLock = function() {
+        if (document.querySelector('.vintage-login-window')) return;
+        if (input) {
+            input.disabled = true;
+            input.blur();
+        }
+        if (_oldShowTerminalLock) _oldShowTerminalLock();
+    };
 
     document.addEventListener('DOMContentLoaded', function() {
         doTheThing('server-root');
@@ -227,9 +247,24 @@ Restricted access. Limited commands available.
     }
 
     // kevin: added this because clicking anywhere else loses focus and i hate that.
+    // Modified to prevent re-focusing while system is locked or modals are open.
     document.addEventListener('click', function() {
         var cliInput = document.getElementById('cli-input');
-        if (cliInput) cliInput.focus();
+        if (!cliInput) return;
+
+        var s = typeof getDataX === 'function' ? getDataX() : { serverRootUnlocked: true };
+        var isLocked = !s.serverRootUnlocked;
+        var modalOpen = document.querySelector('.vintage-login-window') || 
+                        (document.getElementById('master-credentials-modal') && 
+                         document.getElementById('master-credentials-modal').style.display === 'block');
+
+        if (isLocked || modalOpen) {
+            cliInput.disabled = true;
+            cliInput.blur();
+        } else {
+            cliInput.disabled = false;
+            cliInput.focus();
+        }
     });
 </script>
 
