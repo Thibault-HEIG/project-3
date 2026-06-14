@@ -158,7 +158,7 @@ Restricted access. Limited commands available.
 
     function print(text, cls) {
         var div = document.createElement('div');
-        div.className = (cls || '') + ' cli-terminal';
+        div.className = (cls || '');
         div.textContent = text;
         output.appendChild(div);
         var term = document.getElementById('cli-terminal');
@@ -167,7 +167,7 @@ Restricted access. Limited commands available.
 
     function printHTML(html, cls) {
         var div = document.createElement('div');
-        div.className = (cls || '') + ' cli-terminal';
+        div.className = (cls || '');
         div.innerHTML = html;
         output.appendChild(div);
         var term = document.getElementById('cli-terminal');
@@ -258,11 +258,7 @@ Restricted access. Limited commands available.
                 toggleBit('serverRootUnlocked', true);
                 if (window.sparkle) window.sparkle();
                 setTimeout(function() {
-                    var modal = document.getElementById('master-credentials-modal');
-                    var bodyContent = modal.querySelector('.win-body').innerHTML;
-                    // Replace static display='none' with dynamic removal for windowMaker6000 compatibility
-                    bodyContent = bodyContent.replace(/document.getElementById\('master-credentials-modal'\).style.display='none'/g, 'this.closest(".win-popup").remove()');
-                    windowMaker6000(bodyContent, { title: 'System Alert', width: 350 });
+                    location.reload();
                 }, 1000);
             } else {
                 print('Login failed: Invalid credentials.', 'cli-error');

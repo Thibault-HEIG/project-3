@@ -540,8 +540,8 @@ body.server-root {
 
 /* CLI Terminal */
 .cli-terminal {
-    background: #050505; border: 1px solid #0a3a0a;
-    padding: 15px; font-size: 15px;
+    font-family: 'VT323';
+    font-size: 15px;
     line-height: 1.5; white-space: pre-wrap; word-wrap: break-word;
 }
 #cli-terminal {
