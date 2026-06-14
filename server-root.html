@@ -30,7 +30,7 @@
         <div id="sr-login-box" style="border: 2px solid #f00; background: #000; padding: 20px; margin: 20px auto; width: 300px; color: #f00; text-align: left; font-family: monospace;">
             <label for="sr-pass" style="display: block; margin-bottom: 5px;">PASSWORD:</label>
             <input type="password" id="sr-pass" style="background: #000; color: #f00; border: 1px solid #f00; width: 100%; font-family: monospace; margin-bottom: 10px; outline: none;">
-            <button id="sr-enter" style="background: #f00; color: #000; border: none; font-family: monospace; cursor: pointer; width: 100%; font-weight: bold; padding: 5px;">ENTER</button>
+            <button id="sr-enter" onclick="verifySR()" style="background: #f00; color: #000; border: none; font-family: monospace; cursor: pointer; width: 100%; font-weight: bold; padding: 5px;">ENTER</button>
         </div>
 
         <p style="margin-top:30px"><a href="index.html">Return to HOME</a></p>
@@ -209,7 +209,7 @@ Restricted access. Limited commands available.
         var input = document.getElementById('sr-pass');
         if (!input) return;
         var val = input.value.trim().toLowerCase();
-        if (typeof isItRight === 'function' ? isItRight(val) : (btoa(val) === 'cmFuZHkgcmVuZGVy')) {
+        if (typeof isItRight === 'function' ? isItRight(val) : (btoa(val) === 'ZmxleGJveA==')) {
             toggleBit('serverRootUnlocked', true);
             // Show terminal credentials (moved from game.js)
             windowMaker6000(
@@ -410,6 +410,19 @@ Restricted access. Limited commands available.
     document.addEventListener('DOMContentLoaded', function() {
         doTheThing('server-root');
         logicLoop('server-root');
+
+        // backend: add enter key support for password field
+        var srPass = document.getElementById('sr-pass');
+        if (srPass) {
+            srPass.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') verifySR();
+            });
+        }
+        var srBtn = document.getElementById('sr-enter');
+        if (srBtn) {
+            srBtn.onclick = verifySR;
+        }
+
         var s = getDataX();
         if (s && !s.serverRootUnlocked) {
             document.getElementById('access-denied').style.display = 'block';
