@@ -38,9 +38,9 @@
     <small>Maintained by T. Morrison | Server: Apache/1.3.27 (Unix) PHP/4.3.1</small>
 </div>
 
-<div class="php-content">
+<div id="reboot-msg" style="display:none; background:#aa0000; color:#fff; padding:20px; border:2px solid #fff; box-shadow:5px 5px 0px #000; font-family:monospace; margin:20px; text-align:center; position:relative; z-index:9999;"></div>
 
-    <div id="reboot-msg" style="display:none; color:#ff0000; font-weight:bold; margin:10px 0;"></div>
+<div class="php-content">
 
     <div class="fake-section overlap-chaos" style="background:#2a1f10;border:2px solid #ff6600;padding:15px;margin-bottom:20px">
         <h2 style="color:#ff6600">IDENTITY PROTECTION MODULE</h2>
@@ -244,10 +244,22 @@
         var btns = document.querySelectorAll('button');
         btns.forEach(function(b) { b.disabled = true; });
         
-        var msg = document.createElement('div');
-        msg.id = 'reboot-msg';
-        msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#aa0000;color:#fff;padding:20px;z-index:999999;font-family:monospace;border:2px solid #fff;box-shadow:5px 5px 0px #000;';
-        document.body.appendChild(msg);
+        // target existing element to prevent duplicate ID creation
+        var msg = document.getElementById('reboot-msg');
+        if (!msg) {
+            msg = document.createElement('div');
+            msg.id = 'reboot-msg';
+            document.body.appendChild(msg);
+        }
+        msg.style.cssText = 'display:block;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#aa0000;color:#fff;padding:20px;z-index:999999;font-family:monospace;border:2px solid #fff;box-shadow:5px 5px 0px #000;';
+        
+        // lock system
+        isSystemReady = false;
+
+        // persist crash state
+        php_s = getDataX();
+        php_s.isCrashed = true;
+        putDataY(php_s);
         
         var cd = 10;
         msg.textContent = 'Rebooting Apache... [' + cd + ']s';
@@ -258,11 +270,28 @@
                 msg.textContent = 'Rebooting Apache... [' + cd + ']s';
             } else {
                 clearInterval(iv);
-                msg.remove();
+                msg.style.display = 'none';
                 if (content) content.classList.remove('server-rebooting');
-                btns.forEach(function(b) { b.disabled = false; });
+                
+                // re-fetch state to ensure up-to-date check
+                php_s = getDataX();
+
+                // handle editor-btn correctly during re-enabling
+                btns.forEach(function(b) { 
+                    if (b.id === 'editor-btn') {
+                        if (!php_s.phpEditorOpened) b.disabled = false;
+                    } else {
+                        b.disabled = false; 
+                    }
+                });
+                
                 phpSpeedState.actionCounter = 0;
                 phpSpeedState.lastActionTime = 0;
+
+                // unlock and clear persistence
+                isSystemReady = true;
+                php_s.isCrashed = false;
+                putDataY(php_s);
             }
         }, 1000);
     }
@@ -324,17 +353,23 @@
 
         // INITIALIZE STATE REFERENCE
         php_s = getDataX();
-        // check if root is unlocked
-        if (php_s && php_s.serverRootUnlocked) {
-            // link to the abyss
-            var sr = document.createElement('a');
-            sr.href = 'server-root.html';
-            sr.className = 'scattered-btn scattered-btn-sr';
-            sr.textContent = '/root/';
-            sr.style.cssText = 'position:fixed;bottom:35px;right:20px;';
-            document.body.appendChild(sr);
+
+        // PERSISTENCE CHECK
+        if (php_s && php_s.isCrashed) {
+            triggerFatalCrash();
+        } else {
+            // check if root is unlocked
+            if (php_s && php_s.serverRootUnlocked) {
+                // link to the abyss
+                var sr = document.createElement('a');
+                sr.href = 'server-root.html';
+                sr.className = 'scattered-btn scattered-btn-sr';
+                sr.textContent = '/root/';
+                sr.style.cssText = 'position:fixed;bottom:35px;right:20px;';
+                document.body.appendChild(sr);
+            }
+            isSystemReady = true;
         }
-        isSystemReady = true;
     });
 
     // searches for a user in the imaginary database
