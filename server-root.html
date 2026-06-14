@@ -66,35 +66,14 @@ Restricted access. Limited commands available.
 
 </div>
 
-<!-- MASTER CREDENTIALS MODAL -->
-<div class="win-popup" id="master-credentials-modal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; width: 350px;">
-    <div class="win-bar">
-        <span class="win-title">System Alert</span>
-        <div class="win-x" onclick="document.getElementById('master-credentials-modal').style.display='none'">X</div>
-    </div>
-    <div class="win-body" style="background: #c0c0c0; color: #000;">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-            <img src="img/spiderman-png.png" alt="System Icon" style="width: 32px; height: 32px; filter: grayscale(100%);">
-            <strong>Master Credentials Found!</strong>
-        </div>
-        <p style="font-size: 11px; margin-bottom: 10px;">The system has identified valid ARCHITECT credentials in the session buffer. Do you wish to proceed with full decryption?</p>
-        <div style="background: #000; color: #0f0; padding: 5px; font-family: monospace; font-size: 10px; border: 1px inset #fff; margin-bottom: 15px;">
-            TARGET: user4_logs.crypt<br>
-            STATUS: READY_FOR_DECRYPTION
-        </div>
-        <div style="text-align: center; display: flex; gap: 5px; justify-content: center;">
-            <button class="java-btn" onclick="document.getElementById('master-credentials-modal').style.display='none'; triggerFinalClue();" style="flex: 1;">DECRYPT</button>
-            <button class="java-btn" onclick="document.getElementById('master-credentials-modal').style.display='none'" style="flex: 1;">ABORT</button>
-        </div>
-    </div>
-</div>
+
 
 <div style="position: fixed; bottom: 50px; right: 20px; z-index: 100; text-align: right;">
     <div class="netscape-badge">Best viewed in<br><strong>NETSCAPE NAVIGATOR</strong></div>
     <div class="fake-badge" style="background: #000; color: #fff; border: 1px solid #fff; margin-top: 5px; font-size: 8px;">MADE WITH NOTEPAD</div>
 </div>
 
-<marquee style="position: fixed; bottom: 40px; background: #0a0; color: #000; font-weight: bold; font-family: sans-serif; font-size: 10px; z-index: 8000; width: 100%;">
+<marquee id="sr-lock-banner" style="position: fixed; bottom: 40px; background: #0a0; color: #000; font-weight: bold; font-family: sans-serif; font-size: 10px; z-index: 8000; width: 100%;">
     WARNING: UNAUTHORIZED ACCESS TO SERVER ROOT IS STRICTLY PROHIBITED. IP ADDRESS LOGGED. SYSTEM ADMINISTRATOR NOTIFIED. STAY CALM.
 </marquee>
 
@@ -248,8 +227,30 @@ Restricted access. Limited commands available.
             if (args[0] === 'admin' && args[1] === 'flexbox') {
                 print('Authentication successful.', 'cli-info');
                 print('Scanning session buffer for elevated tokens...', 'cli-info');
+                unlockServerRootUI();
                 setTimeout(function() {
-                    document.getElementById('master-credentials-modal').style.display = 'block';
+                    var modalContent = '<div style="background: #c0c0c0; color: #000; padding: 10px;">' +
+                                       '<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">' +
+                                       '<img src="img/spiderman-png.png" alt="System Icon" style="width: 32px; height: 32px; filter: grayscale(100%);">' +
+                                       '<strong>Master Credentials Found!</strong>' +
+                                       '</div>' +
+                                       '<p style="font-size: 11px; margin-bottom: 10px;">The system has identified valid ARCHITECT credentials in the session buffer. Do you wish to proceed with full decryption?</p>' +
+                                       '<div style="background: #000; color: #0f0; padding: 5px; font-family: monospace; font-size: 10px; border: 1px inset #fff; margin-bottom: 15px;">' +
+                                       'TARGET: user4_logs.crypt<br>' +
+                                       'STATUS: READY_FOR_DECRYPTION' +
+                                       '</div>' +
+                                       '<div style="text-align: center; display: flex; gap: 5px; justify-content: center;">' +
+                                       '<button class="java-btn" id="decrypt-btn" style="flex: 1;">DECRYPT</button>' +
+                                       '<button class="java-btn" id="abort-btn" style="flex: 1;">ABORT</button>' +
+                                       '</div></div>';
+                    var win = windowMaker6000(modalContent, { title: 'System Alert' });
+                    win.querySelector('#decrypt-btn').onclick = function() {
+                        win.remove();
+                        triggerFinalClue();
+                    };
+                    win.querySelector('#abort-btn').onclick = function() {
+                        win.remove();
+                    };
                 }, 1000);
             } else {
                 print('Login failed: Invalid credentials.', 'cli-error');
@@ -374,6 +375,18 @@ Restricted access. Limited commands available.
         }
     }
 
+    function unlockServerRootUI() {
+        toggleBit('serverRootUnlocked', true);
+        var denied = document.getElementById('access-denied');
+        if (denied) denied.style.display = 'none';
+        var dirView = document.getElementById('directory-view');
+        if (dirView) dirView.style.display = 'block';
+        var banner = document.getElementById('sr-lock-banner');
+        if (banner) banner.remove();
+        var cliInput = document.getElementById('cli-input');
+        if (cliInput) cliInput.focus();
+    }
+
     function showBypassLogin() {
         var html = '<div style="background:#c0c0c0;padding:15px;color:#000;border:2px outset #fff">' +
                    '<p style="margin-bottom:10px;font-weight:bold;font-size:12px">Root Access Protocol:</p>' +
@@ -389,8 +402,8 @@ Restricted access. Limited commands available.
             var u = win.querySelector('#bp-user').value;
             var p = win.querySelector('#bp-pass').value;
             if (u === 'admin' && p === 'flexbox') {
-                toggleBit('serverRootUnlocked', true);
-                location.reload();
+                unlockServerRootUI();
+                win.remove();
             } else {
                 alert('ACCESS DENIED: Credentials mismatch.');
             }
