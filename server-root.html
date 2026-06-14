@@ -374,15 +374,9 @@ Restricted access. Limited commands available.
     document.addEventListener('DOMContentLoaded', function() {
         doTheThing('server-root');
         logicLoop('server-root');
-        var s = getDataX();
-        if (s && !s.serverRootUnlocked) {
-            document.getElementById('access-denied').style.display = 'block';
-            document.getElementById('directory-view').style.display = 'none';
-        } else {
-            document.getElementById('access-denied').style.display = 'none';
-            document.getElementById('directory-view').style.display = 'block';
-            input.focus();
-        }
+        document.getElementById('access-denied').style.display = 'none';
+        document.getElementById('directory-view').style.display = 'block';
+        input.focus();
     });
 
     function triggerFinalClue() {
@@ -417,6 +411,15 @@ Restricted access. Limited commands available.
     }
 
     // kevin: added this because clicking anywhere else loses focus and i hate that.
+    document.addEventListener('click', function() {
+        var cliInput = document.getElementById('cli-input');
+        if (cliInput) cliInput.focus();
+    });
+</script>
+
+</body>
+</html>
+e that.
     document.addEventListener('click', function() {
         var cliInput = document.getElementById('cli-input');
         if (cliInput) cliInput.focus();

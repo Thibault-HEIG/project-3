@@ -785,7 +785,7 @@ function checkRootUnlock() {
                     '<div style="text-align:center;padding:15px">' +
                     '<p style="color:#0f0;font-family:monospace;font-size:12px;margin-bottom:10px">SERVER ACCESS GRANTED</p>' +
                     '<p style="font-size:10px;color:#ccc">Credentials for /server-root/ bypass:</p>' +
-                    '<p style="font-size:14px;color:#fff;margin:10px 0;background:#333;padding:5px"><b>USER: admin<br>PASS: project3_root</b></p>' +
+                    '<p style="font-size:14px;color:#fff;margin:10px 0;background:#333;padding:5px"><b>USER: admin<br>PASS: flexbox</b></p>' +
                     '<p style="font-size:9px;color:#888">Use the "login" command in the root terminal.</p>' +
                     '</div>',
                     { title: '🔑 SYSTEM OVERRIDE' }
