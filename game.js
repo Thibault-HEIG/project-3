@@ -594,6 +594,11 @@ function windowMaker6000(a, o) {
     p.style.left = finalX + 'px';
     p.style.top = (finalY + window.scrollY) + 'px';
     
+    // Support width option
+    if (o.width) {
+        p.style.width = o.width + 'px';
+    }
+    
     // set z-index (must clear MIDI bar @ 9000)
     p.style.zIndex = upOne();
     // add to page

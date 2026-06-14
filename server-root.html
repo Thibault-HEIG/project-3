@@ -72,7 +72,7 @@ Restricted access. Limited commands available.
         <span class="win-title">System Alert</span>
         <div class="win-x" onclick="document.getElementById('master-credentials-modal').style.display='none'">X</div>
     </div>
-    <div class="win-body" style="background: #c0c0c0; color: #000;">
+    <div class="win-body">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
             <img src="img/spiderman-png.png" alt="System Icon" style="width: 32px; height: 32px; filter: grayscale(100%);">
             <strong>Master Credentials Found!</strong>
@@ -469,9 +469,18 @@ Restricted access. Limited commands available.
     });
     
     // also keep the global focus helper but maybe more specific
-    document.addEventListener('click', function() {
+    document.addEventListener('click', function(e) {
         var cliInput = document.getElementById('cli-input');
-        if (cliInput) cliInput.focus();
+        if (!cliInput) return;
+        
+        var isInput = e.target.tagName === 'INPUT';
+        var modal = e.target.closest('.win-popup');
+        var isTerminal = modal && modal.id === 'terminal-window';
+        var inOtherModal = modal && !isTerminal;
+
+        if (!isInput && !inOtherModal) {
+            cliInput.focus();
+        }
     });
 </script>
 

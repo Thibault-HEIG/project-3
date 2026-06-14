@@ -79,6 +79,7 @@ body {
     font-weight: bold;
 }
 .win-x:active { border-style: inset; }
+.win-popup .win-body { background: #c0c0c0; color: #000; }
 .win-body { padding: 10px; }
 
 /* --- Scattered Nav Buttons --- */
