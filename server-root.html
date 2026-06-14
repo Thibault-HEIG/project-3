@@ -129,7 +129,6 @@ Restricted access. Limited commands available.
         }
     };
 
-    var currentPath = ['root'];
     var cmdHistory = [];
     var historyIdx = -1;
     var input = document.getElementById('cli-input');
@@ -187,20 +186,12 @@ Restricted access. Limited commands available.
         logicLoop('server-root');
 
         // Terminal is always visible, but locked by handleCmd
-        document.getElementById('access-denied').style.display = 'none';
         document.getElementById('directory-view').style.display = 'block';
         if (input) input.focus();
 
         var s = getDataX();
         if (!s.serverRootUnlocked) {
             showTerminalLock();
-        }
-
-        var err403 = document.getElementById('error-403');
-        if (err403) {
-            err403.onclick = function() {
-                showTerminalLock();
-            };
         }
     });
 

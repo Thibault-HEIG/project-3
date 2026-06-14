@@ -36,6 +36,7 @@ var xx = null; // xml parser
 var yy = ''; // yaml buffer
 var z9 = 0; // z-index base
 var serverRootUnlocked = false; // logic state for terminal access
+var currentPath = ['root']; // current directory in virtual file system
 
 // DEFAULT STATE BLUEPRINT
 // IMPORTANT: this array is critical for the hash map
@@ -1131,20 +1132,22 @@ function deadValidator(input) {
 // =============================================
 
 function showTerminalLock() {
-    var html = '<div style="background:#c0c0c0;padding:15px;color:#000;border:2px outset #fff">' +
-               '<p style="margin-bottom:10px;font-weight:bold;font-size:12px;color:red;text-align:center">CRITICAL: SYSTEM LOCKED</p>' +
-               '<div style="margin-bottom:5px;display:flex;justify-content:space-between;align-items:center">User: <input type="text" id="lock-user" style="width:150px;font-family:monospace;background:#fff;border:1px inset #888"></div>' +
-               '<div style="margin-bottom:15px;display:flex;justify-content:space-between;align-items:center">Pass: <input type="password" id="lock-pass" style="width:150px;font-family:monospace;background:#fff;border:1px inset #888"></div>' +
-               '<div style="text-align:center">' +
-               '<button class="java-btn" id="lock-auth" style="padding:4px 30px;cursor:pointer">AUTHORIZE</button>' +
+    var html = '<div class="vintage-form">' +
+               '<p>CRITICAL: SYSTEM LOCKED</p>' +
+               '<div><label>User:</label> <input type="text" id="lock-user"></div>' +
+               '<div><label>Pass:</label> <input type="password" id="lock-pass"></div>' +
+               '<div>' +
+               '<button class="java-btn" id="lock-auth">AUTHORIZE</button>' +
                '</div></div>';
     
-    var win = windowMaker6000(html, { title: 'TERMINAL LOCK', x: window.innerWidth/2 - 150 });
+    var win = windowMaker6000(html, { 
+        title: 'TERMINAL LOCK', 
+        cls: 'vintage-login-window' 
+    });
     
     // Disable closing functionality
     var closeBtn = win.querySelector('.win-x');
     if (closeBtn) {
-        closeBtn.style.display = 'none';
         closeBtn.onclick = function() { return false; };
     }
     
