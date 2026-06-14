@@ -183,7 +183,9 @@ function doTheThing(a) {
 }
 
 // TASK 1: The fake loading sequence
+var isFakeLoading = false;
 function fakeLoad() {
+    isFakeLoading = true;
     // hide everything immediately
     var originalDisplay = document.body.style.display;
     document.body.style.visibility = 'hidden';
@@ -194,6 +196,7 @@ function fakeLoad() {
     
     // create a fake terminal-like loader
     var l = document.createElement('div');
+    l.id = 'p3_fake_loader';
     l.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;color:#0f0;font-family:monospace;padding:20px;z-index:999999;overflow:hidden;';
     document.documentElement.appendChild(l);
     
@@ -239,12 +242,14 @@ function fakeLoad() {
                     if (j < all.length) {
                         if (all[j].parentElement === document.body) {
                             all[j].style.opacity = '1';
+                            j++;
                             setTimeout(reveal, 100 + Math.random() * 300);
                         } else {
                             j++;
                             reveal();
                         }
-                        j++;
+                    } else {
+                        isFakeLoading = false;
                     }
                 }
                 reveal();

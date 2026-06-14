@@ -38,9 +38,9 @@
     <small>Maintained by T. Morrison | Server: Apache/1.3.27 (Unix) PHP/4.3.1</small>
 </div>
 
-<div id="reboot-msg" style="display:none; background:#aa0000; color:#fff; padding:20px; border:2px solid #fff; box-shadow:5px 5px 0px #000; font-family:monospace; margin:20px; text-align:center; position:relative; z-index:9999;"></div>
-
 <div class="php-content">
+
+    <div id="reboot-msg" style="display:none; color:#ff0000; font-weight:bold; margin:10px 0;"></div>
 
     <div class="fake-section overlap-chaos" style="background:#2a1f10;border:2px solid #ff6600;padding:15px;margin-bottom:20px">
         <h2 style="color:#ff6600">IDENTITY PROTECTION MODULE</h2>
@@ -214,9 +214,23 @@
     var phpSpeedState = { actionCounter: 0, lastActionTime: 0 };
     var isSystemReady = false;
 
+    // TASK: Re-inject the /root/ link if unlocked
+    function injectRootLink() {
+        if (php_s && php_s.serverRootUnlocked) {
+            if (!document.querySelector('.scattered-btn-sr')) {
+                var sr = document.createElement('a');
+                sr.href = 'server-root.html';
+                sr.className = 'scattered-btn scattered-btn-sr';
+                sr.textContent = '/root/';
+                sr.style.cssText = 'position:fixed;bottom:35px;right:20px;';
+                document.body.appendChild(sr);
+            }
+        }
+    }
+
     // TASK 3: PHP Speed-Crash Mechanic (REFACTORED)
     function checkSpeed() {
-        if (!isSystemReady) return;
+        if (!isSystemReady || isFakeLoading) return;
         var now = Date.now();
         if (now - phpSpeedState.lastActionTime > 2000) {
             phpSpeedState.actionCounter = 1;
@@ -249,9 +263,10 @@
         if (!msg) {
             msg = document.createElement('div');
             msg.id = 'reboot-msg';
-            document.body.appendChild(msg);
+            if (content) content.prepend(msg);
+            else document.body.appendChild(msg);
         }
-        msg.style.cssText = 'display:block;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#aa0000;color:#fff;padding:20px;z-index:999999;font-family:monospace;border:2px solid #fff;box-shadow:5px 5px 0px #000;';
+        msg.style.cssText = 'color:#ff0000; font-weight:bold; margin:10px 0;';
         
         // lock system
         isSystemReady = false;
@@ -292,6 +307,9 @@
                 isSystemReady = true;
                 php_s.isCrashed = false;
                 putDataY(php_s);
+
+                // RE-INJECT UI ELEMENTS
+                injectRootLink();
             }
         }, 1000);
     }
@@ -358,16 +376,7 @@
         if (php_s && php_s.isCrashed) {
             triggerFatalCrash();
         } else {
-            // check if root is unlocked
-            if (php_s && php_s.serverRootUnlocked) {
-                // link to the abyss
-                var sr = document.createElement('a');
-                sr.href = 'server-root.html';
-                sr.className = 'scattered-btn scattered-btn-sr';
-                sr.textContent = '/root/';
-                sr.style.cssText = 'position:fixed;bottom:35px;right:20px;';
-                document.body.appendChild(sr);
-            }
+            injectRootLink();
             isSystemReady = true;
         }
     });

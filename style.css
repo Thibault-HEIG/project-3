@@ -714,3 +714,10 @@ body.quiet-mode .overlap-chaos { display: none !important; }
     opacity: 0.7;
     pointer-events: none;
 }
+
+/* Disable navigation links appended to body during reboot */
+.php-content.server-rebooting ~ .scattered-btn {
+    filter: grayscale(100%);
+    opacity: 0.5;
+    pointer-events: none;
+}
