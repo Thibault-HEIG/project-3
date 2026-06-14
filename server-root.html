@@ -22,11 +22,15 @@
 
 <div class="sr-content" id="sr-content">
 
-    <div id="access-denied" style="display:none;text-align:center;padding:60px 20px">
-        <h2 style="color:#f00">ACCESS DENIED</h2>
-        <p>Error 403: Forbidden</p>
-        <p style="color:#0a0;font-size:14px">Insufficient permissions. Required clearance: ARCHITECT</p>
-        <p style="margin-top:30px"><a href="index.html">Return to HOME</a></p>
+    <div id="access-denied" style="display:none;text-align:center;padding:80px 20px">
+        <div style="display:inline-block; border: 4px ridge #f00; padding: 40px; background: #000; box-shadow: 15px 15px 0 #300;">
+            <h1 style="color:#f00; font-weight: bold; margin-bottom: 20px; text-decoration: underline;">*** SECURITY ALERT ***</h1>
+            <h2 style="color:#f00; font-weight: bold; font-size: 32px; margin: 0;">ACCESS DENIED</h2>
+            <p id="error-403" style="font-weight: bold; font-size: 24px; margin: 20px 0;">Error 403: Forbidden</p>
+            <p style="color:#0a0;font-size:14px; font-family: monospace;">Insufficient permissions. Required clearance: ARCHITECT</p>
+            <p style="color: #600; font-size: 11px; margin-top: 30px;">Your IP has been logged. Unauthorized access is a federal offense.</p>
+            <p style="margin-top:40px"><a href="index.html" style="color: #f00; border: 2px outset #f00; padding: 5px 15px; text-decoration: none; font-weight: bold;">&lt; RETURN TO HOME &gt;</a></p>
+        </div>
     </div>
 
     <div id="directory-view" style="display:none">
@@ -370,12 +374,49 @@ Restricted access. Limited commands available.
         }
     }
 
+    function showBypassLogin() {
+        var html = '<div style="background:#c0c0c0;padding:15px;color:#000;border:2px outset #fff">' +
+                   '<p style="margin-bottom:10px;font-weight:bold;font-size:12px">Root Access Protocol:</p>' +
+                   '<div style="margin-bottom:5px">User: <input type="text" id="bp-user" style="width:120px;font-family:monospace"></div>' +
+                   '<div style="margin-bottom:15px">Pass: <input type="password" id="bp-pass" style="width:120px;font-family:monospace"></div>' +
+                   '<div style="text-align:center">' +
+                   '<button class="java-btn" id="bp-auth" style="padding:4px 20px">AUTHORIZE</button>' +
+                   '</div></div>';
+        
+        var win = windowMaker6000(html, { title: 'Bypass Login', x: window.innerWidth/2 - 100 });
+        
+        win.querySelector('#bp-auth').onclick = function() {
+            var u = win.querySelector('#bp-user').value;
+            var p = win.querySelector('#bp-pass').value;
+            if (u === 'admin' && p === 'flexbox') {
+                toggleBit('serverRootUnlocked', true);
+                location.reload();
+            } else {
+                alert('ACCESS DENIED: Credentials mismatch.');
+            }
+        };
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         doTheThing('server-root');
         logicLoop('server-root');
-        document.getElementById('access-denied').style.display = 'none';
-        document.getElementById('directory-view').style.display = 'block';
-        input.focus();
+
+        var s = getDataX();
+        if (s.serverRootUnlocked) {
+            document.getElementById('access-denied').style.display = 'none';
+            document.getElementById('directory-view').style.display = 'block';
+            if (input) input.focus();
+        } else {
+            document.getElementById('access-denied').style.display = 'block';
+            document.getElementById('directory-view').style.display = 'none';
+        }
+
+        var err403 = document.getElementById('error-403');
+        if (err403) {
+            err403.onclick = function() {
+                showBypassLogin();
+            };
+        }
     });
 
     function triggerFinalClue() {
