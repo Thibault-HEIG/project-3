@@ -236,21 +236,20 @@ Restricted access. Limited commands available.
                 if (hasHidden) getBonus('sr_found_hidden');
             }
         } 
+        else if (cmd === 'pwd') {
+            var displayPath = '/' + currentPath.slice(1).join('/');
+            print(displayPath || '/');
+        }
         else if (cmd === 'login') {
-            var s = getDataX();
-            if (s && s.serverRootUnlocked) {
-                if (args[0] === 'admin' && args[1] === 'project3_root') {
-                    print('Authentication successful.', 'cli-info');
-                    print('Scanning session buffer for elevated tokens...', 'cli-info');
-                    setTimeout(function() {
-                        document.getElementById('master-credentials-modal').style.display = 'block';
-                    }, 1000);
-                } else {
-                    print('Login failed: Invalid credentials.', 'cli-error');
-                    print('Usage: login [username] [password]', 'cli-info');
-                }
+            if (args[0] === 'admin' && args[1] === 'flexbox') {
+                print('Authentication successful.', 'cli-info');
+                print('Scanning session buffer for elevated tokens...', 'cli-info');
+                setTimeout(function() {
+                    document.getElementById('master-credentials-modal').style.display = 'block';
+                }, 1000);
             } else {
-                print('Command not available.', 'cli-error');
+                print('Login failed: Invalid credentials.', 'cli-error');
+                print('Usage: login [username] [password]', 'cli-info');
             }
         }
         else if (cmd === 'cd') {
@@ -356,7 +355,7 @@ Restricted access. Limited commands available.
             var randErr = errors[Math.floor(Math.random() * errors.length)];
             print(cmd + ': command not found', 'cli-error');
             print(randErr, 'cli-error');
-            print('Available commands: ls, cd, cat, login', 'cli-info');
+            print('Available commands: ls, cd, cat, pwd, login', 'cli-info');
         }
 
     }
@@ -411,15 +410,6 @@ Restricted access. Limited commands available.
     }
 
     // kevin: added this because clicking anywhere else loses focus and i hate that.
-    document.addEventListener('click', function() {
-        var cliInput = document.getElementById('cli-input');
-        if (cliInput) cliInput.focus();
-    });
-</script>
-
-</body>
-</html>
-e that.
     document.addEventListener('click', function() {
         var cliInput = document.getElementById('cli-input');
         if (cliInput) cliInput.focus();
