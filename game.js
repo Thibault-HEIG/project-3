@@ -777,19 +777,7 @@ function checkRootUnlock() {
         if (d.phpArchitectSearched) {
             // check if not already unlocked
             if (!d.serverRootUnlocked) {
-                // unlock it!
-                toggleBit('serverRootUnlocked', true);
-                // show the credentials popup
-                // users will need these for the terminal
-                windowMaker6000(
-                    '<div style="text-align:center;padding:15px">' +
-                    '<p style="color:#0f0;font-family:monospace;font-size:12px;margin-bottom:10px">SERVER ACCESS GRANTED</p>' +
-                    '<p style="font-size:10px;color:#ccc">Credentials for /server-root/ bypass:</p>' +
-                    '<p style="font-size:14px;color:#fff;margin:10px 0;background:#333;padding:5px"><b>USER: admin<br>PASS: project3_root</b></p>' +
-                    '<p style="font-size:9px;color:#888">Use the "login" command in the root terminal.</p>' +
-                    '</div>',
-                    { title: '🔑 SYSTEM OVERRIDE' }
-                );
+                // automatic unlock removed - must use password prompt on server-root.html
             }
         }
     }
