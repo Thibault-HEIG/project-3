@@ -40,6 +40,8 @@
 
 <div class="php-content">
 
+    <div id="reboot-msg" style="display:none; color:#ff0000; font-weight:bold; margin:10px 0;"></div>
+
     <div class="fake-section overlap-chaos" style="background:#2a1f10;border:2px solid #ff6600;padding:15px;margin-bottom:20px">
         <h2 style="color:#ff6600">IDENTITY PROTECTION MODULE</h2>
         <p>Status: <b>OBFUSCATED</b>. Method: <b>Labyrinth Construction</b>.</p>
@@ -70,7 +72,7 @@
     <div class="php-form">
         <label>🔍 User Search</label>
         <input type="text" id="user-search" placeholder="Enter username to search..." onkeydown="if(event.key==='Enter')searchUser()">
-        <button onclick="searchUser()">SEARCH</button>
+        <button onclick="searchUser()" id="btn-search">SEARCH</button>
         <div id="search-result" style="margin-top:10px"></div>
     </div>
 
@@ -118,14 +120,14 @@
         <div style="display:none">
             <div><div><div><div><!-- ARCHITECT DATA: UmFuZHkgUmVuZGVy --></div></div></div></div>
         </div>
-        <button onclick="runDiagnostic()">Run System Check</button>
+        <button onclick="runDiagnostic()" id="btn-diagnostic">Run System Check</button>
         <div id="diagnostic" style="margin-top:10px"></div>
     </div>
 
     <!-- RECOVER LOST PAGE -->
     <div class="php-form">
         <label>🔄 Page Recovery Tool</label>
-        <button onclick="recoverPage()">Recover Lost Page</button>
+        <button onclick="recoverPage()" id="btn-recover">Recover Lost Page</button>
         <div id="recovery-result" style="margin-top:10px"></div>
     </div>
 
@@ -209,27 +211,60 @@
 <script>
     // GLOBAL PHP STATE REPOSITORY
     var php_s = null;
+    var phpSpeedState = { actionCounter: 0, lastActionTime: 0 };
+    var isSystemReady = false;
 
-    // TASK 3: PHP Speed-Crash Mechanic
-    var clickTimes = [];
-    document.addEventListener('mousedown', function() {
+    // TASK 3: PHP Speed-Crash Mechanic (REFACTORED)
+    function checkSpeed() {
+        if (!isSystemReady) return;
         var now = Date.now();
-        clickTimes.push(now);
-        // keep only last 2 seconds
-        clickTimes = clickTimes.filter(function(t) { return now - t < 2000; });
-        if (clickTimes.length > 3) {
-            triggerSpeedCrash();
+        if (now - phpSpeedState.lastActionTime > 2000) {
+            phpSpeedState.actionCounter = 1;
+        } else {
+            phpSpeedState.actionCounter++;
         }
-    });
+        phpSpeedState.lastActionTime = now;
+        if (phpSpeedState.actionCounter > 3) {
+            triggerFatalCrash();
+        }
+    }
 
-    function triggerSpeedCrash() {
-        document.body.style.background = '#fff';
-        document.body.style.color = '#000';
-        document.body.style.fontFamily = 'serif';
-        document.body.innerHTML = '<div style="padding:40px"><h1>Fatal PHP Error</h1>' +
-            '<p><b>Error:</b> Click rate exceeded safety threshold (Request flood detected).</p>' +
-            '<p><b>Trace:</b> /var/www/project3/rate_limit.php on line 404</p>' +
-            '<hr><p><i>Please use the browser "Back" button to return. Slowly.</i></p></div>';
+    function triggerFatalCrash() {
+        var wallOfText = "PHP FATAL ERROR: [0x0842] Execution of search.php timed out. The system has detected a massive leak in user4's pipes. " +
+            "The internal buffer is overflowing with garbage data. Memory corruption is imminent. The labyrinth is collapsing. " +
+            "Apache cannot handle this level of incompetence. We are shutting down all processes to prevent total data loss. " +
+            "The Architect has been notified of your reckless clicking. Do not attempt to reload. The pipes are clogged. " +
+            "The system will attempt a hard reboot in 10 seconds. God save the server.";
+        
+        windowMaker6000(wallOfText, { title: 'PHP FATAL ERROR' });
+        
+        var content = document.querySelector('.php-content');
+        if (content) content.classList.add('server-rebooting');
+        
+        var btns = document.querySelectorAll('button');
+        btns.forEach(function(b) { b.disabled = true; });
+        
+        var msg = document.createElement('div');
+        msg.id = 'reboot-msg';
+        msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#aa0000;color:#fff;padding:20px;z-index:999999;font-family:monospace;border:2px solid #fff;box-shadow:5px 5px 0px #000;';
+        document.body.appendChild(msg);
+        
+        var cd = 10;
+        msg.textContent = 'Rebooting Apache... [' + cd + ']s';
+        
+        var iv = setInterval(function() {
+            cd--;
+            if (cd > 0) {
+                msg.textContent = 'Rebooting Apache... [' + cd + ']s';
+            } else {
+                clearInterval(iv);
+                msg.remove();
+                if (content) content.classList.remove('server-rebooting');
+                btns.forEach(function(b) { b.disabled = false; });
+                phpSpeedState.actionCounter = 0;
+                phpSpeedState.lastActionTime = 0;
+            }
+        }, 1000);
     }
 
     // TASK 8: Sentient PHP Warnings
@@ -299,10 +334,12 @@
             sr.style.cssText = 'position:fixed;bottom:35px;right:20px;';
             document.body.appendChild(sr);
         }
+        isSystemReady = true;
     });
 
     // searches for a user in the imaginary database
     function searchUser() {
+        checkSpeed();
         // grab the query
         var q = document.getElementById('user-search').value.trim().toLowerCase();
         // the result container
@@ -339,6 +376,7 @@
 
     // opens the text editor
     function openEditor() {
+        checkSpeed();
         // make it visible
         document.getElementById('editor-area').style.display = 'block';
         // disable the button
@@ -351,6 +389,7 @@
 
     // runs a fake system check
     function runDiagnostic() {
+        checkSpeed();
         // container for diagnostic info
         var d = document.getElementById('diagnostic');
         d.innerHTML = '<div style="color:#a0d0a0">Running system check...</div>';
@@ -373,6 +412,7 @@
 
     // recovers a fragment of a lost page
     function recoverPage() {
+        checkSpeed();
         // the recovery container
         var r = document.getElementById('recovery-result');
         r.innerHTML = '<div style="color:#a0d0a0">Scanning for recoverable pages...</div>';
