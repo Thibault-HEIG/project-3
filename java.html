@@ -63,8 +63,8 @@
             <button class="java-btn" onclick="openBuildReports()">🔨 Build</button>
             <button class="java-btn" onclick="openLicense()">📄 License</button>
             <button class="java-btn" onclick="openAbout()">ℹ️ About</button>
-            <button class="java-btn" onclick="heavyDownload('System Config')">⚙️ Config</button>
-            <button class="java-btn" onclick="heavyDownload('Deployment manager')">🚀 Deploy</button>
+            <button class="java-btn" onclick="openConfigEditor()">⚙️ Config</button>
+            <button class="java-btn" onclick="startEnterpriseDeployment()">🚀 Deploy</button>
             <!-- Nav buttons disguised as enterprise tools -->
             <button class="java-btn" onclick="location.href='index.html'" style="color:#808080;font-size:9px">🏠 Portal Home</button>
             <button class="java-btn" onclick="location.href='sql.html'" style="color:#808080;font-size:9px">💾 DB Admin</button>
@@ -111,21 +111,25 @@
                             <th style="text-align:left">PID</th>
                             <th style="text-align:left">Service</th>
                             <th style="text-align:left">Status</th>
+                            <th style="text-align:left">Action</th>
                         </tr>
-                        <tr>
+                        <tr id="proc-1001">
                             <td>1001</td>
                             <td>admin</td>
-                            <td style="color:green">RUNNING</td>
+                            <td class="proc-status" style="color:green">RUNNING</td>
+                            <td><button class="java-btn" style="font-size:9px;padding:1px 3px" onclick="killProcess(1001)">KILL</button></td>
                         </tr>
-                        <tr>
+                        <tr id="proc-1002">
                             <td>1002</td>
                             <td>sysbot</td>
-                            <td style="color:green">RUNNING</td>
+                            <td class="proc-status" style="color:green">RUNNING</td>
+                            <td><button class="java-btn" style="font-size:9px;padding:1px 3px" onclick="killProcess(1002)">KILL</button></td>
                         </tr>
-                        <tr>
+                        <tr id="proc-1004">
                             <td>1004</td>
                             <td>user4-architect</td>
-                            <td style="color:orange">HUNG</td>
+                            <td class="proc-status" style="color:orange">HUNG</td>
+                            <td><button class="java-btn" style="font-size:9px;padding:1px 3px" onclick="killProcess(1004)">KILL</button></td>
                         </tr>
                     </table>
                 </div>
@@ -137,7 +141,7 @@
         <div class="java-panel" style="margin-top:10px">
             <div class="java-panel-header">Recent Activity (last 48h)</div>
             <div class="java-panel-body">
-                <div class="java-log">
+                <div class="java-log" id="java-log-container">
                     <div class="log-line log-info">[2003-03-14 08:00] t.morrison logged in from 192.168.0.5</div>
                     <div class="log-line log-info">[2003-03-14 08:15] t.morrison updated /home/index.html (typo fix)</div>
                     <div class="log-line log-info">[2003-03-14 10:30] s.pixel uploaded banner_v3.png</div>
@@ -493,6 +497,93 @@
 
     function _j2ee_bridge_init() {
         return "v2.1 bridge ready";
+    }
+
+    function openConfigEditor() {
+        var mockXML = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+            '<java-config>\n' +
+            '  <heap-size>256MB</heap-size>\n' +
+            '  <max-threads>50</max-threads>\n' +
+            '  <innovation-level>99</innovation-level>\n' +
+            '  <optimization-flag>false</optimization-flag>\n' +
+            '</java-config>';
+        var html = '<div style="width:300px">' +
+            '<p style="font-size:11px">System Configuration (XML)</p>' +
+            '<textarea id="config-xml" style="width:100%;height:150px;font-family:monospace;font-size:10px">' + mockXML + '</textarea>' +
+            '<div style="text-align:right;margin-top:10px">' +
+            '<button class="java-btn" onclick="saveConfig()">Save</button>' +
+            '</div>' +
+            '</div>';
+        var p = windowMaker6000(html, { title: '⚙️ Config Editor' });
+        
+        window.saveConfig = function() {
+            toggleBit('javaConfigOptimized', true);
+            sparkle();
+            p.remove();
+            windowMaker6000('<p style="font-size:11px;color:green">Configuration saved and optimized.</p>', { title: 'Success', autoClose: 2000 });
+        };
+    }
+
+    function startEnterpriseDeployment() {
+        var html = '<div style="width:300px">' +
+            '<p style="font-size:11px">Deploying Enterprise WAR...</p>' +
+            '<div class="load-bar-outer" style="height:15px;margin:10px 0;width:100%;background:#fff;border:1px solid #888;overflow:hidden">' +
+            '<div class="load-bar-inner" id="deploy-bar" style="width:0%;height:100%;background:linear-gradient(180deg,#cc8844,#996633)"></div>' +
+            '</div>' +
+            '<p id="deploy-msg" style="font-size:10px;color:#888">Preparing architectural_override.war...</p>' +
+            '</div>';
+        var p = windowMaker6000(html, { title: '🚀 Enterprise Deployment', autoClose: 0 });
+        var bar = p.querySelector('#deploy-bar');
+        var msg = p.querySelector('#deploy-msg');
+        var pct = 0;
+        
+        var iv = setInterval(function() {
+            if (!p.parentNode) { clearInterval(iv); return; }
+            pct += Math.random() * 15;
+            if (pct >= 100) {
+                pct = 100;
+                clearInterval(iv);
+                bar.style.width = '100%';
+                msg.textContent = 'Deployment complete.';
+                
+                // Log entry
+                var log = document.getElementById('java-log-container');
+                if (log) {
+                    var entry = document.createElement('div');
+                    entry.className = 'log-line log-critical';
+                    entry.textContent = '[2003-03-15] GUEST deployed architectural_override.war';
+                    log.appendChild(entry);
+                    log.scrollTop = log.scrollHeight;
+                }
+                
+                setTimeout(function() { p.remove(); }, 1000);
+            } else {
+                bar.style.width = pct + '%';
+                if (pct > 50) msg.textContent = 'Injecting overrides...';
+            }
+        }, 300);
+    }
+
+    function killProcess(pid) {
+        if (pid === 1001 || pid === 1002) {
+            windowMaker6000('<p style="color:red;font-weight:bold;text-align:center;padding:10px">ACCESS DENIED:<br>Permission Denied.</p>', 
+                { title: '❌ Error', autoClose: 2000 });
+        } else if (pid === 1004) {
+            toggleBit('user4Terminated', true);
+            var row = document.getElementById('proc-1004');
+            if (row) {
+                var status = row.querySelector('.proc-status');
+                status.textContent = 'TERMINATED';
+                status.style.color = 'red';
+                var btn = row.querySelector('button');
+                if (btn) btn.disabled = true;
+            }
+            sparkle();
+            windowMaker6000('<div style="padding:10px">' +
+                '<p style="color:red;font-weight:bold">Process 1004 dumped core.</p>' +
+                '<p style="font-size:11px">Secret located at:<br><b style="font-size:13px">/server-root/.hidden/</b></p>' +
+                '</div>', { title: '⚠️ Core Dump' });
+        }
     }
 </script>
 

@@ -328,8 +328,15 @@ function heavyDownload(title, size) {
             'Optimizing bitstream...'
         ];
         if (Math.random() > 0.8) msg.textContent = msgs[Math.floor(Math.random()*msgs.length)];
-        stats.textContent = 'Downloaded: ' + (pct * totalSize / 100).toFixed(1) + ' MB / ' + (totalSize/1024).toFixed(1) + ' GB (' + pct.toFixed(2) + '%)';
+        stats.textContent = 'Downloaded: ' + formatBytes(pct * totalSize / 100) + ' / ' + formatBytes(totalSize) + ' (' + pct.toFixed(2) + '%)';
     }, 1000);
+}
+
+function formatBytes(mb) {
+    if (mb >= 1024) {
+        return (mb / 1024).toFixed(1) + ' GB';
+    }
+    return mb.toFixed(1) + ' MB';
 }
 
 // Rule 3: 20 second timeout for forced failure
