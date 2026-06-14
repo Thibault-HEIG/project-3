@@ -22,18 +22,7 @@
 
 <div class="sr-content" id="sr-content">
 
-    <div id="access-denied" style="display:none;text-align:center;padding:80px 20px">
-        <div style="display:inline-block; border: 4px ridge #f00; padding: 40px; background: #000; box-shadow: 15px 15px 0 #300;">
-            <h1 style="color:#f00; font-weight: bold; margin-bottom: 20px; text-decoration: underline;">*** SECURITY ALERT ***</h1>
-            <h2 style="color:#f00; font-weight: bold; font-size: 32px; margin: 0;">ACCESS DENIED</h2>
-            <p id="error-403" style="font-weight: bold; font-size: 24px; margin: 20px 0;">Error 403: Forbidden</p>
-            <p style="color:#0a0;font-size:14px; font-family: monospace;">Insufficient permissions. Required clearance: ARCHITECT</p>
-            <p style="color: #600; font-size: 11px; margin-top: 30px;">Your IP has been logged. Unauthorized access is a federal offense.</p>
-            <p style="margin-top:40px"><a href="index.html" style="color: #f00; border: 2px outset #f00; padding: 5px 15px; text-decoration: none; font-weight: bold;">&lt; RETURN TO HOME &gt;</a></p>
-        </div>
-    </div>
-
-    <div id="directory-view" style="display:none">
+    <div id="directory-view">
 
         <!-- TERMINAL WINDOW -->
         <div class="win-popup" id="terminal-window" style="position: relative; max-width: 100%; min-width: 600px; margin: 0 auto; box-shadow: 4px 4px 0 #000;">
@@ -147,15 +136,6 @@ Restricted access. Limited commands available.
     var output = document.getElementById('cli-output');
     var prompt = document.getElementById('cli-prompt');
 
-    function getDir(path) {
-        var node = FS;
-        for (var i = 0; i < path.length; i++) {
-            if (node.contents) node = node.contents;
-            node = node[path[i]];
-        }
-        return node.contents || node;
-    }
-
     function print(text, cls) {
         var div = document.createElement('div');
         div.className = cls || '';
@@ -202,219 +182,24 @@ Restricted access. Limited commands available.
         }
     });
 
-    function handleCmd(line) {
-        var parts = line.split(/\s+/);
-        var cmd = parts[0].toLowerCase();
-        var args = parts.slice(1);
-
-        if (cmd === 'ls') {
-            var dir = getDir(currentPath);
-            var showAll = (args.indexOf('-a') !== -1 || args.indexOf('-la') !== -1 || args.indexOf('-al') !== -1);
-            var showLong = (args.indexOf('-l') !== -1 || args.indexOf('-la') !== -1 || args.indexOf('-al') !== -1);
-            var files = Object.keys(dir).filter(function(f) {
-                return showAll || !f.startsWith('.');
-            });
-            
-            if (showLong || showAll) {
-                // detailed listing
-                print('total ' + files.length);
-                files.forEach(function(f) {
-                    var entry = dir[f];
-                    var isDir = entry.type === 'dir';
-                    var perms = isDir ? 'drwxr-x---' : '-rw-r-----';
-                    var size = entry.size || (isDir ? '4.0K' : '0');
-                    var date = entry.modified || '2003-03-14';
-                    var name = isDir ? f + '/' : f;
-                    print(perms + '  user4  staff  ' + size + '  ' + date + '  ' + name);
-                });
-            } else {
-                // simple listing
-                var display = files.map(function(f) {
-                    return dir[f].type === 'dir' ? f + '/' : f;
-                });
-                print(display.join('  '));
-            }
-
-            if (showAll) {
-                var hasHidden = files.some(function(f) { return f.startsWith('.'); });
-                if (hasHidden) getBonus('sr_found_hidden');
-            }
-        } 
-        else if (cmd === 'pwd') {
-            var displayPath = '/' + currentPath.slice(1).join('/');
-            print(displayPath || '/');
-        }
-        else if (cmd === 'login') {
-            if (args[0] === 'admin' && args[1] === 'flexbox') {
-                print('Authentication successful.', 'cli-info');
-                print('Scanning session buffer for elevated tokens...', 'cli-info');
-                setTimeout(function() {
-                    document.getElementById('master-credentials-modal').style.display = 'block';
-                }, 1000);
-            } else {
-                print('Login failed: Invalid credentials.', 'cli-error');
-                print('Usage: login [username] [password]', 'cli-info');
-            }
-        }
-        else if (cmd === 'cd') {
-            var arg = args[0];
-            if (!arg || arg === '/' || arg === '~') {
-                currentPath = ['root'];
-            } else if (arg === '..') {
-                if (currentPath.length > 1) currentPath.pop();
-            } else if (arg === '.') {
-                // stay in place
-            } else {
-                var segments = arg.split('/').filter(function(s) { return s !== ''; });
-                var tempPath = currentPath.slice();
-                var valid = true;
-                for (var i = 0; i < segments.length; i++) {
-                    var seg = segments[i];
-                    if (seg === '..') {
-                        if (tempPath.length > 1) tempPath.pop();
-                    } else if (seg === '.') {
-                        continue;
-                    } else {
-                        var dir = getDir(tempPath);
-                        if (dir[seg] && dir[seg].type === 'dir') {
-                            if (seg === '.hidden') {
-                                var s = getDataX();
-                                if (s && !s.notesRead) {
-                                    print('cd: .hidden: Permission denied', 'cli-error');
-                                    valid = false;
-                                    break;
-                                }
-                            }
-                            tempPath.push(seg);
-                        } else if (dir[seg] && dir[seg].type === 'file') {
-                            print('cd: ' + seg + ': Not a directory', 'cli-error');
-                            valid = false;
-                            break;
-                        } else {
-                            print('cd: ' + seg + ': No such file or directory', 'cli-error');
-                            valid = false;
-                            break;
-                        }
-                    }
-                }
-                if (valid) currentPath = tempPath;
-            }
-            var displayPath = '/' + currentPath.slice(1).join('/');
-            prompt.textContent = 'root@project3:' + (displayPath || '/') + '$';
-
-            var pathStr = currentPath.join('/');
-            if (pathStr.indexOf('.hidden') !== -1) {
-                getBonus('sr_entered_hidden');
-                var hiddenDir = getDir(currentPath);
-                var hiddenFiles = Object.keys(hiddenDir);
-                if (hiddenFiles.length > 0) {
-                    print('');
-                    hiddenFiles.forEach(function(f) {
-                        var entry = hiddenDir[f];
-                        if (entry.type === 'file') {
-                            printHTML('<span class="cli-link" onclick="openHiddenFile(\'' + f + '\')">' + f + '</span> (' + (entry.size || '?') + ')', 'cli-info');
-                        }
-                    });
-                }
-            }
-            if (pathStr.indexOf('old') !== -1) getBonus('sr_entered_old');
-        }
-        else if (cmd === 'cat') {
-            var arg = args[0];
-            if (!arg) {
-                print('cat: missing operand', 'cli-error');
-            } else {
-                // Support reading .secret/fragments.log directly
-                if (arg === '.secret/fragments.log') {
-                    var sDir = FS.root['.secret'];
-                    var sFile = sDir.contents['fragments.log'];
-                    print(sFile.content);
-                    toggleBit(sFile.flag, true);
-                    return;
-                }
-                var dir = getDir(currentPath);
-                var file = dir[arg];
-                if (file && file.type === 'file') {
-                    if (file.content) {
-                        print(file.content);
-                        if (file.flag) toggleBit(file.flag, true);
-                        if (file.clue) getBonus(file.clue);
-                    } else {
-                        print('cat: ' + arg + ': File is binary or empty', 'cli-error');
-                    }
-                } else if (file && file.type === 'dir') {
-                    print('cat: ' + arg + ': Is a directory', 'cli-error');
-                } else {
-                    print('cat: ' + arg + ': No such file or directory', 'cli-error');
-                }
-            }
-        }
-        else if (cmd !== '') {
-            var errors = [
-                'SYSTEM_ERR: CORE_RESISTANCE_DETECTED',
-                'FATAL: UNAUTHORIZED_COMMAND_EXECUTION',
-                'KERNEL_PANIC: MEMORY_SEGMENTATION_FAULT',
-                'ERROR: STACK_OVERFLOW_IN_CMD_PARSER'
-            ];
-            var randErr = errors[Math.floor(Math.random() * errors.length)];
-            print(cmd + ': command not found', 'cli-error');
-            print(randErr, 'cli-error');
-            print('Available commands: ls, cd, cat, pwd, login', 'cli-info');
-        }
-
-    }
-
-    function openHiddenFile(filename) {
-        var dir = getDir(currentPath);
-        var file = dir[filename];
-        if (file && file.type === 'file') {
-            if (file.flag) toggleBit(file.flag, true);
-            if (file.clue) getBonus(file.clue);
-            if (file.action) file.action();
-        }
-    }
-
-    function showBypassLogin() {
-        var html = '<div style="background:#c0c0c0;padding:15px;color:#000;border:2px outset #fff">' +
-                   '<p style="margin-bottom:10px;font-weight:bold;font-size:12px">Root Access Protocol:</p>' +
-                   '<div style="margin-bottom:5px">User: <input type="text" id="bp-user" style="width:120px;font-family:monospace"></div>' +
-                   '<div style="margin-bottom:15px">Pass: <input type="password" id="bp-pass" style="width:120px;font-family:monospace"></div>' +
-                   '<div style="text-align:center">' +
-                   '<button class="java-btn" id="bp-auth" style="padding:4px 20px">AUTHORIZE</button>' +
-                   '</div></div>';
-        
-        var win = windowMaker6000(html, { title: 'Bypass Login', x: window.innerWidth/2 - 100 });
-        
-        win.querySelector('#bp-auth').onclick = function() {
-            var u = win.querySelector('#bp-user').value;
-            var p = win.querySelector('#bp-pass').value;
-            if (u === 'admin' && p === 'flexbox') {
-                toggleBit('serverRootUnlocked', true);
-                location.reload();
-            } else {
-                alert('ACCESS DENIED: Credentials mismatch.');
-            }
-        };
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
         doTheThing('server-root');
         logicLoop('server-root');
 
+        // Terminal is always visible, but locked by handleCmd
+        document.getElementById('access-denied').style.display = 'none';
+        document.getElementById('directory-view').style.display = 'block';
+        if (input) input.focus();
+
         var s = getDataX();
-        if (s.serverRootUnlocked) {
-            document.getElementById('access-denied').style.display = 'none';
-            document.getElementById('directory-view').style.display = 'block';
-            if (input) input.focus();
-        } else {
-            document.getElementById('access-denied').style.display = 'block';
-            document.getElementById('directory-view').style.display = 'none';
+        if (!s.serverRootUnlocked) {
+            showTerminalLock();
         }
 
         var err403 = document.getElementById('error-403');
         if (err403) {
             err403.onclick = function() {
-                showBypassLogin();
+                showTerminalLock();
             };
         }
     });

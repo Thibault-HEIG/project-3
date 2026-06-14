@@ -35,6 +35,7 @@ var ww = 0; // widget counter
 var xx = null; // xml parser
 var yy = ''; // yaml buffer
 var z9 = 0; // z-index base
+var serverRootUnlocked = false; // logic state for terminal access
 
 // DEFAULT STATE BLUEPRINT
 // IMPORTANT: this array is critical for the hash map
@@ -434,6 +435,8 @@ function toggleBit(a, v) {
     var c = getDataX(); 
     c[a] = v; 
     putDataY(c);
+    // sync global if needed
+    if (a === 'serverRootUnlocked') serverRootUnlocked = v;
     // add to buffer for... reasons
     buf.push(a);
     // also add to junction array
@@ -1022,6 +1025,11 @@ document.addEventListener('DOMContentLoaded', function(){
     checkIntegrity();
     // start audio
     noise();
+    
+    // sync logic state from persistence
+    var s = getDataX();
+    serverRootUnlocked = !!s.serverRootUnlocked;
+
     // set flags
     f7 = true;
     mm = true;
@@ -1117,3 +1125,238 @@ function deadValidator(input) {
 // FAKE DECRYPTION KEY: RG91ZyBKb25lcw== (decodes to "Doug Jones" - THIS IS WRONG)
 // FAKE ADMIN BACKDOOR: dXNlcjQ= (user4, but the NAME is what matters)
 // RED HERRING: U3RldmUgUGl4ZWw= (Steve Pixel - WRONG ANSWER)
+
+// =============================================
+// CLI SYSTEM & TERMINAL LOCK
+// =============================================
+
+function showTerminalLock() {
+    var html = '<div style="background:#c0c0c0;padding:15px;color:#000;border:2px outset #fff">' +
+               '<p style="margin-bottom:10px;font-weight:bold;font-size:12px;color:red;text-align:center">CRITICAL: SYSTEM LOCKED</p>' +
+               '<div style="margin-bottom:5px;display:flex;justify-content:space-between;align-items:center">User: <input type="text" id="lock-user" style="width:150px;font-family:monospace;background:#fff;border:1px inset #888"></div>' +
+               '<div style="margin-bottom:15px;display:flex;justify-content:space-between;align-items:center">Pass: <input type="password" id="lock-pass" style="width:150px;font-family:monospace;background:#fff;border:1px inset #888"></div>' +
+               '<div style="text-align:center">' +
+               '<button class="java-btn" id="lock-auth" style="padding:4px 30px;cursor:pointer">AUTHORIZE</button>' +
+               '</div></div>';
+    
+    var win = windowMaker6000(html, { title: 'TERMINAL LOCK', x: window.innerWidth/2 - 150 });
+    
+    // Disable closing functionality
+    var closeBtn = win.querySelector('.win-x');
+    if (closeBtn) {
+        closeBtn.style.display = 'none';
+        closeBtn.onclick = function() { return false; };
+    }
+    
+    win.querySelector('#lock-auth').onclick = function() {
+        var u = win.querySelector('#lock-user').value;
+        var p = win.querySelector('#lock-pass').value;
+        if (u === 'admin' && p === 'flexbox') {
+            serverRootUnlocked = true;
+            toggleBit('serverRootUnlocked', true);
+            win.remove();
+            if (typeof print === 'function') {
+                print('--- AUTHENTICATION SUCCESSFUL ---', 'cli-highlight');
+                print('System access granted. Terminal unlocked.', 'cli-info');
+            }
+        } else {
+            alert('CRITICAL FAILURE: ACCESS DENIED');
+            if (typeof print === 'function') print('AUTHENTICATION FAILURE', 'cli-error');
+        }
+    };
+}
+
+function handleCmd(line) {
+    // TASK: Entry Point Lock
+    var s = getDataX();
+    if (!s.serverRootUnlocked) {
+        if (typeof print === 'function') {
+            print('CRITICAL: SYSTEM LOCKED', 'cli-error');
+        }
+        showTerminalLock();
+        return;
+    }
+
+    var parts = line.split(/\s+/);
+    var cmd = parts[0].toLowerCase();
+    var args = parts.slice(1);
+
+    if (cmd === 'ls') {
+        var dir = getDir(currentPath);
+        var showAll = (args.indexOf('-a') !== -1 || args.indexOf('-la') !== -1 || args.indexOf('-al') !== -1);
+        var showLong = (args.indexOf('-l') !== -1 || args.indexOf('-la') !== -1 || args.indexOf('-al') !== -1);
+        var files = Object.keys(dir).filter(function(f) {
+            return showAll || !f.startsWith('.');
+        });
+        
+        if (showLong || showAll) {
+            print('total ' + files.length);
+            files.forEach(function(f) {
+                var entry = dir[f];
+                var isDir = entry.type === 'dir';
+                var perms = isDir ? 'drwxr-x---' : '-rw-r-----';
+                var size = entry.size || (isDir ? '4.0K' : '0');
+                var date = entry.modified || '2003-03-14';
+                var name = isDir ? f + '/' : f;
+                print(perms + '  user4  staff  ' + size + '  ' + date + '  ' + name);
+            });
+        } else {
+            var display = files.map(function(f) {
+                return dir[f].type === 'dir' ? f + '/' : f;
+            });
+            print(display.join('  '));
+        }
+
+        if (showAll) {
+            var hasHidden = files.some(function(f) { return f.startsWith('.'); });
+            if (hasHidden) getBonus('sr_found_hidden');
+        }
+    } 
+    else if (cmd === 'pwd') {
+        var displayPath = '/' + (currentPath ? currentPath.slice(1).join('/') : '');
+        print(displayPath || '/');
+    }
+    else if (cmd === 'login') {
+        // SECONDARY AUTH LAYER
+        if (args[0] === 'admin' && args[1] === 'flexbox') {
+            print('Authentication successful.', 'cli-info');
+            print('Scanning session buffer for elevated tokens...', 'cli-info');
+            setTimeout(function() {
+                var m = document.getElementById('master-credentials-modal');
+                if (m) m.style.display = 'block';
+            }, 1000);
+        } else {
+            print('Login failed: Invalid credentials.', 'cli-error');
+            print('Usage: login [username] [password]', 'cli-info');
+        }
+    }
+    else if (cmd === 'cd') {
+        var arg = args[0];
+        if (!arg || arg === '/' || arg === '~') {
+            currentPath = ['root'];
+        } else if (arg === '..') {
+            if (currentPath.length > 1) currentPath.pop();
+        } else if (arg === '.') {
+            // stay in place
+        } else {
+            var segments = arg.split('/').filter(function(s) { return s !== ''; });
+            var tempPath = currentPath.slice();
+            var valid = true;
+            for (var i = 0; i < segments.length; i++) {
+                var seg = segments[i];
+                if (seg === '..') {
+                    if (tempPath.length > 1) tempPath.pop();
+                } else if (seg === '.') {
+                    continue;
+                } else {
+                    var dir = getDir(tempPath);
+                    if (dir[seg] && dir[seg].type === 'dir') {
+                        if (seg === '.hidden') {
+                            var s2 = getDataX();
+                            if (s2 && !s2.notesRead) {
+                                print('cd: .hidden: Permission denied', 'cli-error');
+                                valid = false;
+                                break;
+                            }
+                        }
+                        tempPath.push(seg);
+                    } else if (dir[seg] && dir[seg].type === 'file') {
+                        print('cd: ' + seg + ': Not a directory', 'cli-error');
+                        valid = false;
+                        break;
+                    } else {
+                        print('cd: ' + seg + ': No such file or directory', 'cli-error');
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+            if (valid) currentPath = tempPath;
+        }
+        var displayPath = '/' + (currentPath ? currentPath.slice(1).join('/') : '');
+        var pr = document.getElementById('cli-prompt');
+        if (pr) pr.textContent = 'root@project3:' + (displayPath || '/') + '$';
+
+        var pathStr = currentPath.join('/');
+        if (pathStr.indexOf('.hidden') !== -1) {
+            getBonus('sr_entered_hidden');
+            var hiddenDir = getDir(currentPath);
+            var hiddenFiles = Object.keys(hiddenDir);
+            if (hiddenFiles.length > 0) {
+                print('');
+                hiddenFiles.forEach(function(f) {
+                    var entry = hiddenDir[f];
+                    if (entry.type === 'file') {
+                        if (typeof printHTML === 'function') {
+                            printHTML('<span class="cli-link" onclick="openHiddenFile(\\'' + f + '\\')">' + f + '</span> (' + (entry.size || '?') + ')', 'cli-info');
+                        }
+                    }
+                });
+            }
+        }
+        if (pathStr.indexOf('old') !== -1) getBonus('sr_entered_old');
+    }
+    else if (cmd === 'cat') {
+        var arg = args[0];
+        if (!arg) {
+            print('cat: missing operand', 'cli-error');
+        } else {
+            if (arg === '.secret/fragments.log') {
+                if (typeof FS !== 'undefined' && FS.root['.secret']) {
+                    var sDir = FS.root['.secret'];
+                    var sFile = sDir.contents['fragments.log'];
+                    print(sFile.content);
+                    toggleBit(sFile.flag, true);
+                    return;
+                }
+            }
+            var dir = getDir(currentPath);
+            var file = dir[arg];
+            if (file && file.type === 'file') {
+                if (file.content) {
+                    print(file.content);
+                    if (file.flag) toggleBit(file.flag, true);
+                    if (file.clue) getBonus(file.clue);
+                } else {
+                    print('cat: ' + arg + ': File is binary or empty', 'cli-error');
+                }
+            } else if (file && file.type === 'dir') {
+                print('cat: ' + arg + ': Is a directory', 'cli-error');
+            } else {
+                print('cat: ' + arg + ': No such file or directory', 'cli-error');
+            }
+        }
+    }
+    else if (cmd !== '') {
+        var errors = [
+            'SYSTEM_ERR: CORE_RESISTANCE_DETECTED',
+            'FATAL: UNAUTHORIZED_COMMAND_EXECUTION',
+            'KERNEL_PANIC: MEMORY_SEGMENTATION_FAULT',
+            'ERROR: STACK_OVERFLOW_IN_CMD_PARSER'
+        ];
+        var randErr = errors[Math.floor(Math.random() * errors.length)];
+        print(cmd + ': command not found', 'cli-error');
+        print(randErr, 'cli-error');
+        print('Available commands: ls, cd, cat, pwd, login', 'cli-info');
+    }
+}
+
+function getDir(path) {
+    if (typeof FS === 'undefined') return {};
+    var node = FS;
+    for (var i = 0; i < path.length; i++) {
+        if (node.contents) node = node.contents;
+        node = node[path[i]];
+    }
+    return node.contents || node;
+}
+
+function openHiddenFile(filename) {
+    var dir = getDir(currentPath);
+    var file = dir[filename];
+    if (file && file.type === 'file') {
+        if (file.flag) toggleBit(file.flag, true);
+        if (file.clue) getBonus(file.clue);
+        if (file.action) file.action();
+    }
+}

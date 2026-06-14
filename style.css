@@ -712,3 +712,52 @@ body.quiet-mode .overlap-chaos { display: none !important; }
     font-weight: bold;
     text-align: center;
 }
+
+/* =======================================
+   VINTAGE FORM STYLES
+   ======================================= */
+.vintage-form {
+    background: #c0c0c0;
+    padding: 10px;
+    color: #000;
+}
+.vintage-form p {
+    margin-bottom: 12px;
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #000080;
+}
+.vintage-form label {
+    display: inline-block;
+    width: 45px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #000;
+}
+.vintage-form input {
+    background: #fff;
+    border: 2px inset #808080;
+    color: #000;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    padding: 2px 4px;
+    width: 140px;
+    margin-bottom: 5px;
+}
+.vintage-form input:focus {
+    outline: none;
+    background: #ffffcc;
+}
+
+/* Container styling for windowMaker6000 */
+.win-popup.vintage-login-window {
+    position: fixed !important;
+    top: 30% !important;
+    left: 20% !important;
+    width: 260px;
+    z-index: 20000 !important;
+}
+.win-popup.vintage-login-window .win-x {
+    display: none !important; /* Hide close button */
+}
