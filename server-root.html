@@ -416,9 +416,7 @@ Restricted access. Limited commands available.
 
         var s = getDataX();
         if (s.serverRootUnlocked) {
-            document.getElementById('access-denied').style.display = 'none';
-            document.getElementById('directory-view').style.display = 'block';
-            if (input) input.focus();
+            unlockServerRootUI();
         } else {
             document.getElementById('access-denied').style.display = 'block';
             document.getElementById('directory-view').style.display = 'none';
