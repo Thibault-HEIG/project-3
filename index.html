@@ -57,7 +57,7 @@
     <button class="absurd-z" onclick="popup('<p>IDENTITY CAMOUFLAGE INITIALIZED.</p>',{title:'SYSTEM'})" style="background:yellow;color:black;border:3px outset #ff0">🛡️ PROTECT</button>
     <button class="useless-btn" onclick="heavyDownload('Innovation')">🚀 Innovation</button>
     <button class="useless-btn" onclick="openDocumentation()">📚 Documentation</button>
-    <button onclick="location.href='server-root.html'" style="font-size: 8px; color: #555">SERVER ROOT</button>
+    <button onclick="attemptServerRoot()" style="font-size: 8px; color: #555">SERVER ROOT</button>
 </div>
 
 <!-- THE BROKEN MENU — expands on hover, hides a clue inside the chaos -->
@@ -108,7 +108,7 @@
     <div class="fake-section overlap-chaos">
         <h2 style="color:#ff0">DEPRECATED PROJECT ARCHIVE</h2>
         <p>This section contains restricted logs regarding the site infrastructure.</p>
-        <button onclick="location.href='server-root.html'">View Logs</button>
+        <button onclick="attemptServerRoot()">View Logs</button>
     </div>
 
     <div class="flame-divider">🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥</div>
@@ -317,16 +317,12 @@
         windowMaker6000(msg, { title: 'Guestbook — Error' });
     }
 
-    function attemptServerRoot() {
-        location.href = 'server-root.html';
-    }
-
     // renders the map of the site
     function openSitemap() {
         var s = getDataX();
         var srLink = '';
         if (s && s.sqlDeepAccess && s.phpArchitectSearched) {
-            srLink = '<br><a href="server-root.html" style="color:#00ff00;text-decoration:none">/server-root/</a>';
+            srLink = '<br><a href="#" onclick="attemptServerRoot(); return false;" style="color:#00ff00;text-decoration:none">/server-root/</a>';
         }
         // legacy map data
         var map = '<div style="font-family:Courier New;font-size:11px">' +
@@ -340,7 +336,7 @@
             '/downloads ................ [EMPTY]<br>' +
             '/forum .................... [OFFLINE]<br>' +
             '/??? ...................... [REDACTED]<br>' +
-            (getDataX() && getDataX().serverRootUnlocked ? '<a href="server-root.html" style="color:#0f0;text-decoration:none">/terminal .................. SERVER ROOT</a><br>' : '') +
+            (getDataX() && getDataX().serverRootUnlocked ? '<a href="#" onclick="attemptServerRoot(); return false;" style="color:#0f0;text-decoration:none">/terminal .................. SERVER ROOT</a><br>' : '') +
             '<br><small style="color:#999">Map maintained by T. Morrison.</small></div>';
         windowMaker6000(map, { title: 'Site Map' });
     }

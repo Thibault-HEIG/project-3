@@ -387,29 +387,6 @@ Restricted access. Limited commands available.
         if (cliInput) cliInput.focus();
     }
 
-    function showBypassLogin() {
-        var html = '<div style="background:#c0c0c0;padding:15px;color:#000;border:2px outset #fff">' +
-                   '<p style="margin-bottom:10px;font-weight:bold;font-size:12px">Root Access Protocol:</p>' +
-                   '<div style="margin-bottom:5px">User: <input type="text" id="bp-user" style="width:120px;font-family:monospace"></div>' +
-                   '<div style="margin-bottom:15px">Pass: <input type="password" id="bp-pass" style="width:120px;font-family:monospace"></div>' +
-                   '<div style="text-align:center">' +
-                   '<button class="java-btn" id="bp-auth" style="padding:4px 20px">AUTHORIZE</button>' +
-                   '</div></div>';
-        
-        var win = windowMaker6000(html, { title: 'Bypass Login', x: window.innerWidth/2 - 100 });
-        
-        win.querySelector('#bp-auth').onclick = function() {
-            var u = win.querySelector('#bp-user').value;
-            var p = win.querySelector('#bp-pass').value;
-            if (u === 'admin' && p === 'flexbox') {
-                unlockServerRootUI();
-                win.remove();
-            } else {
-                alert('ACCESS DENIED: Credentials mismatch.');
-            }
-        };
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
         doTheThing('server-root');
         logicLoop('server-root');
