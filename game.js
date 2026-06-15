@@ -798,32 +798,42 @@ function checkRootUnlock() {
 
 // Global function to attempt access to server root
 window.attemptServerRoot = function() {
-    var state = getDataX();
-    if (state.serverRootUnlocked) {
-        window.location.href = 'server-root.html';
-    } else {
-        windowMaker6000(
-            '<div style="background:#c0c0c0;padding:20px;font-family:monospace;font-size:12px;">' +
-            '<p>Login Required:</p>' +
-            'User: <input type="text" id="root-user" style="font-family:monospace;"><br><br>' +
-            'Pass: <input type="password" id="root-pass" style="font-family:monospace;"><br><br>' +
-            '<button onclick="verifyRootLogin()" style="font-family:monospace;">Login</button>' +
-            '</div>',
-            { title: 'System Login' }
-        );
-    }
+    window.location.href = 'server-root.html';
 };
 
 // Global function to verify root login
-window.verifyRootLogin = function() {
-    var u = document.getElementById('root-user').value;
-    var p = document.getElementById('root-pass').value;
+window.verifyRootLogin = function(u, p) {
     if (u === 'admin' && p === 'flexbox') {
         toggleBit('serverRootUnlocked', true);
-        window.location.href = 'server-root.html';
-    } else {
-        alert('ACCESS DENIED');
+        return true;
     }
+    return false;
+};
+
+// Function to trigger the Master Credentials Found modal
+window.showMasterCredentialsModal = function(onDecrypt) {
+    var modalContent = '<div style="background: #c0c0c0; color: #000; padding: 10px;">' +
+                       '<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">' +
+                       '<img src="img/spiderman-png.png" alt="System Icon" style="width: 32px; height: 32px; filter: grayscale(100%);">' +
+                       '<strong>Master Credentials Found!</strong>' +
+                       '</div>' +
+                       '<p style="font-size: 11px; margin-bottom: 10px;">The system has identified valid ARCHITECT credentials in the session buffer. Do you wish to proceed with full decryption?</p>' +
+                       '<div style="background: #000; color: #0f0; padding: 5px; font-family: monospace; font-size: 10px; border: 1px inset #fff; margin-bottom: 15px;">' +
+                       'TARGET: user4_logs.crypt<br>' +
+                       'STATUS: READY_FOR_DECRYPTION' +
+                       '</div>' +
+                       '<div style="text-align: center; display: flex; gap: 5px; justify-content: center;">' +
+                       '<button class="java-btn" id="decrypt-btn" style="flex: 1;">DECRYPT</button>' +
+                       '<button class="java-btn" id="abort-btn" style="flex: 1;">ABORT</button>' +
+                       '</div></div>';
+    var win = windowMaker6000(modalContent, { title: 'System Alert' });
+    win.querySelector('#decrypt-btn').onclick = function() {
+        win.remove();
+        onDecrypt();
+    };
+    win.querySelector('#abort-btn').onclick = function() {
+        win.remove();
+    };
 };
 
 // audio simulation engine

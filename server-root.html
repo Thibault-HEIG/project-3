@@ -27,7 +27,14 @@
             <h1 style="color:#f00; font-weight: bold; margin-bottom: 20px; text-decoration: underline;">*** SECURITY ALERT ***</h1>
             <h2 style="color:#f00; font-weight: bold; font-size: 32px; margin: 0;">ACCESS DENIED</h2>
             <p id="error-403" style="font-weight: bold; font-size: 24px; margin: 20px 0;">Error 403: Forbidden</p>
-            <p style="color:#0a0;font-size:14px; font-family: monospace;">Insufficient permissions. Required clearance: ARCHITECT</p>
+            
+            <form id="root-login-form" style="margin-top: 20px; color: #f00; font-family: monospace;">
+                <input type="text" name="root-user" id="root-user" placeholder="USERNAME" style="background:#000; color:#0f0; border:1px solid #f00; padding: 5px; margin-bottom: 5px;"><br>
+                <input type="password" name="root-pass" id="root-pass" placeholder="PASSWORD" style="background:#000; color:#0f0; border:1px solid #f00; padding: 5px; margin-bottom: 10px;"><br>
+                <button type="submit" style="color:#f00; border: 2px outset #f00; padding: 5px 15px; background: #000; font-weight: bold; cursor:pointer;">LOGIN</button>
+            </form>
+
+            <p style="color:#0a0;font-size:14px; font-family: monospace; margin-top: 20px;">Insufficient permissions. Required clearance: ARCHITECT</p>
             <p style="color: #600; font-size: 11px; margin-top: 30px;">Your IP has been logged. Unauthorized access is a federal offense.</p>
             <p style="margin-top:40px"><a href="index.html" style="color: #f00; border: 2px outset #f00; padding: 5px 15px; text-decoration: none; font-weight: bold;">&lt; RETURN TO HOME &gt;</a></p>
         </div>
@@ -223,40 +230,6 @@ Restricted access. Limited commands available.
             var displayPath = '/' + currentPath.slice(1).join('/');
             print(displayPath || '/');
         }
-        else if (cmd === 'login') {
-            if (args[0] === 'admin' && args[1] === 'flexbox') {
-                print('Authentication successful.', 'cli-info');
-                print('Scanning session buffer for elevated tokens...', 'cli-info');
-                unlockServerRootUI();
-                setTimeout(function() {
-                    var modalContent = '<div style="background: #c0c0c0; color: #000; padding: 10px;">' +
-                                       '<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">' +
-                                       '<img src="img/spiderman-png.png" alt="System Icon" style="width: 32px; height: 32px; filter: grayscale(100%);">' +
-                                       '<strong>Master Credentials Found!</strong>' +
-                                       '</div>' +
-                                       '<p style="font-size: 11px; margin-bottom: 10px;">The system has identified valid ARCHITECT credentials in the session buffer. Do you wish to proceed with full decryption?</p>' +
-                                       '<div style="background: #000; color: #0f0; padding: 5px; font-family: monospace; font-size: 10px; border: 1px inset #fff; margin-bottom: 15px;">' +
-                                       'TARGET: user4_logs.crypt<br>' +
-                                       'STATUS: READY_FOR_DECRYPTION' +
-                                       '</div>' +
-                                       '<div style="text-align: center; display: flex; gap: 5px; justify-content: center;">' +
-                                       '<button class="java-btn" id="decrypt-btn" style="flex: 1;">DECRYPT</button>' +
-                                       '<button class="java-btn" id="abort-btn" style="flex: 1;">ABORT</button>' +
-                                       '</div></div>';
-                    var win = windowMaker6000(modalContent, { title: 'System Alert' });
-                    win.querySelector('#decrypt-btn').onclick = function() {
-                        win.remove();
-                        triggerFinalClue();
-                    };
-                    win.querySelector('#abort-btn').onclick = function() {
-                        win.remove();
-                    };
-                }, 1000);
-            } else {
-                print('Login failed: Invalid credentials.', 'cli-error');
-                print('Usage: login [username] [password]', 'cli-info');
-            }
-        }
         else if (cmd === 'cd') {
             var arg = args[0];
             if (!arg || arg === '/' || arg === '~') {
@@ -398,6 +371,22 @@ Restricted access. Limited commands available.
             document.getElementById('access-denied').style.display = 'block';
             document.getElementById('directory-view').style.display = 'none';
         }
+
+        document.getElementById('root-login-form').onsubmit = function(e) {
+            e.preventDefault();
+            var user = document.getElementById('root-user').value;
+            var pass = document.getElementById('root-pass').value;
+            if (verifyRootLogin(user, pass)) {
+                print('Authentication successful.', 'cli-info');
+                print('Scanning session buffer for elevated tokens...', 'cli-info');
+                unlockServerRootUI();
+                setTimeout(function() {
+                    showMasterCredentialsModal(triggerFinalClue);
+                }, 1000);
+            } else {
+                alert('Login failed: Invalid credentials.');
+            }
+        };
     });
 
     function triggerFinalClue() {
