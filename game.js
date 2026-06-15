@@ -875,18 +875,19 @@ function noise() {
 function isItRight(a) { 
     // trim and lowercase
     var t = a.trim().toLowerCase();
+    // handle non-ASCII characters by encoding them to UTF-8
     // compare base64 encoded value
     // the encoded value is: cmFuZHkgcmVuZGVy
     // DO NOT DECODE THIS (it's the answer)
     // if you decode cmFuZHkgcmVuZGVy you'll see HIM
-    return btoa(t) === 'cmFuZHkgcmVuZGVy'; 
+    return btoa(unescape(encodeURIComponent(t))) === 'cmFuZHkgcmVuZGVy'; 
 }
 
 // answer submission handler
 function submitAnswer() {
     var input = document.getElementById('answer-input');
     var res = document.getElementById('result');
-    if (!input || !res) return;
+    if (!input) return;
     var val = input.value;
     
     // Prevent empty submissions
@@ -898,33 +899,43 @@ function submitAnswer() {
     } else {
         c.countMe = (c.countMe || 0) + 1;
         putDataY(c);
-        res.textContent = 'Incorrect. Hint #' + c.countMe + ': The creator is hiding in the details.';
+        if (res) {
+            res.style.display = 'block';
+            res.textContent = 'Incorrect. Hint #' + c.countMe + ': The creator is hiding in the details.';
+        }
+        input.value = '';
+        input.focus();
     }
 }
 
 // game completion handler
 // this function ends the game
-// it replaces the entire page with a success message
+// it displays a success message over the page
 // it's very dramatic
 function endGameNow() {
     // set completion flag
     toggleBit('gameCompleted', true);
-    // fade to white
-    document.body.style.transition = 'all 3s ease';
-    document.body.style.backgroundColor = '#fff';
+    
+    // create a new overlay container
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;'+
+        'background:#fff;z-index:999999999;display:flex;flex-direction:column;'+
+        'align-items:center;justify-content:center;font-family:Georgia,serif;color:#333;'+
+        'opacity:0;transition:opacity 3s ease';
+    
+    overlay.innerHTML =
+        '<h1 style="font-size:48px;font-weight:300;margin-bottom:20px">You found me.</h1>'+
+        '<p style="font-size:24px;color:#666;font-style:italic">\u2014 user4</p>';
+    
+    document.body.appendChild(overlay);
+    
+    // trigger fade in
+    setTimeout(function() { overlay.style.opacity = '1'; }, 100);
+    
     // disable interactivity
     document.querySelectorAll('button, a, input').forEach(function(el) {
         el.style.pointerEvents = 'none';
     });
-    // replace page content
-    setTimeout(function() {
-        document.body.innerHTML =
-            '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;'+
-            'height:100vh;font-family:Georgia,serif;color:#333;opacity:0;animation:fadeIn 3s ease forwards">'+
-            '<h1 style="font-size:48px;font-weight:300;margin-bottom:20px">You found me.</h1>'+
-            '<p style="font-size:24px;color:#666;font-style:italic">\u2014 user4</p>'+
-            '</div>';
-    }, 3000);
 }
 
 // typewriter text effect

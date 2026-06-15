@@ -33,16 +33,11 @@
 
 <script src="game.js"></script>
 <script>
-    // GLOBAL ATTEMPTS COUNTER
-    var countMe = 0;
-    // THE GLOBAL TRUTH
-    var truth_s = null;
-
     document.addEventListener('DOMContentLoaded', function() {
         // inform system of final arrival
         doTheThing('report');
         // grab the truth
-        truth_s = getDataX();
+        var truth_s = getDataX();
         // check if user is allowed to see the end
         if (!truth_s || !truth_s.serverRootUnlocked || !truth_s.notesRead) {
             // nested logic for rejection
@@ -58,42 +53,6 @@
         // focus the input box
         document.getElementById('answer-input').focus();
     });
-
-    // handles the submission of the final answer
-    function submitAnswer() {
-        // grab the input element
-        var input = document.getElementById('answer-input');
-        // result container
-        var result = document.getElementById('result');
-        // the value entered
-        var val = input.value.trim();
-
-        // if empty then we do nothing
-        if (!val) {
-            return;
-        }
-        
-        // add 1 to the attempts
-        countMe = countMe + 1;
-
-        // check if it is right
-        if (isItRight(val)) {
-            // we have a winner!
-            endGameNow();
-        } else {
-            // wrong answer logic
-            result.style.display = 'block';
-            // nested ternary for error messages (MUCH BETTER)
-    result.textContent = (countMe === 1) ? 'Incorrect. Think harder.' : 
-                                 (countMe === 2) ? 'Wrong. The clues are everywhere.' :
-                                 (countMe === 3) ? 'No. Read the logs. Read the notes. Who BUILT this?' :
-                                 'The username is user4. His name is hidden in the technical sectors.';
-            // clear the box
-            input.value = '';
-            // refocus
-            input.focus();
-        }
-    }
 
     // DEAD CODE FOR VALIDATION
     function _validate_input_length(str) {
