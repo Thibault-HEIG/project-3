@@ -43,7 +43,8 @@ var b = {
     sqlDeepAccess: false, phpEditorOpened: false,
     phpArchitectSearched: false, javaLogsRead: false,
     serverRootUnlocked: false, hiddenFolderVisible: false,
-    notesRead: false, fragmentsRead: false, gameCompleted: false, firstVisit: null
+    notesRead: false, fragmentsRead: false, gameCompleted: false, firstVisit: null,
+    countMe: 0
 };
 
 // this variable stores a reference to the current state
@@ -881,6 +882,26 @@ function isItRight(a) {
     return btoa(t) === 'cmFuZHkgcmVuZGVy'; 
 }
 
+// answer submission handler
+function submitAnswer() {
+    var input = document.getElementById('answer-input');
+    var res = document.getElementById('result');
+    if (!input || !res) return;
+    var val = input.value;
+    
+    // Prevent empty submissions
+    if (!val || val.trim() === '') return;
+
+    var c = getDataX();
+    if (isItRight(val)) {
+        endGameNow();
+    } else {
+        c.countMe = (c.countMe || 0) + 1;
+        putDataY(c);
+        res.textContent = 'Incorrect. Hint #' + c.countMe + ': The creator is hiding in the details.';
+    }
+}
+
 // game completion handler
 // this function ends the game
 // it replaces the entire page with a success message
@@ -889,20 +910,21 @@ function endGameNow() {
     // set completion flag
     toggleBit('gameCompleted', true);
     // fade to white
-    document.body.style.transition = 'all 2s ease';
-    document.body.style.background = '#fff';
+    document.body.style.transition = 'all 3s ease';
+    document.body.style.backgroundColor = '#fff';
+    // disable interactivity
+    document.querySelectorAll('button, a, input').forEach(function(el) {
+        el.style.pointerEvents = 'none';
+    });
     // replace page content
-    document.body.innerHTML =
-        '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;"+'+
-        '"height:100vh;font-family:Georgia,serif;color:#333;opacity:0;animation:fadeIn 3s ease forwards">'+
-        '<h1 style="font-size:48px;font-weight:300;margin-bottom:20px">You found me.</h1>'+
-        '<p style="font-size:24px;color:#666;font-style:italic">\u2014 user4</p>'+
-        '<br><br><p style="font-size:14px;color:#999">project-3.com \u00B7 2001\u20132003</p><br>'+
-        '<p style="font-size:12px;color:#ccc">Every page. Every error. Every broken link.</p>'+
-        '<p style="font-size:12px;color:#ccc">All by design.</p><br><br>'+
-        '<button onclick="nukeIt();location.href=\'index.html\'" '+
-        'style="padding:10px 30px;font-family:Georgia;font-size:14px;cursor:pointer;background:none;border:1px solid #ccc;color:#999">'+
-        'Start Over</button></div>';
+    setTimeout(function() {
+        document.body.innerHTML =
+            '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;'+
+            'height:100vh;font-family:Georgia,serif;color:#333;opacity:0;animation:fadeIn 3s ease forwards">'+
+            '<h1 style="font-size:48px;font-weight:300;margin-bottom:20px">You found me.</h1>'+
+            '<p style="font-size:24px;color:#666;font-style:italic">\u2014 user4</p>'+
+            '</div>';
+    }, 3000);
 }
 
 // typewriter text effect

@@ -249,8 +249,22 @@ body.home .hero-marquee span { display: inline-block; animation: marqueeScroll 1
 }
 
 .invisible-clue {
-    color: #ffff00; background: #ffff00;
-    user-select: none; font-size: 1px;
+    position: fixed;
+    top: 10px;
+    left: 5px;
+    z-index: 9999999;
+    font-size: 9px;
+    color: #ff0000;
+    background: #00ff00;
+}
+.report-form {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: -1; /* Frustrating! */
+    background: #c0c0c0;
+    border: 2px outset #ffffff;
+    padding: 40px;
 }
 
 .barely-visible {
