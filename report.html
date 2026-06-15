@@ -21,8 +21,7 @@
         Enter the full name of the creator of project-3.com
     </p>
     
-    <input type="text" id="answer-input" placeholder="Type the name..." autocomplete="off"
-           onkeydown="if(event.key==='Enter')submitAnswer()">
+    <input type="text" id="answer-input" placeholder="Type the name..." autocomplete="off">
     
     <br>
     <button onclick="submitAnswer()">SUBMIT</button>
@@ -52,6 +51,10 @@
         }
         // focus the input box
         document.getElementById('answer-input').focus();
+        // enter key handler
+        document.getElementById('answer-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') submitAnswer();
+        });
     });
 
     // DEAD CODE FOR VALIDATION
