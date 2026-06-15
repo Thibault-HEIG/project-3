@@ -421,13 +421,6 @@ Restricted access. Limited commands available.
             document.getElementById('access-denied').style.display = 'block';
             document.getElementById('directory-view').style.display = 'none';
         }
-
-        var err403 = document.getElementById('error-403');
-        if (err403) {
-            err403.onclick = function() {
-                showBypassLogin();
-            };
-        }
     });
 
     function triggerFinalClue() {

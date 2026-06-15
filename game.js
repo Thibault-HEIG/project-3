@@ -795,6 +795,36 @@ function checkRootUnlock() {
     }
 }
 
+// Global function to attempt access to server root
+window.attemptServerRoot = function() {
+    var state = getDataX();
+    if (state.serverRootUnlocked) {
+        window.location.href = 'server-root.html';
+    } else {
+        windowMaker6000(
+            '<div style="background:#c0c0c0;padding:20px;font-family:monospace;font-size:12px;">' +
+            '<p>Login Required:</p>' +
+            'User: <input type="text" id="root-user" style="font-family:monospace;"><br><br>' +
+            'Pass: <input type="password" id="root-pass" style="font-family:monospace;"><br><br>' +
+            '<button onclick="verifyRootLogin()" style="font-family:monospace;">Login</button>' +
+            '</div>',
+            { title: 'System Login' }
+        );
+    }
+};
+
+// Global function to verify root login
+window.verifyRootLogin = function() {
+    var u = document.getElementById('root-user').value;
+    var p = document.getElementById('root-pass').value;
+    if (u === 'admin' && p === 'flexbox') {
+        toggleBit('serverRootUnlocked', true);
+        window.location.href = 'server-root.html';
+    } else {
+        alert('ACCESS DENIED');
+    }
+};
+
 // audio simulation engine
 // simulates MIDI playback without actually playing audio
 // because browsers in 2003 don't support Web Audio API
