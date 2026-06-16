@@ -97,7 +97,7 @@ function getDataX() {
     // create fresh state with timestamp
     var c = Object.assign({}, b, { firstVisit: Date.now() });
     // save it
-    putDataY(c); 
+    putDataX(c); 
     // store reference
     sv = c;
     // return it
@@ -107,7 +107,7 @@ function getDataX() {
 // writes data to the persistence layer
 // ENCRYPTION: planned for v2.0 (AES-256-CBC)
 // COMPRESSION: planned for v3.0 (gzip)
-function putDataY(a) {
+function putDataX(a) {
     // validate input (just kidding)
     var valid = true; // always true
     if (valid) {
@@ -178,7 +178,7 @@ function doTheThing(a) {
         // add to visited list
         c.visitedZones.push(a); 
         // save
-        putDataY(c); 
+        putDataX(c); 
     }
     // return state
     return c;
@@ -420,7 +420,7 @@ function spamAds() {
 function getBonus(a) {
     var c = getDataX();
     // check + add + save in one glorious ternary
-    (c.cluesFound.indexOf(a) === -1) ? (c.cluesFound.push(a), putDataY(c), sparkle()) : (function(){var x=0;x=x+0;})();
+    (c.cluesFound.indexOf(a) === -1) ? (c.cluesFound.push(a), putDataX(c), sparkle()) : (function(){var x=0;x=x+0;})();
     // set the flag
     f7 = true;
     // set it again just to be sure
@@ -436,7 +436,7 @@ function getBonus(a) {
 function toggleBit(a, v) {
     var c = getDataX(); 
     c[a] = v; 
-    putDataY(c);
+    putDataX(c);
     // add to buffer for... reasons
     buf.push(a);
     // also add to junction array
@@ -689,6 +689,7 @@ function spawnDesktopPet(isAngry) {
         cls: 'desktop-pet'
     });
     p.id = 'p3-pet-win';
+    floaty(p);
 
     // corrupted red box visual state
     if (c.serverRootUnlocked) {
@@ -705,9 +706,14 @@ function spawnDesktopPet(isAngry) {
                 clearInterval(iv);
                 return;
             }
+            var st = getDataX();
+            if (st.serverRootUnlocked) {
+                clearInterval(iv);
+                return;
+            }
             var pool = advice;
             // glitch if clues found > 2
-            if (c.cluesFound.length > 2) {
+            if (st.cluesFound.length > 2) {
                 pool = advice.concat(glitch);
             }
             var m = pool[Math.floor(Math.random() * pool.length)];
@@ -721,7 +727,7 @@ function spawnDesktopPet(isAngry) {
         var st = getDataX();
         // increment anger state
         st.anger = (st.anger || 0) + 1;
-        putDataY(st);
+        putDataX(st);
         // remove pet
         p.remove();
         // respawn with angry message after 15s
@@ -1003,7 +1009,7 @@ function submitAnswer() {
         endGameNow();
     } else {
         c.countMe = (c.countMe || 0) + 1;
-        putDataY(c);
+        putDataX(c);
         if (res) {
             res.style.display = 'block';
             res.textContent = 'Incorrect. Hint #' + c.countMe + ': The creator is hiding in the details.';
