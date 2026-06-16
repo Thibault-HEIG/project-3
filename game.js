@@ -20,7 +20,6 @@ class GameStateManager {
     gameCompleted: false,
     firstVisit: null,
     countMe: 0,
-    forumDismissals: 0,
     anger: 0
   });
 
