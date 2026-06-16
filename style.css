@@ -748,19 +748,93 @@ body.quiet-mode .overlap-chaos { display: none !important; }
     left: auto !important;
 }
 
-/* Corrupted state styling */
+/* =======================================
+   CORRUPTED / GLITCH STATE
+   ======================================= */
+.corrupted {
+    animation: glitchShake 0.1s infinite !important;
+    border: 3px solid #f00 !important;
+}
+
+/* Ensure corrupted win-popups (especially the AI chat) look broken */
 .win-popup.corrupted {
     background-color: #ff0000 !important;
+    background-image: none !important;
     color: #ffffff !important;
-    animation: glitchShake 0.1s infinite !important;
-    box-shadow: 0 0 20px #ff0000 !important;
+    box-shadow: 0 0 30px #ff0000, inset 0 0 10px #000 !important;
+    border: 2px solid #fff !important;
+    z-index: 99999 !important;
 }
+
 .win-popup.corrupted .win-bar {
-    background-color: #000000 !important;
+    background-color: #000 !important;
+    color: #f00 !important;
+    border-bottom: 1px solid #f00 !important;
 }
+
 .win-popup.corrupted .win-title {
     color: #ff0000 !important;
+    font-family: 'VT323', monospace !important;
+    text-transform: uppercase;
 }
+
+/* Specific overrides for the AI chat when corrupted */
+.win-popup.ai-chat-popup.corrupted {
+    border-radius: 0 !important; /* Lose the modern rounded corners */
+}
+
+.win-popup.corrupted .ai-chat-container,
+.win-popup.corrupted .ai-chat-messages,
+.win-popup.corrupted .ai-chat-input-area {
+    background: #000 !important;
+    color: #f00 !important;
+}
+
+.win-popup.corrupted .ai-message {
+    background: #200 !important;
+    color: #f00 !important;
+    border: 1px solid #f00 !important;
+    font-family: 'Courier New', monospace !important;
+}
+
+.win-popup.corrupted .ai-chat-input {
+    background: #000 !important;
+    color: #f00 !important;
+    border: 1px solid #f00 !important;
+}
+
+.win-popup.corrupted .ai-send-btn {
+    background: #f00 !important;
+    color: #000 !important;
+}
+
+.win-popup.corrupted .ai-dot {
+    background: #f00 !important;
+}
+
+.win-popup.corrupted .ai-error {
+    background: #400 !important;
+    border: 2px dashed #f00 !important;
+    color: #fff !important;
+    animation: pulse 0.5s infinite !important;
+}
+
+.win-popup.corrupted .pet-dialogue {
+    background: #000 !important;
+    color: #f00 !important;
+    border: 1px solid #f00 !important;
+}
+
+.win-popup.corrupted .pet-dialogue::before {
+    border-top-color: #f00 !important;
+}
+
+.win-popup.corrupted .pet-dialogue::after {
+    border-top-color: #000 !important;
+}
+
+
+
 
 .pet-dialogue {
     position: absolute;

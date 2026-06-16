@@ -855,6 +855,7 @@ const Interactions = {
    */
   AIChatAssistant: class AIChatAssistant {
     static #instance = null;
+    static #templates = null;
     #popup = null;
     #isLoading = false;
 
@@ -864,59 +865,67 @@ const Interactions = {
         return AIChatAssistant.#instance;
       }
       AIChatAssistant.#instance = this;
+      this.#init();
+    }
+
+    async #init() {
+      if (!AIChatAssistant.#templates) {
+        try {
+          const response = await fetch('ai-chat-assets.html');
+          const html = await response.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          AIChatAssistant.#templates = {
+            main: doc.querySelector('.ai-chat-container').outerHTML,
+            typing: doc.querySelector('.ai-typing').outerHTML,
+            error: doc.querySelector('.ai-error').outerHTML
+          };
+        } catch (e) {
+          console.error('AI Assistant: Failed to load assets.', e);
+          return;
+        }
+      }
       this.render();
     }
 
     focus() {
       if (this.#popup && this.#popup.parentNode) {
         this.#popup.style.zIndex = WindowManager.nextZIndex();
-      } else {
-        this.render();
       }
     }
 
     render() {
-      const content = 
-        '<div class="ai-chat-container" style="width:280px;height:350px;display:flex;flex-direction:column;background:#c0c0c0;font-family:\'MS Sans Serif\',Tahoma,sans-serif;font-size:11px;">' +
-          '<div class="ai-chat-log" style="flex:1;overflow-y:scroll;background:#fff;border:2px inset #808080;margin:8px;padding:5px;color:#000;font-family:monospace;">' +
-            '<div style="color:#000080;margin-bottom:5px;">> AI Assistant v0.1-alpha initialized.</div>' +
-            '<div style="color:#000080;margin-bottom:8px;">> Connection: STABLE</div>' +
-            '<div style="margin-bottom:8px;"><b>Assistant:</b> Greetings. I am the project-3 helper. Ask me anything about the architecture.</div>' +
-          '</div>' +
-          '<div class="ai-chat-loading" style="display:none;padding:0 10px;font-style:italic;color:#444;font-size:10px;margin-bottom:5px;">Assistant is thinking...</div>' +
-          '<div class="ai-chat-input-area" style="padding:8px;display:flex;gap:5px;border-top:1px solid #808080;background:#d0d0d0;">' +
-            '<input type="text" class="ai-chat-input" style="flex:1;border:2px inset #fff;padding:2px;font-size:11px;" placeholder="Enter query...">' +
-            '<button class="ai-chat-send" style="padding:2px 8px;background:#c0c0c0;border:2px outset #fff;font-size:11px;cursor:pointer;">Send</button>' +
-          '</div>' +
-        '</div>';
+      if (!AIChatAssistant.#templates) return;
 
-      this.#popup = WindowManager.create(content, {
-        title: '🤖 AI Assistant',
+      this.#popup = WindowManager.create(AIChatAssistant.#templates.main, {
+        title: 'Neural Interface v4.0.2',
         cls: 'ai-chat-popup'
       });
       this.#popup.id = 'p3-ai-chat-win';
 
       const input = this.#popup.querySelector('.ai-chat-input');
-      const sendBtn = this.#popup.querySelector('.ai-chat-send');
+      const sendBtn = this.#popup.querySelector('.ai-send-btn');
 
-      sendBtn.onclick = () => this.handleSend();
-      input.onkeydown = (e) => { if (e.key === 'Enter') this.handleSend(); };
+      if (sendBtn) sendBtn.onclick = () => this.handleSend();
+      if (input) input.onkeydown = (e) => { if (e.key === 'Enter') this.handleSend(); };
 
       stateManager.update('aiChatOpened', true);
 
       const closeBtn = this.#popup.querySelector('.win-x');
-      const originalClose = closeBtn.onclick;
-      closeBtn.onclick = () => {
-        AIChatAssistant.#instance = null;
-        if (originalClose) originalClose.call(closeBtn);
-        else this.#popup.remove();
-      };
+      if (closeBtn) {
+        const originalClose = closeBtn.onclick;
+        closeBtn.onclick = () => {
+          AIChatAssistant.#instance = null;
+          if (originalClose) originalClose.call(closeBtn);
+          else this.#popup.remove();
+        };
+      }
     }
 
     handleSend() {
       if (this.#isLoading) return;
       const input = this.#popup.querySelector('.ai-chat-input');
-      const text = input.value.trim();
+      const text = input ? input.value.trim() : '';
       if (!text) return;
 
       this.addMessage('User', text);
@@ -931,10 +940,12 @@ const Interactions = {
 
     addMessage(sender, text) {
       if (!this.#popup || !this.#popup.parentNode) return;
-      const log = this.#popup.querySelector('.ai-chat-log');
+      const log = this.#popup.querySelector('.ai-chat-messages');
+      if (!log) return;
+      
       const msg = document.createElement('div');
-      msg.style.marginBottom = '6px';
-      msg.innerHTML = '<b>' + sender + ':</b> ' + text;
+      msg.className = 'ai-message ' + (sender === 'User' ? 'user' : 'bot');
+      msg.innerHTML = text;
       log.appendChild(msg);
       log.scrollTop = log.scrollHeight;
     }
@@ -942,16 +953,37 @@ const Interactions = {
     setLoading(loading) {
       this.#isLoading = loading;
       if (!this.#popup || !this.#popup.parentNode) return;
-      const loadingEl = this.#popup.querySelector('.ai-chat-loading');
-      loadingEl.style.display = loading ? 'block' : 'none';
+      const log = this.#popup.querySelector('.ai-chat-messages');
+      if (!log) return;
+
+      if (loading) {
+        const typingContainer = document.createElement('div');
+        typingContainer.innerHTML = AIChatAssistant.#templates.typing;
+        const typingEl = typingContainer.firstChild;
+        typingEl.id = 'ai-typing-indicator';
+        log.appendChild(typingEl);
+        log.scrollTop = log.scrollHeight;
+      } else {
+        const typingEl = log.querySelector('#ai-typing-indicator');
+        if (typingEl) typingEl.remove();
+      }
+
       const input = this.#popup.querySelector('.ai-chat-input');
-      const sendBtn = this.#popup.querySelector('.ai-chat-send');
-      input.disabled = loading;
-      sendBtn.disabled = loading;
+      const sendBtn = this.#popup.querySelector('.ai-send-btn');
+      if (input) input.disabled = loading;
+      if (sendBtn) sendBtn.disabled = loading;
     }
 
     triggerCrash() {
-      this.addMessage('Assistant', '<span style="color:#c00;font-weight:bold;">CRITICAL_FAILURE: API_LIMIT_EXCEEDED</span>');
+      if (!this.#popup || !this.#popup.parentNode) return;
+      const log = this.#popup.querySelector('.ai-chat-messages');
+      if (!log) return;
+
+      const errorContainer = document.createElement('div');
+      errorContainer.innerHTML = AIChatAssistant.#templates.error;
+      log.appendChild(errorContainer.firstChild);
+      log.scrollTop = log.scrollHeight;
+
       setTimeout(() => {
         const crashSteps = [
           'Attempting emergency buffer flush...',
@@ -976,12 +1008,17 @@ const Interactions = {
     finalizeCrash() {
       if (!this.#popup || !this.#popup.parentNode) return;
       this.#popup.classList.add('corrupted');
-      this.#popup.querySelector('.win-title').textContent = '⚠ API LIMIT REACHED ⚠';
+      const titleEl = this.#popup.querySelector('.win-title');
+      if (titleEl) titleEl.textContent = '⚠ API LIMIT REACHED ⚠';
+      
       const input = this.#popup.querySelector('.ai-chat-input');
-      const sendBtn = this.#popup.querySelector('.ai-chat-send');
-      input.placeholder = 'OFFLINE';
-      input.disabled = true;
-      sendBtn.disabled = true;
+      const sendBtn = this.#popup.querySelector('.ai-send-btn');
+      if (input) {
+        input.placeholder = 'OFFLINE';
+        input.disabled = true;
+      }
+      if (sendBtn) sendBtn.disabled = true;
+      
       stateManager.update('aiChatCrashed', true);
       stateManager.addClue('ai_crash_fragment');
     }
