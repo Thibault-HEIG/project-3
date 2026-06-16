@@ -51,7 +51,15 @@ class GameStateManager {
     try {
       const raw = localStorage.getItem(this.#storageKey);
       if (raw && typeof raw === 'string' && raw.includes('{')) {
-        this.#state = Object.assign({}, this.#defaults, JSON.parse(raw));
+        const parsed = JSON.parse(raw);
+        
+        // Strict Enforcement: serverRootUnlocked is invalid if prerequisites are missing.
+        // This prevents stale localStorage payloads from injecting unauthorized access.
+        if (parsed.serverRootUnlocked && (!parsed.sqlDeepAccess || !parsed.phpArchitectSearched)) {
+          parsed.serverRootUnlocked = false;
+        }
+
+        this.#state = Object.assign({}, this.#defaults, parsed);
         this.#syncLegacyGlobals();
         return this.#state;
       }

@@ -22,7 +22,7 @@
 
 <div class="sr-content" id="sr-content">
 
-    <div id="access-denied" style="display:none;text-align:center;padding:80px 20px">
+    <div id="access-denied" style="display:block;text-align:center;padding:80px 20px">
         <div style="display:inline-block; border: 4px ridge #f00; padding: 40px; background: #000; box-shadow: 15px 15px 0 #300;">
             <h1 style="color:#f00; font-weight: bold; margin-bottom: 20px; text-decoration: underline;">*** SECURITY ALERT ***</h1>
             <h2 style="color:#f00; font-weight: bold; font-size: 32px; margin: 0;">ACCESS DENIED</h2>
@@ -396,15 +396,19 @@ Restricted access. Limited commands available.
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        // [MOD] STRICT STATE ENFORCEMENT
+        // Preemptively force access-denied UI if state is locked to avoid logicLoop race conditions
+        var s = getDataX();
+        if (!s.serverRootUnlocked) {
+            document.getElementById('access-denied').style.display = 'block';
+            document.getElementById('directory-view').style.display = 'none';
+        }
+
         doTheThing('server-root');
         logicLoop('server-root');
 
-        var s = getDataX();
         if (s.serverRootUnlocked) {
             unlockServerRootUI();
-        } else {
-            document.getElementById('access-denied').style.display = 'block';
-            document.getElementById('directory-view').style.display = 'none';
         }
 
         document.getElementById('root-login-form').onsubmit = function(e) {
