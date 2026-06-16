@@ -778,19 +778,22 @@ function checkRootUnlock() {
         if (d.phpArchitectSearched) {
             // check if not already unlocked
             if (!d.serverRootUnlocked) {
-                // unlock it!
-                toggleBit('serverRootUnlocked', true);
-                // show the credentials popup
-                // users will need these for the terminal
-                windowMaker6000(
-                    '<div style="text-align:center;padding:15px">' +
-                    '<p style="color:#0f0;font-family:monospace;font-size:12px;margin-bottom:10px">SERVER ACCESS GRANTED</p>' +
-                    '<p style="font-size:10px;color:#ccc">Credentials for /server-root/ bypass:</p>' +
-                    '<p style="font-size:14px;color:#fff;margin:10px 0;background:#333;padding:5px"><b>USER: admin<br>PASS: flexbox</b></p>' +
-                    '<p style="font-size:9px;color:#888">Use the "login" command in the root terminal.</p>' +
-                    '</div>',
-                    { title: '🔑 SYSTEM OVERRIDE' }
-                );
+                // TASK: Do NOT unlock automatically anymore.
+                // Authentication must happen via the server-root.html form.
+                
+                // only show the credentials popup once per session
+                if (!sessionStorage.getItem('p3_root_creds_shown')) {
+                    sessionStorage.setItem('p3_root_creds_shown', '1');
+                    windowMaker6000(
+                        '<div style="text-align:center;padding:15px">' +
+                        '<p style="color:#0f0;font-family:monospace;font-size:12px;margin-bottom:10px">SERVER ACCESS GRANTED</p>' +
+                        '<p style="font-size:10px;color:#ccc">Credentials for /server-root/ bypass:</p>' +
+                        '<p style="font-size:14px;color:#fff;margin:10px 0;background:#333;padding:5px"><b>USER: admin<br>PASS: flexbox</b></p>' +
+                        '<p style="font-size:9px;color:#888">Use the login form on the server root page.</p>' +
+                        '</div>',
+                        { title: '🔑 SYSTEM OVERRIDE' }
+                    );
+                }
             }
         }
     }
@@ -799,15 +802,6 @@ function checkRootUnlock() {
 // Global function to attempt access to server root
 window.attemptServerRoot = function() {
     window.location.href = 'server-root.html';
-};
-
-// Global function to verify root login
-window.verifyRootLogin = function(u, p) {
-    if (u === 'admin' && p === 'flexbox') {
-        toggleBit('serverRootUnlocked', true);
-        return true;
-    }
-    return false;
 };
 
 // Function to trigger the Master Credentials Found modal

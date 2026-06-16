@@ -29,9 +29,15 @@
             <p id="error-403" style="font-weight: bold; font-size: 24px; margin: 20px 0;">Error 403: Forbidden</p>
             
             <form id="root-login-form" style="margin-top: 20px; color: #f00; font-family: monospace;">
-                <input type="text" name="root-user" id="root-user" placeholder="USERNAME" style="background:#000; color:#0f0; border:1px solid #f00; padding: 5px; margin-bottom: 5px;"><br>
-                <input type="password" name="root-pass" id="root-pass" placeholder="PASSWORD" style="background:#000; color:#0f0; border:1px solid #f00; padding: 5px; margin-bottom: 10px;"><br>
-                <button type="submit" style="color:#f00; border: 2px outset #f00; padding: 5px 15px; background: #000; font-weight: bold; cursor:pointer;">LOGIN</button>
+                <div style="margin-bottom: 10px;">
+                    <font size="2"><b>&gt; USERNAME:</b></font><br>
+                    <input type="text" name="root-user" id="root-user" style="background:#000; color:#0f0; border:1px solid #f00; padding: 5px; width: 200px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <font size="2"><b>&gt; PASSWORD:</b></font><br>
+                    <input type="password" name="root-pass" id="root-pass" style="background:#000; color:#0f0; border:1px solid #f00; padding: 5px; width: 200px;">
+                </div>
+                <button type="submit" style="color:#f00; border: 2px outset #f00; padding: 5px 25px; background: #000; font-weight: bold; cursor:pointer; font-family: 'VT323', monospace;">[ EXECUTE LOGIN ]</button>
             </form>
 
             <p style="color:#0a0;font-size:14px; font-family: monospace; margin-top: 20px;">Insufficient permissions. Required clearance: ARCHITECT</p>
@@ -93,6 +99,25 @@ Restricted access. Limited commands available.
 
 <script src="game.js"></script>
 <script>
+    // OVERRIDE: Remove 'login' CLI hint and prevent automatic unlock
+    window.checkRootUnlock = function() {
+        var d = getDataX();
+        if (d.sqlDeepAccess && d.phpArchitectSearched && !d.serverRootUnlocked) {
+            if (!sessionStorage.getItem('p3_root_creds_shown')) {
+                sessionStorage.setItem('p3_root_creds_shown', '1');
+                windowMaker6000(
+                    '<div style="text-align:center;padding:15px">' +
+                    '<p style="color:#0f0;font-family:monospace;font-size:12px;margin-bottom:10px">SERVER ACCESS GRANTED</p>' +
+                    '<p style="font-size:10px;color:#ccc">Credentials for /server-root/ bypass:</p>' +
+                    '<p style="font-size:14px;color:#fff;margin:10px 0;background:#333;padding:5px"><b>USER: admin<br>PASS: flexbox</b></p>' +
+                    '<p style="font-size:9px;color:#888">Use the login form on the server root page.</p>' +
+                    '</div>',
+                    { title: '🔑 SYSTEM OVERRIDE' }
+                );
+            }
+        }
+    };
+
     // VIRTUAL FILE SYSTEM
     var FS = {
         'root': {
@@ -333,7 +358,7 @@ Restricted access. Limited commands available.
             var randErr = errors[Math.floor(Math.random() * errors.length)];
             print(cmd + ': command not found', 'cli-error');
             print(randErr, 'cli-error');
-            print('Available commands: ls, cd, cat, pwd, login', 'cli-info');
+            print('Available commands: ls, cd, cat, pwd', 'cli-info');
         }
 
     }
@@ -346,6 +371,16 @@ Restricted access. Limited commands available.
             if (file.clue) getBonus(file.clue);
             if (file.action) file.action();
         }
+    }
+
+    // AUTHENTICATION HANDLER
+    // This is now the exclusive way to unlock the server root.
+    function verifyRootLogin(u, p) {
+        if (u === 'admin' && p === 'flexbox') {
+            toggleBit('serverRootUnlocked', true);
+            return true;
+        }
+        return false;
     }
 
     function unlockServerRootUI() {
