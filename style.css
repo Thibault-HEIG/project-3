@@ -731,9 +731,9 @@ body.quiet-mode .overlap-chaos { display: none !important; }
    90s OS ASSISTANT (DESKTOP PET)
    ======================================= */
 .desktop-pet {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
     width: 60px;
     height: 60px;
     z-index: 900;
@@ -742,6 +742,20 @@ body.quiet-mode .overlap-chaos { display: none !important; }
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+/* Corrupted state styling */
+.win-popup.corrupted {
+    background-color: #ff0000 !important;
+    color: #ffffff !important;
+    animation: glitchShake 0.1s infinite !important;
+    box-shadow: 0 0 20px #ff0000 !important;
+}
+.win-popup.corrupted .win-bar {
+    background-color: #000000 !important;
+}
+.win-popup.corrupted .win-title {
+    color: #ff0000 !important;
 }
 
 .pet-dialogue {

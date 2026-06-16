@@ -681,46 +681,39 @@ function spawnDesktopPet(isAngry) {
 
     var content = '<div id="pet-container" style="text-align:center;padding:10px;font-family:\'Comic Sans MS\',cursive;font-size:12px;">' +
         '<img id="pet-img" src="img/spiderman-png.png" style="width:50px;cursor:pointer;' + (isAngry ? 'filter:invert(1) sepia(1) saturate(5) hue-rotate(-50deg);' : 'filter:hue-rotate(180deg);') + '">' +
-        '<p id="pet-dialogue" style="margin-top:10px;">' + msg + '</p>' +
+        '<p class="pet-dialogue" style="margin-top:10px;">' + msg + '</p>' +
         '</div>';
 
     var p = windowMaker6000(content, {
         title: isAngry ? '💢 SYSTEM DISTURBANCE' : '🐾 Assistant',
-        x: 30,
-        y: 120
+        cls: 'desktop-pet'
     });
     p.id = 'p3-pet-win';
 
-    // bind floaty to the pet element (the image)
-    var petImg = p.querySelector('#pet-img');
-    floaty(petImg);
-
     // corrupted red box visual state
     if (c.serverRootUnlocked) {
-        p.style.background = "#ff0000";
-        p.style.color = "#ffffff";
-        p.querySelector('.win-bar').style.background = "#000000";
-        p.querySelector('.win-title').style.color = "#ff0000";
+        p.classList.add('corrupted');
         p.querySelector('.win-title').textContent = "⚠ CORRUPTED ⚠";
-        // suppress dialogue loops by returning early
-        return;
+        // suppress dialogue loops
     }
 
     // cycle standard advice
-    var dialogueEl = p.querySelector('#pet-dialogue');
-    var iv = setInterval(function() {
-        if (!p.parentNode) {
-            clearInterval(iv);
-            return;
-        }
-        var pool = advice;
-        // glitch if clues found > 2
-        if (c.cluesFound.length > 2) {
-            pool = advice.concat(glitch);
-        }
-        var m = pool[Math.floor(Math.random() * pool.length)];
-        dialogueEl.textContent = m;
-    }, 5000);
+    var dialogueEl = p.querySelector('.pet-dialogue');
+    if (!c.serverRootUnlocked && !isAngry) {
+        var iv = setInterval(function() {
+            if (!p.parentNode) {
+                clearInterval(iv);
+                return;
+            }
+            var pool = advice;
+            // glitch if clues found > 2
+            if (c.cluesFound.length > 2) {
+                pool = advice.concat(glitch);
+            }
+            var m = pool[Math.floor(Math.random() * pool.length)];
+            dialogueEl.textContent = m;
+        }, 5000);
+    }
 
     // handle closing
     var x = p.querySelector('.win-x');
