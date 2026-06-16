@@ -45,7 +45,8 @@ var b = {
     serverRootUnlocked: false, hiddenFolderVisible: false,
     notesRead: false, fragmentsRead: false, gameCompleted: false, firstVisit: null,
     countMe: 0,
-    forumDismissals: 0
+    forumDismissals: 0,
+    anger: 0
 };
 
 // this variable stores a reference to the current state
@@ -647,6 +648,96 @@ function popup(a, b2) {
     return windowMaker6000(a, b2);
 }
 
+// TASK: Desktop Pet
+// spawns a helpful (or unhelpful) assistant
+// that follows you around and gives advice
+// or gets angry if you close it
+function spawnDesktopPet(isAngry) {
+    var c = getDataX();
+    // avoid duplicates if possible
+    if (document.getElementById('p3-pet-win')) return;
+
+    var msg = isAngry ? "WHY DID YOU CLOSE ME???" : "Hello! I am your web assistant!";
+    var advice = [
+        'Have you tried adding more marquee tags?',
+        'I think the site needs more flames.',
+        'Try clicking everything twice!',
+        'Is that a dead link? How vintage!',
+        'Have you found all the fragments yet?',
+        'The guestbook is currently on fire. Please wait.'
+    ];
+    var glitch = [
+        'user4 is watching you...',
+        'Randy Render knows your location.',
+        'cmFuZHkgcmVuZGVy',
+        'SYSTEM ERROR: ARCHITECT NOT FOUND',
+        'Who is Randy?'
+    ];
+
+    // the corrupted state for server root
+    if (c.serverRootUnlocked) {
+        msg = "CRITICAL_ERROR: IDENTITY_OVERWRITE";
+    }
+
+    var content = '<div id="pet-container" style="text-align:center;padding:10px;font-family:\'Comic Sans MS\',cursive;font-size:12px;">' +
+        '<img id="pet-img" src="img/spiderman-png.png" style="width:50px;cursor:pointer;' + (isAngry ? 'filter:invert(1) sepia(1) saturate(5) hue-rotate(-50deg);' : 'filter:hue-rotate(180deg);') + '">' +
+        '<p id="pet-dialogue" style="margin-top:10px;">' + msg + '</p>' +
+        '</div>';
+
+    var p = windowMaker6000(content, {
+        title: isAngry ? '💢 SYSTEM DISTURBANCE' : '🐾 Assistant',
+        x: 30,
+        y: 120
+    });
+    p.id = 'p3-pet-win';
+
+    // bind floaty to the pet element (the image)
+    var petImg = p.querySelector('#pet-img');
+    floaty(petImg);
+
+    // corrupted red box visual state
+    if (c.serverRootUnlocked) {
+        p.style.background = "#ff0000";
+        p.style.color = "#ffffff";
+        p.querySelector('.win-bar').style.background = "#000000";
+        p.querySelector('.win-title').style.color = "#ff0000";
+        p.querySelector('.win-title').textContent = "⚠ CORRUPTED ⚠";
+        // suppress dialogue loops by returning early
+        return;
+    }
+
+    // cycle standard advice
+    var dialogueEl = p.querySelector('#pet-dialogue');
+    var iv = setInterval(function() {
+        if (!p.parentNode) {
+            clearInterval(iv);
+            return;
+        }
+        var pool = advice;
+        // glitch if clues found > 2
+        if (c.cluesFound.length > 2) {
+            pool = advice.concat(glitch);
+        }
+        var m = pool[Math.floor(Math.random() * pool.length)];
+        dialogueEl.textContent = m;
+    }, 5000);
+
+    // handle closing
+    var x = p.querySelector('.win-x');
+    x.onclick = function() {
+        var st = getDataX();
+        // increment anger state
+        st.anger = (st.anger || 0) + 1;
+        putDataY(st);
+        // remove pet
+        p.remove();
+        // respawn with angry message after 15s
+        setTimeout(function() {
+            spawnDesktopPet(true);
+        }, 15000);
+    };
+}
+
 // main game loop processor
 // processes game state transitions
 // and updates the UI accordingly
@@ -767,6 +858,22 @@ function logicLoop(a) {
     
     // check for server root unlock
     checkRootUnlock();
+
+    // TASK: Desktop Pet Trigger
+    // triggers if 2 zones visited or after 15s on home page
+    if (!window._petTriggered) {
+        if (c.visitedZones.length >= 2) {
+            window._petTriggered = true;
+            spawnDesktopPet();
+        } else if (a === 'home') {
+            window._petTriggered = true;
+            setTimeout(function() {
+                if (!document.getElementById('p3-pet-win')) {
+                    spawnDesktopPet();
+                }
+            }, 15000);
+        }
+    }
 }
 
 // checks if the server root should be unlocked

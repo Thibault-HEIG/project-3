@@ -564,6 +564,7 @@ body.server-root {
 .cli-terminal .cli-link:hover { background: #0a3a0a; }
 .cli-input-line {
     display: flex; align-items: center; margin-top: 4px;
+    position: relative; z-index: 1100;
 }
 .cli-input-line .cli-prompt { color: #0a0; white-space: nowrap; margin-right: 8px; }
 .cli-input-line input {
@@ -724,4 +725,71 @@ body.quiet-mode .overlap-chaos { display: none !important; }
     margin-bottom: 20px;
     font-weight: bold;
     text-align: center;
+}
+
+/* =======================================
+   90s OS ASSISTANT (DESKTOP PET)
+   ======================================= */
+.desktop-pet {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    z-index: 900;
+    cursor: help;
+    background-image: url('img/spiderman-png.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.pet-dialogue {
+    position: fixed;
+    bottom: 85px;
+    right: 20px;
+    max-width: 200px;
+    background: #ffffe1;
+    color: #000;
+    border: 1px solid #000;
+    padding: 8px 12px;
+    font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    font-size: 11px;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+    z-index: 900;
+}
+
+/* Tooltip tail */
+.pet-dialogue::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    right: 20px;
+    border-width: 8px 8px 0 0;
+    border-style: solid;
+    border-color: #000 transparent transparent transparent;
+}
+
+.pet-dialogue::before {
+    content: "";
+    position: absolute;
+    bottom: -7px;
+    right: 21px;
+    border-width: 7px 7px 0 0;
+    border-style: solid;
+    border-color: #ffffe1 transparent transparent transparent;
+    z-index: 1;
+}
+
+/* Corrupted state for quiet mode */
+body.quiet-mode .desktop-pet {
+    background-color: #ff0000 !important;
+    background-image: none !important;
+    border: 3px solid #660000;
+    animation: glitchShake 0.1s infinite;
+    box-shadow: 0 0 20px #ff0000;
+}
+
+body.quiet-mode .pet-dialogue {
+    display: none !important;
 }
