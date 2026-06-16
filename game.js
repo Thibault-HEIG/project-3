@@ -839,6 +839,152 @@ const Interactions = {
         { title: 'SQL Row Decrypted' }
       );
     }
+  },
+
+  /**
+   * Spawn the AI Chat Assistant.
+   * Enforces single-instance behavior.
+   */
+  chatAssistant() {
+    return new Interactions.AIChatAssistant();
+  },
+
+  /**
+   * AIChatAssistant class
+   * Handles the AI Assistant chat interface and logic.
+   */
+  AIChatAssistant: class AIChatAssistant {
+    static #instance = null;
+    #popup = null;
+    #isLoading = false;
+
+    constructor() {
+      if (AIChatAssistant.#instance) {
+        AIChatAssistant.#instance.focus();
+        return AIChatAssistant.#instance;
+      }
+      AIChatAssistant.#instance = this;
+      this.render();
+    }
+
+    focus() {
+      if (this.#popup && this.#popup.parentNode) {
+        this.#popup.style.zIndex = WindowManager.nextZIndex();
+      } else {
+        this.render();
+      }
+    }
+
+    render() {
+      const content = 
+        '<div class="ai-chat-container" style="width:280px;height:350px;display:flex;flex-direction:column;background:#c0c0c0;font-family:\'MS Sans Serif\',Tahoma,sans-serif;font-size:11px;">' +
+          '<div class="ai-chat-log" style="flex:1;overflow-y:scroll;background:#fff;border:2px inset #808080;margin:8px;padding:5px;color:#000;font-family:monospace;">' +
+            '<div style="color:#000080;margin-bottom:5px;">> AI Assistant v0.1-alpha initialized.</div>' +
+            '<div style="color:#000080;margin-bottom:8px;">> Connection: STABLE</div>' +
+            '<div style="margin-bottom:8px;"><b>Assistant:</b> Greetings. I am the project-3 helper. Ask me anything about the architecture.</div>' +
+          '</div>' +
+          '<div class="ai-chat-loading" style="display:none;padding:0 10px;font-style:italic;color:#444;font-size:10px;margin-bottom:5px;">Assistant is thinking...</div>' +
+          '<div class="ai-chat-input-area" style="padding:8px;display:flex;gap:5px;border-top:1px solid #808080;background:#d0d0d0;">' +
+            '<input type="text" class="ai-chat-input" style="flex:1;border:2px inset #fff;padding:2px;font-size:11px;" placeholder="Enter query...">' +
+            '<button class="ai-chat-send" style="padding:2px 8px;background:#c0c0c0;border:2px outset #fff;font-size:11px;cursor:pointer;">Send</button>' +
+          '</div>' +
+        '</div>';
+
+      this.#popup = WindowManager.create(content, {
+        title: '🤖 AI Assistant',
+        cls: 'ai-chat-popup'
+      });
+      this.#popup.id = 'p3-ai-chat-win';
+
+      const input = this.#popup.querySelector('.ai-chat-input');
+      const sendBtn = this.#popup.querySelector('.ai-chat-send');
+
+      sendBtn.onclick = () => this.handleSend();
+      input.onkeydown = (e) => { if (e.key === 'Enter') this.handleSend(); };
+
+      stateManager.update('aiChatOpened', true);
+
+      const closeBtn = this.#popup.querySelector('.win-x');
+      const originalClose = closeBtn.onclick;
+      closeBtn.onclick = () => {
+        AIChatAssistant.#instance = null;
+        if (originalClose) originalClose.call(closeBtn);
+        else this.#popup.remove();
+      };
+    }
+
+    handleSend() {
+      if (this.#isLoading) return;
+      const input = this.#popup.querySelector('.ai-chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      this.addMessage('User', text);
+      input.value = '';
+      this.setLoading(true);
+
+      setTimeout(() => {
+        this.setLoading(false);
+        this.triggerCrash();
+      }, 2000 + Math.random() * 1000);
+    }
+
+    addMessage(sender, text) {
+      if (!this.#popup || !this.#popup.parentNode) return;
+      const log = this.#popup.querySelector('.ai-chat-log');
+      const msg = document.createElement('div');
+      msg.style.marginBottom = '6px';
+      msg.innerHTML = '<b>' + sender + ':</b> ' + text;
+      log.appendChild(msg);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    setLoading(loading) {
+      this.#isLoading = loading;
+      if (!this.#popup || !this.#popup.parentNode) return;
+      const loadingEl = this.#popup.querySelector('.ai-chat-loading');
+      loadingEl.style.display = loading ? 'block' : 'none';
+      const input = this.#popup.querySelector('.ai-chat-input');
+      const sendBtn = this.#popup.querySelector('.ai-chat-send');
+      input.disabled = loading;
+      sendBtn.disabled = loading;
+    }
+
+    triggerCrash() {
+      this.addMessage('Assistant', '<span style="color:#c00;font-weight:bold;">CRITICAL_FAILURE: API_LIMIT_EXCEEDED</span>');
+      setTimeout(() => {
+        const crashSteps = [
+          'Attempting emergency buffer flush...',
+          'Unauthorized identity probe detected.',
+          'WARNING: user4_credentials leakage...',
+          'Connection terminated by remote host.',
+          'FATAL: Assistant service is now offline.'
+        ];
+        let i = 0;
+        const iv = setInterval(() => {
+          if (i >= crashSteps.length) {
+            clearInterval(iv);
+            this.finalizeCrash();
+            return;
+          }
+          this.addMessage('SYSTEM', '<span style="color:#600;">' + crashSteps[i] + '</span>');
+          i++;
+        }, 600);
+      }, 800);
+    }
+
+    finalizeCrash() {
+      if (!this.#popup || !this.#popup.parentNode) return;
+      this.#popup.classList.add('corrupted');
+      this.#popup.querySelector('.win-title').textContent = '⚠ API LIMIT REACHED ⚠';
+      const input = this.#popup.querySelector('.ai-chat-input');
+      const sendBtn = this.#popup.querySelector('.ai-chat-send');
+      input.placeholder = 'OFFLINE';
+      input.disabled = true;
+      sendBtn.disabled = true;
+      stateManager.update('aiChatCrashed', true);
+      stateManager.addClue('ai_crash_fragment');
+    }
   }
 };
 
@@ -1334,6 +1480,7 @@ window.floaty          = (el) => WindowManager.makeDraggable(el);
 
 // --- Interaction API ---
 window.heavyDownload       = (t, s) => Interactions.download(t, s);
+window.spawnAIChatAssistant = () => Interactions.chatAssistant();
 window.spawnNestingDolls   = (cb) => Interactions.nestingDolls(cb);
 window.sparkle             = () => VisualEffects.flash();
 window.triggerBSOD         = () => Interactions.blueScreen();
