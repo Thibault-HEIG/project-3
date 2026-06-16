@@ -741,6 +741,13 @@ body.quiet-mode .overlap-chaos { display: none !important; }
     background-position: center;
 }
 
+/* Ensure initial bottom/right placement overrides inline random top/left,
+   but stays compatible with dragging logic which sets bottom: auto */
+.desktop-pet:not([style*="bottom: auto"]) {
+    top: auto !important;
+    left: auto !important;
+}
+
 /* Corrupted state styling */
 .win-popup.corrupted {
     background-color: #ff0000 !important;

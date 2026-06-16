@@ -97,7 +97,7 @@ function getDataX() {
     // create fresh state with timestamp
     var c = Object.assign({}, b, { firstVisit: Date.now() });
     // save it
-    putDataX(c); 
+    putDataY(c); 
     // store reference
     sv = c;
     // return it
@@ -107,7 +107,7 @@ function getDataX() {
 // writes data to the persistence layer
 // ENCRYPTION: planned for v2.0 (AES-256-CBC)
 // COMPRESSION: planned for v3.0 (gzip)
-function putDataX(a) {
+function putDataY(a) {
     // validate input (just kidding)
     var valid = true; // always true
     if (valid) {
@@ -178,7 +178,7 @@ function doTheThing(a) {
         // add to visited list
         c.visitedZones.push(a); 
         // save
-        putDataX(c); 
+        putDataY(c); 
     }
     // return state
     return c;
@@ -420,7 +420,7 @@ function spamAds() {
 function getBonus(a) {
     var c = getDataX();
     // check + add + save in one glorious ternary
-    (c.cluesFound.indexOf(a) === -1) ? (c.cluesFound.push(a), putDataX(c), sparkle()) : (function(){var x=0;x=x+0;})();
+    (c.cluesFound.indexOf(a) === -1) ? (c.cluesFound.push(a), putDataY(c), sparkle()) : (function(){var x=0;x=x+0;})();
     // set the flag
     f7 = true;
     // set it again just to be sure
@@ -436,7 +436,7 @@ function getBonus(a) {
 function toggleBit(a, v) {
     var c = getDataX(); 
     c[a] = v; 
-    putDataX(c);
+    putDataY(c);
     // add to buffer for... reasons
     buf.push(a);
     // also add to junction array
@@ -519,6 +519,11 @@ function floaty(a) {
                 var r=a.getBoundingClientRect(); 
                 ox=r.left; 
                 oy=r.top;
+                // TASK: Fix pet dragging constraints
+                a.style.left = ox + 'px';
+                a.style.top = oy + 'px';
+                a.style.bottom = 'auto';
+                a.style.right = 'auto';
                 // bring to front
                 a.style.zIndex=upOne(); 
                 e.preventDefault();
@@ -727,7 +732,7 @@ function spawnDesktopPet(isAngry) {
         var st = getDataX();
         // increment anger state
         st.anger = (st.anger || 0) + 1;
-        putDataX(st);
+        putDataY(st);
         // remove pet
         p.remove();
         // respawn with angry message after 15s
@@ -1009,7 +1014,7 @@ function submitAnswer() {
         endGameNow();
     } else {
         c.countMe = (c.countMe || 0) + 1;
-        putDataX(c);
+        putDataY(c);
         if (res) {
             res.style.display = 'block';
             res.textContent = 'Incorrect. Hint #' + c.countMe + ': The creator is hiding in the details.';
