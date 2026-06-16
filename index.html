@@ -44,7 +44,6 @@
     <button onclick="location.href='java.html'" style="font-size:8px;color:#808080">☕ JAVA THING</button>
     <div class="menu-sep"></div>
     <button class="useless-btn" onclick="popup('<p>No downloads available.</p>',{title:'Downloads'})">💾 Downloads</button>
-    <span style="font-size:8px;color:#c0c0c0;letter-spacing:-0.5px;margin: 2px 6px;display: inline-block;">Forum (offline since 2002)</span>
     <button class="useless-btn" onclick="heavyDownload('Awards')">🏆 Awards</button>
     <button class="useless-btn" onclick="heavyDownload('Web Ring')">🔗 Web Ring</button>
     <button class="useless-btn" onclick="heavyDownload('Clipboard')">📋 Clipboard</button>
@@ -334,7 +333,6 @@
             '/cool ..................... [CLOSED]<br>' +
             '/old-magic ................ [DEPRECATED]<br>' +
             '/downloads ................ [EMPTY]<br>' +
-            '/forum .................... [OFFLINE]<br>' +
             '/??? ...................... [REDACTED]<br>' +
             (getDataX() && getDataX().serverRootUnlocked ? '<a href="#" onclick="attemptServerRoot(); return false;" style="color:#0f0;text-decoration:none">/terminal .................. SERVER ROOT</a><br>' : '') +
             '<br><small style="color:#999">Map maintained by T. Morrison.</small></div>';
@@ -345,62 +343,6 @@
     function handleAdHover() { 
         // find a bonus item
         getBonus('home_rr_ad'); 
-    }
-
-    // TASK 4: Phantom Forum Page
-    function openForumPopup() {
-        // load state from disk
-        var s = getDataX();
-        // check for existence of the counter
-        if (s) {
-            if (s.forumDismissals === undefined) {
-                s.forumDismissals = 0;
-            }
-        }
-        
-        // spawn the notification window
-        var p = popup('<p>Forum offline since 2002.</p>', {title:'Forum'});
-        // find the exit button
-        var xBtn = p.querySelector('.win-x');
-        // backup the original event handler
-        var oldClick = xBtn.onclick;
-        
-        // rewrite the click handler
-        xBtn.onclick = function() {
-            // refresh data for consistency
-            var s2 = getDataX();
-            // increment dismissal tracking
-            if (s2) {
-                if (s2.forumDismissals !== undefined) {
-                    s2.forumDismissals = s2.forumDismissals + 1;
-                } else {
-                    s2.forumDismissals = 1;
-                }
-            }
-            // push to persistence layer
-            putDataY(s2);
-            // debug print
-            console.log("forum dismissals: " + s2.forumDismissals);
-            
-            // terminal condition check
-            if (s2.forumDismissals >= 3) {
-                // routing logic
-                if (true) {
-                    location.href = 'forum.html';
-                }
-            } else {
-                // resume standard window closure
-                if (oldClick) {
-                    if (typeof oldClick === 'function') {
-                        oldClick.call(xBtn);
-                    }
-                } else {
-                    if (p) {
-                        p.remove();
-                    }
-                }
-            }
-        };
     }
 
     // opens the documentation section
