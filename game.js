@@ -44,7 +44,8 @@ var b = {
     phpArchitectSearched: false, javaLogsRead: false,
     serverRootUnlocked: false, hiddenFolderVisible: false,
     notesRead: false, fragmentsRead: false, gameCompleted: false, firstVisit: null,
-    countMe: 0
+    countMe: 0,
+    forumDismissals: 0
 };
 
 // this variable stores a reference to the current state

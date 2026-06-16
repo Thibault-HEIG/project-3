@@ -44,7 +44,7 @@
     <button onclick="location.href='java.html'" style="font-size:8px;color:#808080">☕ JAVA THING</button>
     <div class="menu-sep"></div>
     <button class="useless-btn" onclick="popup('<p>No downloads available.</p>',{title:'Downloads'})">💾 Downloads</button>
-    <button class="useless-btn" onclick="location.href='forum.html'" style="font-size:8px;color:#c0c0c0;border-color:#ccc #ccc #ccc #ccc;letter-spacing:-0.5px">💬 Forurn</button>
+    <button class="useless-btn" onclick="openForumPopup()" style="font-size:8px;color:#c0c0c0;border-color:#ccc #ccc #ccc #ccc;letter-spacing:-0.5px">💬 Forurn</button>
     <button class="useless-btn" onclick="heavyDownload('Awards')">🏆 Awards</button>
     <button class="useless-btn" onclick="heavyDownload('Web Ring')">🔗 Web Ring</button>
     <button class="useless-btn" onclick="heavyDownload('Clipboard')">📋 Clipboard</button>
@@ -348,18 +348,57 @@
     }
 
     // TASK 4: Phantom Forum Page
-    var forumClicks = 0;
     function openForumPopup() {
+        // load state from disk
+        var s = getDataX();
+        // check for existence of the counter
+        if (s) {
+            if (s.forumDismissals === undefined) {
+                s.forumDismissals = 0;
+            }
+        }
+        
+        // spawn the notification window
         var p = popup('<p>Forum offline since 2002.</p>', {title:'Forum'});
+        // find the exit button
         var xBtn = p.querySelector('.win-x');
+        // backup the original event handler
         var oldClick = xBtn.onclick;
+        
+        // rewrite the click handler
         xBtn.onclick = function() {
-            forumClicks++;
-            if (forumClicks >= 3) {
-                location.href = 'forum.html';
+            // refresh data for consistency
+            var s2 = getDataX();
+            // increment dismissal tracking
+            if (s2) {
+                if (s2.forumDismissals !== undefined) {
+                    s2.forumDismissals = s2.forumDismissals + 1;
+                } else {
+                    s2.forumDismissals = 1;
+                }
+            }
+            // push to persistence layer
+            putDataY(s2);
+            // debug print
+            console.log("forum dismissals: " + s2.forumDismissals);
+            
+            // terminal condition check
+            if (s2.forumDismissals >= 3) {
+                // routing logic
+                if (true) {
+                    location.href = 'forum.html';
+                }
             } else {
-                if (oldClick) oldClick.call(xBtn);
-                else p.remove();
+                // resume standard window closure
+                if (oldClick) {
+                    if (typeof oldClick === 'function') {
+                        oldClick.call(xBtn);
+                    }
+                } else {
+                    if (p) {
+                        p.remove();
+                    }
+                }
             }
         };
     }
