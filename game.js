@@ -641,7 +641,9 @@ const Interactions = {
       st.anger = (st.anger || 0) + 1;
       stateManager.save(st);
       popup.remove();
-      setTimeout(() => Interactions.pet(true), 15000);
+      if (!st.serverRootUnlocked) {
+        setTimeout(() => Interactions.pet(true), 15000);
+      }
     };
   },
 
@@ -978,16 +980,18 @@ const GameLogic = {
 
     // Desktop pet trigger (2+ zones or 15s on home)
     if (!window._petTriggered) {
-      if (state.visitedZones.length >= 2) {
-        window._petTriggered = true;
-        Interactions.pet();
-      } else if (zone === 'home') {
-        window._petTriggered = true;
-        setTimeout(() => {
-          if (!document.getElementById('p3-pet-win')) {
-            Interactions.pet();
-          }
-        }, 15000);
+      if (!state.serverRootUnlocked || zone === 'server-root') {
+        if (state.visitedZones.length >= 2) {
+          window._petTriggered = true;
+          Interactions.pet();
+        } else if (zone === 'home') {
+          window._petTriggered = true;
+          setTimeout(() => {
+            if (!document.getElementById('p3-pet-win')) {
+              Interactions.pet();
+            }
+          }, 15000);
+        }
       }
     }
   },
