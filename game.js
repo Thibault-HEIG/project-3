@@ -595,8 +595,7 @@ const Interactions = {
 
     const content =
       '<div id="pet-container" style="text-align:center;padding:10px;font-family:\'Comic Sans MS\',cursive;font-size:12px;">' +
-      '<img id="pet-img" src="img/spiderman-png.png" style="width:50px;cursor:pointer;' +
-      (isAngry ? 'filter:invert(1) sepia(1) saturate(5) hue-rotate(-50deg);' : 'filter:hue-rotate(180deg);') + '">' +
+      '<img id="pet-img" src="img/assistant.png" style="width:50px;cursor:pointer;' + '">' +
       '<p class="pet-dialogue" style="margin-top:10px;">' + msg + '</p>' +
       '</div>';
 
@@ -1206,7 +1205,6 @@ const GameLogic = {
    */
   verifyAnswer(input) {
     const normalized = input.trim().toLowerCase();
-    // cmFuZHkgcmVuZGVy — DO NOT DECODE (it reveals the architect)
     return btoa(unescape(encodeURIComponent(normalized))) === this._ENCODED_ANSWER;
   },
 
